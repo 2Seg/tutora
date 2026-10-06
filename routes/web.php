@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use Illuminate\Support\Facades\Route;
+use Illuminate\Routing\Router;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+return function (Router $router) {
+    $router->view('/', 'welcome');
+};
