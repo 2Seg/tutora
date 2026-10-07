@@ -15,5 +15,11 @@
     },
     "optionalDependencies": {
         "@laravel/multiplex": "^0.4.1"
+    },
+    "dependencies": {
+        "@inertiajs/vite": "^3.8.0",
+        "@inertiajs/vue3": "^3.8.0",
+        "@vitejs/plugin-vue": "^6.0.9",
+        "vue": "^3.5.43"
     }
 }
