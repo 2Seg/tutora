@@ -5,5 +5,5 @@ declare(strict_types=1);
 use Illuminate\Routing\Router;
 
 return function (Router $router) {
-    $router->view('/', 'app');
+    $router->inertia('/teacher/students', 'Teacher/Students/Index');
 };
