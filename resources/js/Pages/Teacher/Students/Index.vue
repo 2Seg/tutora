@@ -1,6 +1,9 @@
 <script>
+import {Button} from "@/components/ui/button/index.js";
+
 export default {
-    name: "Index"
+    name: "Index",
+    components: {Button}
 }
 </script>
 
