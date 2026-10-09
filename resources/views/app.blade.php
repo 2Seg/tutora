@@ -6,7 +6,7 @@
     <title></title>
     @vite([
         'resources/js/app.ts',
-        "resources/js/Pages/{$page['component']}.vue",
+        "resources/js/pages/{$page['component']}.vue",
         'resources/css/app.css',
     ])
     @inertiaHead
