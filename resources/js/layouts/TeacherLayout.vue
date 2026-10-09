@@ -20,10 +20,6 @@ export default {
     </div>
 
     <main class="flex block-screen justify-between bg-amber-300">
-        <section>Section</section>
-
-        <aside class="flex bg-amber-100">
-            Aside
-        </aside>
+        <slot/>
     </main>
 </template>
