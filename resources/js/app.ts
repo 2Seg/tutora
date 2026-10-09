@@ -1,8 +1,9 @@
-import { createInertiaApp } from '@inertiajs/vue3'
-import { createApp, h } from "vue";
+import { createInertiaApp } from '@inertiajs/vue3';
+import { createApp, h } from 'vue';
 
 createInertiaApp({
     resolve: name => {
+        // @ts-ignore
         const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
         return pages[`./Pages/${name}.vue`]
     },
