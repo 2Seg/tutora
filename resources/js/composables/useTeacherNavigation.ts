@@ -25,6 +25,13 @@ const items = [
         title: 'Your calendar',
         description: 'A easy view of what happens next.',
     },
+    {
+        label: 'Messages',
+        href: '/teacher/messages',
+        icon: Mails,
+        title: 'Your messages',
+        description: 'A great way of keeping in touch with your students.',
+    },
 ];
 
 type NavItem = (typeof items)[number];
