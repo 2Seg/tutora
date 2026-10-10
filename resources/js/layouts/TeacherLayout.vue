@@ -19,7 +19,7 @@ export default {
         <TeacherNavigationMenu></TeacherNavigationMenu>
     </div>
 
-    <main class="flex justify-between">
+    <main class="grid grid-cols-3 px-2 py-3 gap-6">
         <slot/>
     </main>
 </template>

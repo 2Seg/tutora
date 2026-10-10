@@ -1,17 +1,24 @@
 <script lang="ts">
-
-import TeacherLayout from '@/layouts/TeacherLayout.vue';
+import MainHeader from '@/components/shared/MainHeader.vue';
 
 export default {
     name: "Index",
-    components: { TeacherLayout },
+    components: { MainHeader },
 }
 </script>
 
 <template>
-    <section>Section</section>
+    <section class="col-span-full">
+        <MainHeader
+            title="Your students"
+            description="A simple list of students learning French with you."/>
+    </section>
 
-    <aside class="flex bg-amber-100">
+    <section class="col-span-2 bg-white">
+        Section
+    </section>
+
+    <aside class="bg-amber-100">
         Aside
     </aside>
 </template>
