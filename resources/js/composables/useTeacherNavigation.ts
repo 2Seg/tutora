@@ -1,6 +1,6 @@
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { House, Users } from '@lucide/vue';
+import { CalendarDays, CircleDollarSign, House, Mails, Users } from '@lucide/vue';
 
 const items = [
     {
@@ -18,10 +18,13 @@ const items = [
         title: 'Your students',
         description: 'A simple list of students learning with you.',
     },
-    // {label: 'Calendar', href: '/teacher/calendar', icon: CalendarDays, title: '', description: ''},
-    // {label: 'Messaging', href: '/teacher/messages', icon: Mails, title: '', description: ''},
-    // {label: 'Payments', href: '/teacher/payments', icon: CircleDollarSign, title: '', description: ''},
-    // {label: 'Statistics', href: '/teacher/statistics', icon: ChartColumn, title: '', description: ''},
+    {
+        label: 'Calendar',
+        href: '/teacher/calendar',
+        icon: CalendarDays,
+        title: 'Your calendar',
+        description: 'A easy view of what happens next.',
+    },
 ];
 
 type NavItem = (typeof items)[number];
