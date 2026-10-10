@@ -12,7 +12,7 @@ export default {
 </script>
 
 <template>
-    <Item class="flex flex-col items-start">
+    <Item class="flex flex-col items-start py-2 gap-1">
         <ItemTitle>
             <h1>{{ title }}</h1>
         </ItemTitle>
