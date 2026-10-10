@@ -9,7 +9,7 @@ export default {
 
 <template>
     <Avatar>
-        <AvatarImage src="#"/>
+        <AvatarImage src="#" />
         <AvatarFallback>NF</AvatarFallback>
     </Avatar>
 </template>

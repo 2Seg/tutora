@@ -34,22 +34,22 @@ export default {
         <NavigationMenuList>
             <NavigationMenuItem>
                 <NavigationMenuTrigger class="flex gap-3 h-10">
-                    <UserAvatar/>
+                    <UserAvatar />
                     Naëlle Furlan
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                     <ul class="flex flex-col justify-evenly w-43 h-30">
                         <NavigationMenuLink>
-                            <User/>
+                            <User />
                             My profile
                         </NavigationMenuLink>
                         <NavigationMenuLink>
-                            <Settings/>
+                            <Settings />
                             Parameters
                         </NavigationMenuLink>
-                        <Separator/>
+                        <Separator />
                         <NavigationMenuLink>
-                            <LogOut/>
+                            <LogOut />
                             Log out
                         </NavigationMenuLink>
                     </ul>

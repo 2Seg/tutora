@@ -17,23 +17,25 @@ export default {
 </script>
 
 <template>
-    <header class="flex justify-between min-w-screen px-6 pt-3 pb-1">
-        <AppLogo></AppLogo>
-        <ProfileMenu></ProfileMenu>
-    </header>
+    <div class="flex h-dvh flex-col">
+        <header class="flex justify-between min-w-screen px-6 pt-3 pb-1">
+            <AppLogo></AppLogo>
+            <ProfileMenu></ProfileMenu>
+        </header>
 
-    <div class="px-6 pt-1 pb-2">
-        <TeacherNavigationMenu></TeacherNavigationMenu>
-    </div>
+        <div class="px-6 py-2">
+            <TeacherNavigationMenu></TeacherNavigationMenu>
+        </div>
 
-    <main class="grid grid-cols-3 px-2 py-3 gap-6">
-        <section v-if="current" class="col-span-full">
+        <section class="px-2 py-2" v-if="current">
             <MainHeader
                 :title="current.title"
                 :description="current.description"
             />
         </section>
 
-        <slot/>
-    </main>
+        <main class="grid flex-1 grid-cols-3 gap-6 px-6 pb-6">
+            <slot/>
+        </main>
+    </div>
 </template>

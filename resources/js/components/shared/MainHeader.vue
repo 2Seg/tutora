@@ -1,5 +1,10 @@
 <script lang="ts">
-import { Item, ItemActions, ItemDescription, ItemTitle } from '@/components/ui/item';
+import {
+    Item,
+    ItemActions,
+    ItemDescription,
+    ItemTitle,
+} from '@/components/ui/item';
 
 export default {
     name: 'MainHeader',
