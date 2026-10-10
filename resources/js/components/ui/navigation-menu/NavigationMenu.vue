@@ -4,18 +4,20 @@ import type { HTMLAttributes } from 'vue';
 import { reactiveOmit } from '@vueuse/core';
 import { NavigationMenuRoot, useForwardPropsEmits } from 'reka-ui';
 import { cn } from '@/lib/utils';
+import NavigationMenuViewport from './NavigationMenuViewport.vue';
 
 const props = withDefaults(
     defineProps<
         NavigationMenuRootProps & {
             class?: HTMLAttributes['class'];
+            viewport?: boolean;
         }
     >(),
     {},
 );
 const emits = defineEmits<NavigationMenuRootEmits>();
 
-const delegatedProps = reactiveOmit(props, 'class');
+const delegatedProps = reactiveOmit(props, 'class', 'viewport');
 const forwarded = useForwardPropsEmits(delegatedProps, emits);
 </script>
 
@@ -23,6 +25,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
     <NavigationMenuRoot
         v-slot="slotProps"
         data-slot="navigation-menu"
+        :data-viewport="viewport"
         v-bind="forwarded"
         :class="
             cn(
@@ -32,5 +35,6 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits);
         "
     >
         <slot v-bind="slotProps" />
+        <NavigationMenuViewport v-if="viewport" />
     </NavigationMenuRoot>
 </template>
