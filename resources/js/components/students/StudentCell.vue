@@ -1,8 +1,8 @@
-<!-- resources/js/components/students/StudentCell.vue -->
 <script setup lang="ts">
 import { computed } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import type { Student } from '@/types/Student';
+import { Student } from '@/types/Student';
+import UserAvatar from '@/components/users/UserAvatar.vue';
 
 const props = defineProps<{ student: Student }>();
 
@@ -16,12 +16,7 @@ const initials = computed(() =>
 
 <template>
     <div class="flex items-center gap-4">
-        <Avatar class="size-10">
-            <AvatarImage :src="student.avatarImg" :alt="fullName" />
-            <AvatarFallback class="bg-primary/10 font-semibold text-primary">
-                {{ initials }}
-            </AvatarFallback>
-        </Avatar>
+        <UserAvatar class="size-10" :user="student"/>
         <div class="min-w-0">
             <p class="font-semibold leading-tight">{{ fullName }}</p>
             <p class="text-sm text-muted-foreground">{{ student.email }}</p>

@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -7,26 +7,21 @@ import {
     NavigationMenuTrigger,
     NavigationMenuContent,
 } from '@/components/ui/navigation-menu';
-import { Settings, User, LogOut } from '@lucide/vue';
+import { Settings, User as UserIcon, LogOut } from '@lucide/vue';
 import { Separator } from '@/components/ui/separator';
 import UserAvatar from '@/components/users/UserAvatar.vue';
+import { User } from '@/types/User';
+import { computed } from 'vue';
 
-export default {
-    name: 'ProfileMenu',
-    components: {
-        LogOut,
-        NavigationMenu,
-        NavigationMenuContent,
-        NavigationMenuItem,
-        NavigationMenuLink,
-        NavigationMenuList,
-        NavigationMenuTrigger,
-        Separator,
-        Settings,
-        User,
-        UserAvatar,
-    },
+const user: User = {
+    id: 1,
+    firstName: 'Naelle',
+    lastName: 'Furlan',
+    email: 'test@gmail.com',
 };
+const fullName = computed(
+    () => `${user.firstName} ${user.lastName}`,
+);
 </script>
 
 <template>
@@ -34,13 +29,13 @@ export default {
         <NavigationMenuList>
             <NavigationMenuItem>
                 <NavigationMenuTrigger class="flex gap-3 h-10">
-                    <UserAvatar />
-                    Naëlle Furlan
+                    <UserAvatar :user="user" />
+                    <span class="bold">{{ fullName }}</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                     <ul class="flex flex-col justify-evenly w-43 h-30">
                         <NavigationMenuLink>
-                            <User />
+                            <UserIcon />
                             My profile
                         </NavigationMenuLink>
                         <NavigationMenuLink>
