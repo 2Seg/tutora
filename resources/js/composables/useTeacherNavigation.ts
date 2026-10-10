@@ -9,7 +9,7 @@ const items = [
         icon: House,
         exact: true,
         title: 'Dashboard',
-        description: 'A quick overview of your teacher activity.',
+        description: 'A quick overview of your teaching activity.',
     },
     {
         label: 'Students',
@@ -23,14 +23,21 @@ const items = [
         href: '/teacher/calendar',
         icon: CalendarDays,
         title: 'Your calendar',
-        description: 'A easy view of what happens next.',
+        description: 'A easy view to see what happens next.',
     },
     {
         label: 'Messages',
         href: '/teacher/messages',
         icon: Mails,
         title: 'Your messages',
-        description: 'A great way of keeping in touch with your students.',
+        description: 'A great way to keep in touch with your students.',
+    },
+    {
+        label: 'Earnings',
+        href: '/teacher/earnings',
+        icon: CircleDollarSign,
+        title: 'Your earnings',
+        description: 'A direct way to keep track your budget.',
     },
 ];
 
