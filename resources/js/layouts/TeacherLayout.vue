@@ -2,10 +2,17 @@
 import TeacherNavigationMenu from '@/components/teacher/TeacherNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import ProfileMenu from '@/components/shared/ProfileMenu.vue';
+import MainHeader from '@/components/shared/MainHeader.vue';
+import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
 export default {
     name: 'TeacherLayout',
-    components: { ProfileMenu, AppLogo, TeacherNavigationMenu },
+    components: { MainHeader, ProfileMenu, AppLogo, TeacherNavigationMenu },
+    setup() {
+        const { current } = useTeacherNavigation();
+
+        return { current };
+    },
 };
 </script>
 
@@ -20,6 +27,13 @@ export default {
     </div>
 
     <main class="grid grid-cols-3 px-2 py-3 gap-6">
+        <section v-if="current" class="col-span-full">
+            <MainHeader
+                :title="current.title"
+                :description="current.description"
+            />
+        </section>
+
         <slot/>
     </main>
 </template>

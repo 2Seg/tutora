@@ -1,73 +1,28 @@
 <script>
-import {
-    NavigationMenu,
-    NavigationMenuItem,
-    NavigationMenuLink,
-    NavigationMenuList,
-} from '@/components/ui/navigation-menu';
-import {
-    CalendarDays,
-    ChartColumn,
-    CircleDollarSign,
-    House,
-    Mails,
-    Users,
-} from '@lucide/vue';
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink, NavigationMenuList } from '@/components/ui/navigation-menu';
+import { Link } from '@inertiajs/vue3';
+import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
 export default {
     name: 'TeacherNavigationMenu',
-    components: {
-        NavigationMenuList,
-        NavigationMenuLink,
-        NavigationMenuItem,
-        NavigationMenu,
-        House,
-        Users,
-        CalendarDays,
-        Mails,
-        CircleDollarSign,
-        ChartColumn,
-    }
+    components: {Link, NavigationMenuList, NavigationMenuLink, NavigationMenuItem, NavigationMenu,},
+    setup() {
+        const { items, isActive } = useTeacherNavigation();
+
+        return { items, isActive };
+    },
 };
 </script>
 
 <template>
     <NavigationMenu>
         <NavigationMenuList>
-            <NavigationMenuItem>
-                <NavigationMenuLink>
-                    <House/>
-                    Home
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-                <NavigationMenuLink>
-                    <Users/>
-                    Student
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-                <NavigationMenuLink>
-                    <CalendarDays/>
-                    Calendar
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-                <NavigationMenuLink>
-                    <Mails/>
-                    Messaging
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-                <NavigationMenuLink>
-                    <CircleDollarSign/>
-                    Payments
-                </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-                <NavigationMenuLink>
-                    <ChartColumn/>
-                    Statistics
+            <NavigationMenuItem v-for="item in items" :key="item.href">
+                <NavigationMenuLink as-child :active="isActive(item)">
+                    <Link :href="item.href" class="flex flex-row items-center gap-2">
+                        <component :is="item.icon"/>
+                        {{ item.label }}
+                    </Link>
                 </NavigationMenuLink>
             </NavigationMenuItem>
         </NavigationMenuList>

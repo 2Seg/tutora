@@ -2,17 +2,11 @@
 import MainHeader from '@/components/shared/MainHeader.vue';
 
 export default {
-    name: "Index",
+    name: "Dashboard",
     components: { MainHeader },
 }
 </script>
 
 <template>
-    <section class="col-span-2 bg-white">
-        Section
-    </section>
 
-    <aside class="bg-amber-100">
-        Aside
-    </aside>
 </template>
