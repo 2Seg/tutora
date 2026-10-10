@@ -1,7 +1,7 @@
 <script lang="ts">
 import TeacherNavigationMenu from '@/components/teacher/TeacherNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
-import ProfileMenu from '@/components/shared/ProfileMenu.vue';
+import ProfileMenu from '@/components/users/UserMenu.vue';
 import MainHeader from '@/components/shared/MainHeader.vue';
 import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 

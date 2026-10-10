@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Settings, User, LogOut } from '@lucide/vue';
 import { Separator } from '@/components/ui/separator';
-import UserAvatar from '@/components/shared/UserAvatar.vue';
+import UserAvatar from '@/components/users/UserAvatar.vue';
 
 export default {
     name: 'ProfileMenu',
