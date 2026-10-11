@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import UserAvatar from '@/components/users/UserAvatar.vue';
 import { User } from '@/types/User';
 import { computed } from 'vue';
+import { getFullName } from '@/utils/user';
 
 const user: User = {
     id: 1,
@@ -20,7 +21,7 @@ const user: User = {
     email: 'test@gmail.com',
 };
 const fullName = computed(
-    () => `${user.firstName} ${user.lastName}`,
+    () => getFullName(user),
 );
 </script>
 
@@ -30,7 +31,7 @@ const fullName = computed(
             <NavigationMenuItem>
                 <NavigationMenuTrigger class="flex gap-3 h-10">
                     <UserAvatar :user="user" />
-                    <span class="bold">{{ fullName }}</span>
+                    <span class="font-bold">{{ fullName }}</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                     <ul class="flex flex-col justify-evenly w-43 h-30">

@@ -3,14 +3,15 @@ import { computed } from 'vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Student } from '@/types/Student';
 import UserAvatar from '@/components/users/UserAvatar.vue';
+import { getFullName, getInitials } from '@/utils/user';
 
 const props = defineProps<{ student: Student }>();
 
 const fullName = computed(
-    () => `${props.student.firstName} ${props.student.lastName}`,
+    () => getFullName(props.student),
 );
-const initials = computed(() =>
-    `${props.student.firstName[0] ?? ''}${props.student.lastName[0] ?? ''}`.toUpperCase(),
+const initials = computed(
+    () => getInitials(props.student),
 );
 </script>
 

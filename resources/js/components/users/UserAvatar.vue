@@ -2,14 +2,15 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { User } from '@/types/User';
 import { computed } from 'vue';
+import { getFullName, getInitials } from '@/utils/user';
 
 const props = defineProps<{ user: User }>();
 
 const fullName = computed(
-    () => `${props.user.firstName} ${props.user.lastName}`,
+    () => getFullName(props.user),
 );
-const initials = computed(() =>
-    `${props.user.firstName[0] ?? ''}${props.user.lastName[0] ?? ''}`.toUpperCase(),
+const initials = computed(
+    () => getInitials(props.user),
 );
 </script>
 
