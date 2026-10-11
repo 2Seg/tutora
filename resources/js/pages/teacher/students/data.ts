@@ -7,7 +7,7 @@ export const base: Student[] = [
         firstName: 'Emma',
         lastName: 'Johnson',
         email: 'emma.johnson@example.com',
-        phoneNumber: '+1 555 0101',
+        phone: '+15550101',
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ export const base: Student[] = [
         firstName: 'Lucas',
         lastName: 'Martin',
         email: 'lucas.martin@example.com',
-        phoneNumber: '+33 6 12 34 56 78',
+        phone: '+33612345678',
     },
     {
         id: 3,
@@ -23,7 +23,7 @@ export const base: Student[] = [
         firstName: 'Sofia',
         lastName: 'García',
         email: 'sofia.garcia@example.com',
-        phoneNumber: '+34 600 123 456',
+        phone: '+34600123456',
     },
 ]
 
@@ -33,7 +33,7 @@ const extra: Student[] = Array.from({ length: 25 }, (_, i) => ({
     firstName: `Student${i + 1}`,
     lastName: `Test`,
     email: `student${i + 1}@example.com`,
-    phoneNumber: '+00 000 000 000',
+    phone: '+00000000000',
 }))
 
 export const students: Student[] = [...base, ...extra]

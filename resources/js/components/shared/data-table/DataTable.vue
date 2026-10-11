@@ -17,7 +17,7 @@ import {
     features,
     type DataTableFeatures,
 } from '@/components/shared/data-table/features';
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 
 const props = withDefaults(
     defineProps<{
@@ -29,6 +29,24 @@ const props = withDefaults(
     }>(),
     { pageSize: 6 },
 );
+
+const emit = defineEmits<{
+    'row-select': [row: any | null];
+}>();
+const selectedRowId = ref<string | null>(null);
+
+function select(row: { id: string; original: unknown }) {
+    selectedRowId.value = row.id;
+    emit('row-select', row.original);
+}
+
+function clear() {
+    selectedRowId.value = null;
+    emit('row-select', null);
+}
+
+onMounted(() => document.addEventListener('click', clear));
+onBeforeUnmount(() => document.removeEventListener('click', clear));
 
 const table = useTable({
     features,
@@ -94,12 +112,14 @@ const to = computed(() =>
                         <TableRow
                             v-for="row in table.getRowModel().rows"
                             :key="row.id"
-                            class="group border-0 hover:bg-transparent"
+                            class="group border-0 hover:bg-transparent cursor-pointer"
+                            @click.stop="select(row)"
                         >
                             <TableCell
                                 v-for="cell in row.getVisibleCells()"
                                 :key="cell.id"
-                                class="px-3 py-2 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
+                                class="px-3 py-2 gap-1 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
+                                :class="{ 'bg-accent/50': selectedRowId === row.id }"
                             >
                                 <FlexRender :cell="cell" />
                             </TableCell>
