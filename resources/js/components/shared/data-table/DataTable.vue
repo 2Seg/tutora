@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender, useTable } from '@tanstack/vue-table';
-import { Search, ChevronLeft, ChevronRight } from '@lucide/vue';
+import { ChevronLeft, ChevronRight } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import SearchInput from '@/components/shared/SearchInput.vue'
 import {
     Table,
     TableBody,
@@ -60,20 +61,12 @@ const to = computed(() =>
 
 <template>
     <div class="space-y-4">
-        <div class="relative w-full max-w-sm items-center">
-            <Input
-                id="search"
-                class="max-w-sm pl-10"
-                :placeholder="searchPlaceholder ?? 'Search...'"
-                :model-value="table.atoms.globalFilter.get() ?? ''"
-                @update:model-value="table.setGlobalFilter($event)"
-            />
-            <span
-                class="absolute inset-s-0 inset-y-0 flex items-center justify-center px-2"
-            >
-                <Search class="size-5 text-muted-foreground" />
-            </span>
-        </div>
+        <SearchInput
+            class="mb-4"
+            :placeholder="searchPlaceholder"
+            :model-value="table.atoms.globalFilter.get() ?? ''"
+            @update:model-value="table.setGlobalFilter($event)"
+        />
 
         <div class="rounded-2xl bg-primary-foreground p-4">
             <Table>
