@@ -34,7 +34,7 @@ export default {
             />
         </section>
 
-        <main class="grid flex-1 grid-cols-3 gap-6 px-6 pb-6">
+        <main class="grid flex-1 grid-cols-3 content-start gap-6 px-6 pb-6">
             <slot/>
         </main>
     </div>

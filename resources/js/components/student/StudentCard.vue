@@ -5,7 +5,10 @@ import UserAvatar from '@/components/users/UserAvatar.vue';
 import { User } from '@/types/User';
 import { computed } from 'vue';
 import { getFullName } from '@/utils/user';
-import { Item, ItemContent } from '@/components/ui/item';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
+import { Button } from '@/components/ui/button';
+import ItemHeader from '@/components/ui/item/ItemHeader.vue';
+import ItemMedia from '@/components/ui/item/ItemMedia.vue';
 
 const props = defineProps<{ student: Student }>();
 const fullName = computed(
@@ -32,6 +35,34 @@ const fullName = computed(
                         <p class="text-sm">{{ student.phone }}</p>
                     </div>
                 </ItemContent>
+            </Item>
+
+            <Item class="rounded-2xl border-0 bg-primary-foreground">
+                <ItemHeader>
+                    <h4 class="font-serif text-lg">Next lesson</h4>
+                </ItemHeader>
+
+                <ItemMedia
+                    class="size-14 flex-col gap-0 rounded-xl bg-secondary text-primary"
+                >
+                    <span class="text-[10px] font-semibold uppercase">Oct</span>
+                    <span class="font-serif text-xl leading-none">14</span>
+                </ItemMedia>
+
+                <ItemContent>
+                    <ItemTitle>French conversation</ItemTitle>
+                    <ItemDescription>Wednesday · 16:00-17:00</ItemDescription>
+                </ItemContent>
+
+                <ItemActions>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        class="font-semibold text-primary cursor-pointer"
+                    >
+                        View calendar
+                    </Button>
+                </ItemActions>
             </Item>
         </CardContent>
     </Card>

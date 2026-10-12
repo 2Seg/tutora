@@ -3,7 +3,6 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender, useTable } from '@tanstack/vue-table';
 import { ChevronLeft, ChevronRight } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import SearchInput from '@/components/shared/SearchInput.vue'
 import {
     Table,
@@ -86,7 +85,7 @@ const to = computed(() =>
             @update:model-value="table.setGlobalFilter($event)"
         />
 
-        <div class="rounded-2xl bg-primary-foreground p-4">
+        <div class="flex min-h-112 flex-col rounded-2xl bg-primary-foreground p-4">
             <Table>
                 <TableHeader class="[&_tr]:border-0">
                     <TableRow
@@ -136,7 +135,7 @@ const to = computed(() =>
                 </TableBody>
             </Table>
 
-            <div class="mt-4 flex items-center justify-between px-3">
+            <div class="mt-auto flex items-center justify-between px-3">
                 <p class="text-sm text-primary">
                     Showing {{ from }}–{{ to }} of {{ total }}
                     {{ itemLabel ?? 'results' }}

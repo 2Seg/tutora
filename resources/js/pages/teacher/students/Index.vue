@@ -11,9 +11,9 @@ const selectedStudent = ref<Student | null>(null);
 </script>
 
 <template>
-    <section class="col-span-2">
+    <section class="col-span-2 flex flex-col">
         <DataTable
-            class="min-h-0 flex-1"
+            class="min-h-0 flex-1 h-full"
             :columns="columns"
             :data="students"
             search-placeholder="Search by name or email..."
@@ -22,6 +22,6 @@ const selectedStudent = ref<Student | null>(null);
     </section>
 
     <aside v-if="selectedStudent">
-        <StudentCard :student="selectedStudent" @click.stop/>
+        <StudentCard class="h-full" :student="selectedStudent" @click.stop/>
     </aside>
 </template>
