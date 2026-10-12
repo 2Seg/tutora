@@ -2,7 +2,7 @@ import { createColumnHelper, type ColumnDef } from '@tanstack/vue-table';
 import { h } from 'vue';
 import type { DataTableFeatures } from '@/components/shared/data-table/features';
 import type { Student } from '@/types/Student';
-import StudentCell from '@/components/students/StudentCell.vue';
+import StudentCell from '@/components/student/StudentCell.vue';
 
 const columnHelper = createColumnHelper<DataTableFeatures, Student>()
 
