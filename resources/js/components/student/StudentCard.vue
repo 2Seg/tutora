@@ -5,15 +5,19 @@ import UserAvatar from '@/components/users/UserAvatar.vue';
 import { User } from '@/types/User';
 import { computed } from 'vue';
 import { getFullName } from '@/utils/user';
-import { Item, ItemActions, ItemContent, ItemDescription, ItemTitle } from '@/components/ui/item';
+import {
+    Item,
+    ItemActions,
+    ItemContent,
+    ItemDescription,
+    ItemTitle,
+} from '@/components/ui/item';
 import { Button } from '@/components/ui/button';
 import ItemHeader from '@/components/ui/item/ItemHeader.vue';
 import ItemMedia from '@/components/ui/item/ItemMedia.vue';
 
 const props = defineProps<{ student: Student }>();
-const fullName = computed(
-    () => getFullName(props.student),
-);
+const fullName = computed(() => getFullName(props.student));
 </script>
 
 <template>
@@ -27,11 +31,15 @@ const fullName = computed(
             <Item class="flex flex-col items-start bg-primary-foreground">
                 <ItemContent class="gap-4">
                     <div>
-                        <p class="text-xs uppercase text-muted-foreground">Email</p>
+                        <p class="text-xs uppercase text-muted-foreground">
+                            Email
+                        </p>
                         <p class="text-sm">{{ student.email }}</p>
                     </div>
                     <div>
-                        <p class="text-xs uppercase text-muted-foreground">Phone</p>
+                        <p class="text-xs uppercase text-muted-foreground">
+                            Phone
+                        </p>
                         <p class="text-sm">{{ student.phone }}</p>
                     </div>
                 </ItemContent>

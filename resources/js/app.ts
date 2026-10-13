@@ -8,7 +8,7 @@ createInertiaApp({
         const page: any = await resolvePageComponent(
             `./pages/${name}.vue`,
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
-        )
+        );
 
         page.default.layout ??= resolveLayout(name);
 
@@ -18,9 +18,9 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => h(App, props) })
             .use(plugin)
-            .mount(el)
+            .mount(el);
     },
-})
+});
 
 function resolveLayout(name: string) {
     if (name.startsWith('teacher/')) return TeacherLayout;

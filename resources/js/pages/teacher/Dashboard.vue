@@ -2,11 +2,9 @@
 import MainHeader from '@/components/shared/MainHeader.vue';
 
 export default {
-    name: "Dashboard",
+    name: 'Dashboard',
     components: { MainHeader },
-}
+};
 </script>
 
-<template>
-
-</template>
+<template></template>

@@ -3,7 +3,7 @@ import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender, useTable } from '@tanstack/vue-table';
 import { ChevronLeft, ChevronRight } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
-import SearchInput from '@/components/shared/SearchInput.vue'
+import SearchInput from '@/components/shared/SearchInput.vue';
 import {
     Table,
     TableBody,
@@ -118,7 +118,9 @@ const to = computed(() =>
                                 v-for="cell in row.getVisibleCells()"
                                 :key="cell.id"
                                 class="px-3 py-2 gap-1 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
-                                :class="{ 'bg-accent/50': selectedRowId === row.id }"
+                                :class="{
+                                    'bg-accent/50': selectedRowId === row.id,
+                                }"
                             >
                                 <FlexRender :cell="cell" />
                             </TableCell>

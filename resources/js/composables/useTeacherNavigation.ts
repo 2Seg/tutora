@@ -1,6 +1,12 @@
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { CalendarDays, CircleDollarSign, House, Mails, Users } from '@lucide/vue';
+import {
+    CalendarDays,
+    CircleDollarSign,
+    House,
+    Mails,
+    Users,
+} from '@lucide/vue';
 
 const items = [
     {
@@ -50,7 +56,8 @@ export function useTeacherNavigation() {
     const isActive = (item: NavItem): boolean =>
         item.exact
             ? path.value === item.href
-            : path.value === item.href || path.value.startsWith(`${item.href}/`);
+            : path.value === item.href ||
+              path.value.startsWith(`${item.href}/`);
 
     const current = computed(() => items.find(isActive));
 

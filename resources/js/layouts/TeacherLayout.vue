@@ -6,7 +6,6 @@ import MainHeader from '@/components/shared/MainHeader.vue';
 import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
 const { current } = useTeacherNavigation();
-
 </script>
 
 <template>
@@ -27,9 +26,9 @@ const { current } = useTeacherNavigation();
             />
         </section>
 
-<!--        <main class="grid flex-1 grid-cols-3 content-start gap-6 px-6 pb-6">-->
+        <!--        <main class="grid flex-1 grid-cols-3 content-start gap-6 px-6 pb-6">-->
         <main class="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-6">
-            <slot/>
+            <slot />
         </main>
     </div>
 </template>

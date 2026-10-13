@@ -20,9 +20,7 @@ const user: User = {
     lastName: 'Furlan',
     email: 'test@gmail.com',
 };
-const fullName = computed(
-    () => getFullName(user),
-);
+const fullName = computed(() => getFullName(user));
 </script>
 
 <template>

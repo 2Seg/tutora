@@ -7,17 +7,13 @@ import { getFullName, getInitials } from '@/utils/user';
 
 const props = defineProps<{ student: Student }>();
 
-const fullName = computed(
-    () => getFullName(props.student),
-);
-const initials = computed(
-    () => getInitials(props.student),
-);
+const fullName = computed(() => getFullName(props.student));
+const initials = computed(() => getInitials(props.student));
 </script>
 
 <template>
     <div class="flex items-center gap-4">
-        <UserAvatar class="size-10" :user="student"/>
+        <UserAvatar class="size-10" :user="student" />
         <div class="min-w-0">
             <p class="font-semibold leading-tight">{{ fullName }}</p>
             <p class="text-sm text-muted-foreground">{{ student.email }}</p>

@@ -3,11 +3,17 @@ import { computed, ref } from 'vue';
 import TeacherConversationList from '@/components/teacher/TeacherConversationList.vue';
 import StudentCard from '@/components/student/StudentCard.vue';
 import MessageThread from '@/components/messages/MessageThread.vue';
-import { authUserId, messagesByStudent, students } from '@/hardcoded-data/messages-data';
+import {
+    authUserId,
+    messagesByStudent,
+    students,
+} from '@/hardcoded-data/messages-data';
 import MessageComposer from '@/components/messages/MessageComposer.vue';
 
 const selectedId = ref<number | null>(null);
-const selected = computed(() => students.find((s) => s.id === selectedId.value));
+const selected = computed(() =>
+    students.find((s) => s.id === selectedId.value),
+);
 </script>
 
 <template>
@@ -27,7 +33,7 @@ const selected = computed(() => students.find((s) => s.id === selectedId.value))
                     :auth-user-id="authUserId"
                     :messages="messagesByStudent[selected.id] ?? []"
                 />
-                <MessageComposer class="shrink-0 min-w-full"/>
+                <MessageComposer class="shrink-0 min-w-full" />
             </div>
 
             <aside class="w-80 shrink-0 overflow-y-auto">

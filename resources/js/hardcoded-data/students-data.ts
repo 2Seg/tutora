@@ -25,7 +25,7 @@ export const base: Student[] = [
         email: 'sofia.garcia@example.com',
         phone: '+34600123456',
     },
-]
+];
 
 const extra: Student[] = Array.from({ length: 25 }, (_, i) => ({
     id: 100 + i,
@@ -34,6 +34,6 @@ const extra: Student[] = Array.from({ length: 25 }, (_, i) => ({
     lastName: `Test`,
     email: `student${i + 1}@example.com`,
     phone: '+00000000000',
-}))
+}));
 
-export const students: Student[] = [...base, ...extra]
+export const students: Student[] = [...base, ...extra];

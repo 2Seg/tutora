@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { SendHorizontal } from '@lucide/vue';
-import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupTextarea } from '@/components/ui/input-group';
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupButton,
+    InputGroupTextarea,
+} from '@/components/ui/input-group';
 import { ref } from 'vue';
 
-const emit = defineEmits<{ send: [body: string] }>()
+const emit = defineEmits<{ send: [body: string] }>();
 
-const body = ref('')
+const body = ref('');
 
 function send() {
-    const trimmed = body.value.trim()
-    if (!trimmed) return
+    const trimmed = body.value.trim();
+    if (!trimmed) return;
 
-    emit('send', trimmed)
-    body.value = ''
+    emit('send', trimmed);
+    body.value = '';
 }
 </script>
 

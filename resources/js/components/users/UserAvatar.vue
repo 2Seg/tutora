@@ -6,12 +6,8 @@ import { getFullName, getInitials } from '@/utils/user';
 
 const props = defineProps<{ user: User }>();
 
-const fullName = computed(
-    () => getFullName(props.user),
-);
-const initials = computed(
-    () => getInitials(props.user),
-);
+const fullName = computed(() => getFullName(props.user));
+const initials = computed(() => getInitials(props.user));
 </script>
 
 <template>

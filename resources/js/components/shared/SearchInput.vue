@@ -4,8 +4,8 @@ import { Input } from '@/components/ui/input';
 
 const props = withDefaults(
     defineProps<{
-        placeholder?: string,
-        id?: string,
+        placeholder?: string;
+        id?: string;
     }>(),
     { placeholder: 'Search...' },
 );
@@ -22,7 +22,9 @@ const model = defineModel<string>({ default: '' });
             :model-value="model"
             @update:model-value="model = String($event)"
         />
-        <span class="absolute inset-s-0 inset-y-0 flex items-center justify-center px-2">
+        <span
+            class="absolute inset-s-0 inset-y-0 flex items-center justify-center px-2"
+        >
             <Search class="size-5 text-muted-foreground" />
         </span>
     </div>

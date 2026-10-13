@@ -23,7 +23,11 @@ const selectedStudent = ref<Student | null>(null);
         </section>
 
         <aside v-if="selectedStudent">
-            <StudentCard class="h-full" :student="selectedStudent" @click.stop/>
+            <StudentCard
+                class="h-full"
+                :student="selectedStudent"
+                @click.stop
+            />
         </aside>
     </div>
 </template>
