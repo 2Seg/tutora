@@ -13,7 +13,7 @@ defineEmits<{ select: [id: number] }>();
     <nav :class="cn('flex flex-col gap-2', $props.class)">
         <SearchInput class="shrink-0" placeholder="Search mesages..."/>
 
-        <ul class="min-h-0 flex-1 space-y-1 overflow-y-auto">
+        <ul class="bg-card rounded-2xl p-2 min-h-0 flex-1 space-y-1 overflow-y-auto">
             <li v-for="student in students" :key="student.id">
                 <div
                     :class="cn(

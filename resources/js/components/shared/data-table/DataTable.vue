@@ -85,7 +85,7 @@ const to = computed(() =>
             @update:model-value="table.setGlobalFilter($event)"
         />
 
-        <div class="flex min-h-112 flex-col rounded-2xl bg-primary-foreground p-4">
+        <div class="flex min-h-112 flex-col rounded-2xl bg-card p-4">
             <Table>
                 <TableHeader class="[&_tr]:border-0">
                     <TableRow
