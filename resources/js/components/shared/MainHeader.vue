@@ -1,4 +1,4 @@
-<script lang="ts">
+<script setup lang="ts">
 import {
     Item,
     ItemActions,
@@ -6,14 +6,16 @@ import {
     ItemTitle,
 } from '@/components/ui/item';
 
-export default {
-    name: 'MainHeader',
-    components: { ItemActions, ItemDescription, ItemTitle, Item },
-    props: {
-        title: { type: String, default: '' },
-        description: { type: String, default: '' },
-    },
-};
+withDefaults(
+    defineProps<{
+        title: string,
+        description: string,
+    }>(),
+    {
+        title: '',
+        description: '',
+    }
+);
 </script>
 
 <template>

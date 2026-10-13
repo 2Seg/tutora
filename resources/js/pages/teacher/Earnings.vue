@@ -1,7 +1,3 @@
-<script lang="ts">
-export default {
-    name: 'Earnings',
-};
-</script>
+<script setup lang="ts"></script>
 
 <template></template>

@@ -1,4 +1,4 @@
-<script>
+<script setup lang="ts">
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -8,21 +8,7 @@ import {
 import { Link } from '@inertiajs/vue3';
 import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
-export default {
-    name: 'TeacherNavigationMenu',
-    components: {
-        Link,
-        NavigationMenuList,
-        NavigationMenuLink,
-        NavigationMenuItem,
-        NavigationMenu,
-    },
-    setup() {
-        const { items, isActive } = useTeacherNavigation();
-
-        return { items, isActive };
-    },
-};
+const { items, isActive } = useTeacherNavigation()
 </script>
 
 <template>

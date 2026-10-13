@@ -8,7 +8,6 @@ import { getFullName, getInitials } from '@/utils/user';
 const props = defineProps<{ student: Student }>();
 
 const fullName = computed(() => getFullName(props.student));
-const initials = computed(() => getInitials(props.student));
 </script>
 
 <template>

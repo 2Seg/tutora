@@ -1,10 +1,5 @@
-<script lang="ts">
+<script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
-
-export default {
-    name: 'AppLogo',
-    components: { Link },
-};
 </script>
 
 <template>
