@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DataTable from '@/components/shared/data-table/DataTable.vue';
 import { studentColumns } from '@/pages/teacher/students/columns';
-import { students } from '@/pages/teacher/students/data';
+import { students } from '@/hardcoded-data/students-data';
 import { markRaw, ref } from 'vue';
 import StudentCard from '@/components/student/StudentCard.vue';
 import { Student } from '@/types/Student';
