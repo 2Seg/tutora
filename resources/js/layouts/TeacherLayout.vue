@@ -1,19 +1,12 @@
-<script lang="ts">
+<script setup lang="ts">
 import TeacherNavigationMenu from '@/components/teacher/TeacherNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import ProfileMenu from '@/components/users/UserMenu.vue';
 import MainHeader from '@/components/shared/MainHeader.vue';
 import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
-export default {
-    name: 'TeacherLayout',
-    components: { MainHeader, ProfileMenu, AppLogo, TeacherNavigationMenu },
-    setup() {
-        const { current } = useTeacherNavigation();
+const { current } = useTeacherNavigation();
 
-        return { current };
-    },
-};
 </script>
 
 <template>
@@ -34,7 +27,8 @@ export default {
             />
         </section>
 
-        <main class="grid flex-1 grid-cols-3 content-start gap-6 px-6 pb-6">
+<!--        <main class="grid flex-1 grid-cols-3 content-start gap-6 px-6 pb-6">-->
+        <main class="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 pb-6">
             <slot/>
         </main>
     </div>

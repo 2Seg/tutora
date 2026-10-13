@@ -11,17 +11,19 @@ const selectedStudent = ref<Student | null>(null);
 </script>
 
 <template>
-    <section class="col-span-2 flex flex-col">
-        <DataTable
-            class="min-h-0 flex-1 h-full"
-            :columns="columns"
-            :data="students"
-            search-placeholder="Search by name or email..."
-            @row-select="selectedStudent = $event"
-        />
-    </section>
+    <div class="grid grid-cols-3 content-start gap-6">
+        <section class="col-span-2 flex flex-col">
+            <DataTable
+                class="min-h-0 flex-1 h-full"
+                :columns="columns"
+                :data="students"
+                search-placeholder="Search by name or email..."
+                @row-select="selectedStudent = $event"
+            />
+        </section>
 
-    <aside v-if="selectedStudent">
-        <StudentCard class="h-full" :student="selectedStudent" @click.stop/>
-    </aside>
+        <aside v-if="selectedStudent">
+            <StudentCard class="h-full" :student="selectedStudent" @click.stop/>
+        </aside>
+    </div>
 </template>
