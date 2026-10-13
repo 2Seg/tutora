@@ -17,7 +17,7 @@ const fullName = computed(
 </script>
 
 <template>
-    <Card class="gap-4 border-0 bg-secondary shadow-none">
+    <Card class="gap-4 border-0 bg-secondary shadow-none min-h-full">
         <CardHeader class="flex flex-row items-center gap-4">
             <UserAvatar class="size-16" :user="student as User" />
             <h1>{{ fullName }}</h1>
