@@ -4,6 +4,7 @@ import TeacherConversationList from '@/components/teacher/TeacherConversationLis
 import StudentCard from '@/components/student/StudentCard.vue';
 import MessageThread from '@/components/messages/MessageThread.vue';
 import { authUserId, messagesByStudent, students } from '@/hardcoded-data/messages-data';
+import MessageComposer from '@/components/messages/MessageComposer.vue';
 
 const selectedId = ref<number | null>(null);
 const selected = computed(() => students.find((s) => s.id === selectedId.value));
@@ -19,12 +20,16 @@ const selected = computed(() => students.find((s) => s.id === selectedId.value))
         />
 
         <template v-if="selected">
-            <MessageThread
-                class="min-w-0 flex-1"
-                :key="selected.id"
-                :auth-user-id="authUserId"
-                :messages="messagesByStudent[selected.id] ?? []"
-            />
+            <div class="flex min-w-0 flex-1 flex-col gap-3">
+                <MessageThread
+                    class="min-h-0 flex-1 rounded-xl bg-card"
+                    :key="selected.id"
+                    :auth-user-id="authUserId"
+                    :messages="messagesByStudent[selected.id] ?? []"
+                />
+                <MessageComposer class="shrink-0 min-w-full"/>
+            </div>
+
             <aside class="w-80 shrink-0 overflow-y-auto">
                 <StudentCard :student="selected" />
             </aside>

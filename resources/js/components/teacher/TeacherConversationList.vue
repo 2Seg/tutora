@@ -10,7 +10,7 @@ defineEmits<{ select: [id: number] }>();
 </script>
 
 <template>
-    <nav :class="cn('flex flex-col gap-2', $props.class)">
+    <nav :class="cn('flex flex-col gap-3', $props.class)">
         <SearchInput class="shrink-0" placeholder="Search mesages..."/>
 
         <ul class="bg-card rounded-2xl p-2 min-h-0 flex-1 space-y-1 overflow-y-auto">
