@@ -7,7 +7,7 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as BaseRouteServiceProvider;
 use Illuminate\Routing\Router;
 
-class RouteServiceProvider extends BaseRouteServiceProvider
+final class RouteServiceProvider extends BaseRouteServiceProvider
 {
     public function boot()
     {

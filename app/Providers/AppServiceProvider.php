@@ -8,7 +8,7 @@ use App\Repositories\Student\EloquentStudentRepository;
 use App\Repositories\Student\StudentRepository;
 use Illuminate\Support\ServiceProvider;
 
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     public array $bindings = [
         StudentRepository::class => EloquentStudentRepository::class,
