@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import DataTable from '@/components/shared/data-table/DataTable.vue';
 import { studentColumns } from '@/pages/teacher/students/columns';
-import { students } from '@/hardcoded-data/students-data';
 import { markRaw, ref } from 'vue';
 import StudentCard from '@/components/student/StudentCard.vue';
 import { Student } from '@/types/Student';
 
+const props = defineProps<{ students: Student[] }>()
 const columns = markRaw(studentColumns);
 const selectedStudent = ref<Student | null>(null);
 </script>
@@ -16,7 +16,7 @@ const selectedStudent = ref<Student | null>(null);
             <DataTable
                 class="min-h-0 flex-1 h-full"
                 :columns="columns"
-                :data="students"
+                :data="props.students"
                 search-placeholder="Search by name or email..."
                 @row-select="selectedStudent = $event"
             />
