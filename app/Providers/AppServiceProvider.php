@@ -4,23 +4,13 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Repositories\Student\EloquentStudentRepository;
+use App\Repositories\Student\StudentRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    /**
-     * Register any application services.
-     */
-    public function register(): void
-    {
-        //
-    }
-
-    /**
-     * Bootstrap any application services.
-     */
-    public function boot(): void
-    {
-        //
-    }
+    public array $bindings = [
+        StudentRepository::class => EloquentStudentRepository::class,
+    ];
 }
