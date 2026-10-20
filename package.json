@@ -24,7 +24,7 @@
     "dependencies": {
         "@inertiajs/vite": "^3.8.0",
         "@inertiajs/vue3": "^3.8.0",
-        "@lucide/vue": "^1.56.0",
+        "@lucide/vue": "^1.60.0",
         "@tanstack/vue-table": "^9.2.8",
         "@vitejs/plugin-vue": "^6.0.9",
         "@vueuse/core": "^15.0.0",
