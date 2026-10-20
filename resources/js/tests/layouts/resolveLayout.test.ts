@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { resolveLayout } from '@/layouts/resolveLayout';
 import TeacherLayout from '@/layouts/TeacherLayout.vue';
+import AuthLayout from '@/layouts/AuthLayout.vue';
 
 describe('resolveLayout', () => {
     it('does not match an undefined name', () => {
@@ -13,5 +14,9 @@ describe('resolveLayout', () => {
 
     it('resolves TeacherLayout for teacher pages ', () => {
         expect(resolveLayout('teacher/ExamplePage')).toBe(TeacherLayout);
+    });
+
+    it('resolves AuthLayout for auth pages ', () => {
+        expect(resolveLayout('auth/ExamplePage')).toBe(AuthLayout);
     });
 });

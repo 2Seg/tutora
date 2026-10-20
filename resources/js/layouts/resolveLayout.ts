@@ -1,7 +1,9 @@
 import { Component } from 'vue';
+import AuthLayout from '@/layouts/AuthLayout.vue';
 import TeacherLayout from '@/layouts/TeacherLayout.vue';
 
 const layouts: Record<string, Component> = {
+    'auth/': AuthLayout,
     'teacher/': TeacherLayout,
 };
 
