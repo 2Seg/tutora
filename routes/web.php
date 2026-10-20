@@ -8,13 +8,17 @@ use Illuminate\Routing\Router;
 
 return function (Router $router) {
     $router->middleware('web')->group(function ($router) {
-        $router->inertia('/login', 'auth/Login');
-        $router->post('/login', [LoginController::class, 'login']);
+        $router->middleware('guest')->group(function ($router) {
+            $router->inertia('/login', 'auth/Login')->name('login');
+            $router->post('/login', [LoginController::class, 'login'])->name('login.submit');
+        });
 
-        $router->inertia('/teacher', 'teacher/Dashboard');
-        $router->get('/teacher/students', [StudentController::class, 'index']);
-        $router->inertia('/teacher/calendar', 'teacher/Calendar');
-        $router->inertia('/teacher/messages', 'teacher/Messages');
-        $router->inertia('/teacher/earnings', 'teacher/Earnings');
+        $router->middleware('auth')->group(function ($router) {
+            $router->inertia('/teacher', 'teacher/Dashboard')->name('teacher.dashboard');
+            $router->get('/teacher/students', [StudentController::class, 'index'])->name('teacher.students');
+            $router->inertia('/teacher/calendar', 'teacher/Calendar')->name('teacher.calendar');
+            $router->inertia('/teacher/messages', 'teacher/Messages')->name('teacher.messages');
+            $router->inertia('/teacher/earnings', 'teacher/Earnings')->name('teacher.earnings');
+        });
     });
 };

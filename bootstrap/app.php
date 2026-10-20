@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web([
             HandleInertiaRequests::class,
         ]);
+        $middleware->redirectUsersTo(fn (Request $request) => route('teacher.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
