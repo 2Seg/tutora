@@ -11,7 +11,7 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
-final readonly class LoginController
+final readonly class AuthController
 {
     public function __construct(
         private AuthenticateUser $authenticateUser,

@@ -7,7 +7,7 @@ namespace Tests\Feature\Http\Controllers;
 use App\Models\User;
 use Tests\Feature\FeatureTestCase;
 
-final class LoginControllerTest extends FeatureTestCase
+final class AuthControllerTest extends FeatureTestCase
 {
     public function testItRedirectsUserOnLogin(): void
     {
