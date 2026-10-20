@@ -23,7 +23,7 @@ final class LoginController
         $credentials = $loginRequest->safe()->only(['email', 'password']);
         $remember = $loginRequest->boolean('remember');
 
-        $this->authenticateUser->attempt($credentials, $remember);
+        $this->authenticateUser->handle($credentials, $remember);
 
         return $this->redirector->intended(
             $this->urlGenerator->route('teacher.dashboard')

@@ -38,7 +38,7 @@ final class AuthenticateUserTest extends UnitTestCase
             ->andReturn(false);
 
         // Act
-        $this->authenticateUser->attempt([]);
+        $this->authenticateUser->handle([]);
     }
 
     public function testItRegeneratesTheSessionWhenAuthAttemptPasses(): void
@@ -50,7 +50,7 @@ final class AuthenticateUserTest extends UnitTestCase
             ->andReturn(true);
 
         // Act
-        $this->authenticateUser->attempt([]);
+        $this->authenticateUser->handle([]);
 
         // Assert
         $this->session->shouldHaveReceived('regenerate')->once();

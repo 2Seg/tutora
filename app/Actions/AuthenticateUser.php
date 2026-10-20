@@ -15,7 +15,7 @@ final class AuthenticateUser
         private readonly Session $session,
     ) {}
 
-    public function attempt(array $credentials, bool $remember = false): void
+    public function handle(array $credentials, bool $remember = false): void
     {
         if (! $this->authManager->attempt($credentials, $remember)) {
             throw ValidationException::withMessages([
