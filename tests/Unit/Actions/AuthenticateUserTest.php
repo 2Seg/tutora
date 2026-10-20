@@ -13,9 +13,9 @@ use Tests\Unit\UnitTestCase;
 
 final class AuthenticateUserTest extends UnitTestCase
 {
-    private AuthManager|Mock $authManager;
-    private Session|Mock $session;
-    private AuthenticateUser $authenticateUser;
+    private readonly AuthManager|Mock $authManager;
+    private readonly Session|Mock $session;
+    private readonly AuthenticateUser $authenticateUser;
 
     protected function setUp(): void
     {

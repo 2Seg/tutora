@@ -11,8 +11,8 @@ use PHPUnit\Framework\TestCase;
 
 final class StudentResourceTest extends TestCase
 {
-    private Request $request;
-    private Student $student;
+    private readonly Request $request;
+    private readonly Student $student;
 
     protected function setUp(): void
     {

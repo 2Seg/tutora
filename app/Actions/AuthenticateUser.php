@@ -11,8 +11,8 @@ use Illuminate\Validation\ValidationException;
 final class AuthenticateUser
 {
     public function __construct(
-        private AuthManager $authManager,
-        private Session $session,
+        private readonly AuthManager $authManager,
+        private readonly Session $session,
     ) {}
 
     public function attempt(array $credentials, bool $remember = false): void

@@ -13,9 +13,9 @@ use Illuminate\Routing\Redirector;
 final class LoginController
 {
     public function __construct(
-        private Redirector $redirector,
-        private AuthenticateUser $authenticateUser,
-        private UrlGenerator $urlGenerator,
+        private readonly Redirector $redirector,
+        private readonly AuthenticateUser $authenticateUser,
+        private readonly UrlGenerator $urlGenerator,
     ) {}
 
     public function login(LoginRequest $loginRequest): RedirectResponse

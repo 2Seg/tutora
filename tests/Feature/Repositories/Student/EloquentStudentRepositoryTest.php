@@ -11,7 +11,7 @@ use Tests\Feature\FeatureTestCase;
 
 final class EloquentStudentRepositoryTest extends FeatureTestCase
 {
-    private EloquentStudentRepository $studentRepository;
+    private readonly EloquentStudentRepository $studentRepository;
 
     protected function setUp(): void
     {

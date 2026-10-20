@@ -12,8 +12,8 @@ use Inertia\ResponseFactory;
 final class StudentController
 {
     public function __construct(
-        private ResponseFactory $inertia,
-        private StudentRepository $studentRepository,
+        private readonly ResponseFactory $inertia,
+        private readonly StudentRepository $studentRepository,
     ) {}
 
     public function index(Request $request): Response

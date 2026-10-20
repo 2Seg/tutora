@@ -12,7 +12,7 @@ final class LoginRequestTest extends UnitTestCase
 {
     use HasRequestValidator;
 
-    private LoginRequest $loginRequest;
+    private readonly LoginRequest $loginRequest;
 
     protected function setUp(): void
     {
