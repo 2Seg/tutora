@@ -10,27 +10,27 @@ use Tests\Feature\FeatureTestCase;
 
 final class StudentControllerTest extends FeatureTestCase
 {
+    public function testGuestIsRedirectedToLogin(): void
+    {
+        /// Act
+        $actual = $this->get('/teacher/students');
+
+        // Assert
+        $actual->assertRedirect('/login');
+    }
+
     public function testItCallsTheExpectedComponent(): void
     {
         // Arrange
-        User::factory()->create();
+        $user = User::factory()->create();
         $expected = 'teacher/students/Index';
 
         // Act
-        $actual = $this->get('/teacher/students');
+        $actual = $this->actingAs($user)->get('/teacher/students');
 
         // Assert
         $actual->assertOk();
         $this->assertSame($expected, $actual->inertiaPage()['component']);
-    }
-
-    public function testItReturnsNotFoundWhenNoUser(): void
-    {
-        // Act
-        $actual = $this->get('/teacher/students');
-
-        // Assert
-        $actual->assertNotFound();
     }
 
     public function testItSendsExpectedPropsToInertia(): void
@@ -42,7 +42,7 @@ final class StudentControllerTest extends FeatureTestCase
             ->create(['user_id' => $user->id]);
 
         // Act
-        $actual = $this->get('/teacher/students');
+        $actual = $this->actingAs($user)->get('/teacher/students');
 
         // Assert
         $this->assertCount(2, $actual->inertiaProps('students'));
