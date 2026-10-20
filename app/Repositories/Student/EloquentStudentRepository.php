@@ -7,7 +7,7 @@ namespace App\Repositories\Student;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
-final class EloquentStudentRepository implements StudentRepository
+final readonly class EloquentStudentRepository implements StudentRepository
 {
     public function getStudentsFromUser(User $user): Collection
     {

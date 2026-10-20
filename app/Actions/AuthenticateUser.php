@@ -8,11 +8,11 @@ use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Validation\ValidationException;
 
-final class AuthenticateUser
+final readonly class AuthenticateUser
 {
     public function __construct(
-        private readonly AuthManager $authManager,
-        private readonly Session $session,
+        private AuthManager $authManager,
+        private Session $session,
     ) {}
 
     public function handle(array $credentials, bool $remember = false): void

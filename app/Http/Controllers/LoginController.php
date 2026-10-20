@@ -10,12 +10,12 @@ use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
-final class LoginController
+final readonly class LoginController
 {
     public function __construct(
-        private readonly Redirector $redirector,
-        private readonly AuthenticateUser $authenticateUser,
-        private readonly UrlGenerator $urlGenerator,
+        private Redirector $redirector,
+        private AuthenticateUser $authenticateUser,
+        private UrlGenerator $urlGenerator,
     ) {}
 
     public function login(LoginRequest $loginRequest): RedirectResponse

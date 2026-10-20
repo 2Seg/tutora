@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 
-final class StudentController
+final readonly class StudentController
 {
     public function __construct(
-        private readonly ResponseFactory $inertia,
-        private readonly StudentRepository $studentRepository,
+        private ResponseFactory $inertia,
+        private StudentRepository $studentRepository,
     ) {}
 
     public function index(Request $request): Response
