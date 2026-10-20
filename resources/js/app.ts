@@ -1,7 +1,7 @@
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, DefineComponent, h } from 'vue';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import TeacherLayout from '@/layouts/TeacherLayout.vue';
+import { resolveLayout } from '@/layouts/resolveLayout';
 
 createInertiaApp({
     resolve: async (name) => {
@@ -10,7 +10,9 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         );
 
-        page.default.layout ??= resolveLayout(name);
+        if (page.default.layout === undefined) {
+            page.default.layout = resolveLayout(name);
+        }
 
         return page;
     },
@@ -21,9 +23,3 @@ createInertiaApp({
             .mount(el);
     },
 });
-
-function resolveLayout(name: string) {
-    if (name.startsWith('teacher/')) return TeacherLayout;
-
-    return undefined;
-}
