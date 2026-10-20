@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Actions;
 
 use App\Actions\AuthenticateUser;
-use Illuminate\Auth\AuthManager;
+use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Validation\ValidationException;
 use Mockery\Mock;
@@ -13,7 +13,7 @@ use Tests\Unit\UnitTestCase;
 
 final class AuthenticateUserTest extends UnitTestCase
 {
-    private readonly AuthManager|Mock $authManager;
+    private readonly StatefulGuard|Mock $guard;
     private readonly Session|Mock $session;
     private readonly AuthenticateUser $authenticateUser;
 
@@ -21,9 +21,9 @@ final class AuthenticateUserTest extends UnitTestCase
     {
         parent::setUp();
 
-        $this->authManager = $this->mock(AuthManager::class);
+        $this->guard = $this->mock(StatefulGuard::class);
         $this->session = $this->spy(Session::class);
-        $this->authenticateUser = new AuthenticateUser($this->authManager, $this->session);
+        $this->authenticateUser = new AuthenticateUser($this->guard, $this->session);
     }
 
     public function testItThrowsAValidationExceptionWhenAuthAttemptFails(): void
@@ -32,7 +32,7 @@ final class AuthenticateUserTest extends UnitTestCase
         $this->expectException(ValidationException::class);
 
         // Arrange
-        $this->authManager->shouldReceive('attempt')
+        $this->guard->shouldReceive('attempt')
             ->once()
             ->with([], false)
             ->andReturn(false);
@@ -44,7 +44,7 @@ final class AuthenticateUserTest extends UnitTestCase
     public function testItRegeneratesTheSessionWhenAuthAttemptPasses(): void
     {
         // Arrange
-        $this->authManager->shouldReceive('attempt')
+        $this->guard->shouldReceive('attempt')
             ->once()
             ->with([], false)
             ->andReturn(true);

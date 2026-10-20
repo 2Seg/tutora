@@ -6,6 +6,9 @@ namespace App\Providers;
 
 use App\Repositories\Student\EloquentStudentRepository;
 use App\Repositories\Student\StudentRepository;
+use Illuminate\Auth\AuthManager;
+use Illuminate\Contracts\Auth\StatefulGuard;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
@@ -13,4 +16,12 @@ final class AppServiceProvider extends ServiceProvider
     public array $bindings = [
         StudentRepository::class => EloquentStudentRepository::class,
     ];
+
+    public function register()
+    {
+        $this->app->bind(
+            StatefulGuard::class,
+            fn (Application $app): StatefulGuard => $app->make(AuthManager::class)->guard('web'),
+        );
+    }
 }
