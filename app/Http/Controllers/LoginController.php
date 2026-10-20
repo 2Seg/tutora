@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Actions\AuthenticateUser;
+use App\Actions\LogoutUser;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\RedirectResponse;
@@ -13,8 +14,9 @@ use Illuminate\Routing\Redirector;
 final readonly class LoginController
 {
     public function __construct(
-        private Redirector $redirector,
         private AuthenticateUser $authenticateUser,
+        private LogoutUser $logoutUser,
+        private Redirector $redirector,
         private UrlGenerator $urlGenerator,
     ) {}
 
@@ -28,5 +30,12 @@ final readonly class LoginController
         return $this->redirector->intended(
             $this->urlGenerator->route('teacher.dashboard')
         );
+    }
+
+    public function logout(): RedirectResponse
+    {
+        $this->logoutUser->handle();
+
+        return $this->redirector->to('/');
     }
 }

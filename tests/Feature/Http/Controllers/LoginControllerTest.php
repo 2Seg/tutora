@@ -9,7 +9,7 @@ use Tests\Feature\FeatureTestCase;
 
 final class LoginControllerTest extends FeatureTestCase
 {
-    public function testItRedirectsUser(): void
+    public function testItRedirectsUserOnLogin(): void
     {
         // Act
         $actual = $this->post('/login');
@@ -57,7 +57,7 @@ final class LoginControllerTest extends FeatureTestCase
         $this->assertNotNull($user->refresh()->remember_token);
     }
 
-    public function testItDoesNotRemembersUserIfRememberIsFalse(): void
+    public function testItDoesNotRememberUserIfRememberIsFalse(): void
     {
         // Arrange
         $data = [
@@ -76,7 +76,7 @@ final class LoginControllerTest extends FeatureTestCase
         $this->assertNull($user->refresh()->remember_token);
     }
 
-    public function testItFailsIfEmailIfEmailDoesNotMatch(): void
+    public function testItFailsIfEmailDoesNotMatch(): void
     {
         // Arrange
         $data = [
@@ -95,7 +95,7 @@ final class LoginControllerTest extends FeatureTestCase
         $this->assertGuest();
     }
 
-    public function testItFailsIfEmailIfPasswordDoesNotMatch(): void
+    public function testItFailsIfPasswordDoesNotMatch(): void
     {
         // Arrange
         $data = [
@@ -124,5 +124,38 @@ final class LoginControllerTest extends FeatureTestCase
 
         // Assert
         $actual->assertRedirect('/teacher');
+    }
+
+    public function testItRedirectsGuestToLoginOnLogout(): void
+    {
+        // Act
+        $actual = $this->post('/logout');
+
+        // Assert
+        $actual->assertRedirect('/login');
+    }
+
+    public function testItRedirectsAuthenticatedUserToHomeOnLogout(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $actual = $this->actingAs($user)->post('/logout');
+
+        // Assert
+        $actual->assertRedirect('/');
+    }
+
+    public function testItLogsAuthenticatedUserOut(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $this->actingAs($user)->post('/logout');
+
+        // Assert
+        $this->assertGuest();
     }
 }

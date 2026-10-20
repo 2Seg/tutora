@@ -14,6 +14,8 @@ return function (Router $router) {
         });
 
         $router->middleware('auth')->group(function ($router) {
+            $router->post('/logout', [LoginController::class, 'logout'])->name('login.logout');
+
             $router->inertia('/teacher', 'teacher/Dashboard')->name('teacher.dashboard');
             $router->get('/teacher/students', [StudentController::class, 'index'])->name('teacher.students');
             $router->inertia('/teacher/calendar', 'teacher/Calendar')->name('teacher.calendar');
