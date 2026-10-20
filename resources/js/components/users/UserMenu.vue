@@ -13,6 +13,7 @@ import UserAvatar from '@/components/users/UserAvatar.vue';
 import { User } from '@/types/User';
 import { computed } from 'vue';
 import { getFullName } from '@/utils/user';
+import { Link } from '@inertiajs/vue3';
 
 const user: User = {
     id: 1,
@@ -42,9 +43,16 @@ const fullName = computed(() => getFullName(user));
                             Parameters
                         </NavigationMenuLink>
                         <Separator />
-                        <NavigationMenuLink>
-                            <LogOut />
-                            Log out
+                        <NavigationMenuLink as-child>
+                            <Link
+                                href="/logout"
+                                method="post"
+                                as="button"
+                                class="flex items-center gap-2 w-full cursor-pointer"
+                            >
+                                <LogOut/>
+                                Log out
+                            </Link>
                         </NavigationMenuLink>
                     </ul>
                 </NavigationMenuContent>
