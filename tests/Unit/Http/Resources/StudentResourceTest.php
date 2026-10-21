@@ -7,9 +7,9 @@ namespace Tests\Unit\Http\Resources;
 use App\Http\Resources\StudentResource;
 use App\Models\Student;
 use Illuminate\Http\Request;
-use PHPUnit\Framework\TestCase;
+use Tests\Unit\UnitTestCase;
 
-final class StudentResourceTest extends TestCase
+final class StudentResourceTest extends UnitTestCase
 {
     private readonly Request $request;
     private readonly Student $student;
