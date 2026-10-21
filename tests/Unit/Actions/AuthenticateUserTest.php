@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace Tests\Unit\Actions;
 
 use App\Actions\AuthenticateUser;
+use App\Exceptions\InvalidCredentials;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
-use Illuminate\Validation\ValidationException;
+use Mockery;
 use Mockery\Mock;
 use Tests\Unit\UnitTestCase;
 
@@ -19,17 +20,15 @@ final class AuthenticateUserTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
-        $this->guard = $this->mock(StatefulGuard::class);
-        $this->session = $this->spy(Session::class);
+        $this->guard = Mockery::mock(StatefulGuard::class);
+        $this->session = Mockery::spy(Session::class);
         $this->authenticateUser = new AuthenticateUser($this->guard, $this->session);
     }
 
     public function testItThrowsAValidationExceptionWhenAuthAttemptFails(): void
     {
         // Assert
-        $this->expectException(ValidationException::class);
+        $this->expectException(InvalidCredentials::class);
 
         // Arrange
         $this->guard->shouldReceive('attempt')
