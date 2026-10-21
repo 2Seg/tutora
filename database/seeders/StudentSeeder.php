@@ -10,9 +10,6 @@ class StudentSeeder extends Seeder
 {
     use WithoutModelEvents;
 
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
         Student::factory()
