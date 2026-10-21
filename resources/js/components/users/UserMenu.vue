@@ -11,17 +11,16 @@ import { Settings, User as UserIcon, LogOut } from '@lucide/vue';
 import { Separator } from '@/components/ui/separator';
 import UserAvatar from '@/components/users/UserAvatar.vue';
 import { User } from '@/types/User';
-import { computed } from 'vue';
-import { getFullName } from '@/utils/user';
 import { Link } from '@inertiajs/vue3';
 
 const user: User = {
     id: 1,
     firstName: 'Naelle',
     lastName: 'Furlan',
+    fullName: 'Naelle Furlan',
+    initials: 'NF',
     email: 'test@gmail.com',
 };
-const fullName = computed(() => getFullName(user));
 </script>
 
 <template>
@@ -30,7 +29,7 @@ const fullName = computed(() => getFullName(user));
             <NavigationMenuItem>
                 <NavigationMenuTrigger class="flex gap-3 h-10">
                     <UserAvatar :user="user" />
-                    <span class="font-bold">{{ fullName }}</span>
+                    <span class="font-bold">{{ user.fullName }}</span>
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                     <ul class="flex flex-col justify-evenly w-43 h-30">

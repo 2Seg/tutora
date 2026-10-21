@@ -3,7 +3,6 @@ import { Student } from '@/types/Student';
 import { cn } from '@/lib/utils';
 import SearchInput from '@/components/shared/SearchInput.vue';
 import UserAvatar from '@/components/users/UserAvatar.vue';
-import { getFullName } from '@/utils/user';
 
 defineProps<{
     students: Student[];
@@ -33,9 +32,9 @@ defineEmits<{ select: [id: number] }>();
                     <UserAvatar :user="student" class="size-10" />
 
                     <div class="flex flex-col min-w-0">
-                        <span class="truncate text-sm font-medium">{{
-                            getFullName(student)
-                        }}</span>
+                        <span class="truncate text-sm font-medium">
+                            {{ student.fullName }}
+                        </span>
                         <span class="truncate text-xs text-muted-foreground"
                             >Preview of last message...</span
                         >

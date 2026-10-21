@@ -5,6 +5,7 @@ export interface Student {
     firstName: string;
     lastName: string;
     fullName: string;
+    initials: string;
     phone: string;
     avatarImg: string;
     timezone: string;
