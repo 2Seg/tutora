@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Http\Requests;
 
 use App\Http\Requests\LoginRequest;
-use Tests\Concerns\HasRequestValidator;
+use Tests\Unit\Concerns\HasRequestValidator;
 use Tests\Unit\UnitTestCase;
 
 final class LoginRequestTest extends UnitTestCase
@@ -16,8 +16,6 @@ final class LoginRequestTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
         $this->loginRequest = new LoginRequest();
     }
 

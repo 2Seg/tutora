@@ -2,17 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Tests\Concerns;
+namespace Tests\Unit\Concerns;
 
-use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Contracts\Validation\Factory as ValidatorFactory;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Translation\ArrayLoader;
+use Illuminate\Translation\Translator;
+use Illuminate\Validation\Factory;
 
 trait HasRequestValidator
 {
     protected function makeRequestValidator(FormRequest $formRequest, array $data): Validator
     {
-        return $this->app->make(ValidatorFactory::class)->make(
+        $factory = new Factory(new Translator(new ArrayLoader(), 'en'));
+
+        return $factory->make(
             $data,
             $formRequest->rules(),
             $formRequest->messages(),

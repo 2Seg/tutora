@@ -7,6 +7,7 @@ namespace Tests\Unit\Actions;
 use App\Actions\LogoutUser;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
+use Mockery;
 use Mockery\Mock;
 use Tests\Unit\UnitTestCase;
 
@@ -18,10 +19,8 @@ final class LogoutUserTest extends UnitTestCase
 
     protected function setUp(): void
     {
-        parent::setUp();
-
-        $this->guard = $this->spy(StatefulGuard::class);
-        $this->session = $this->spy(Session::class);
+        $this->guard = Mockery::spy(StatefulGuard::class);
+        $this->session = Mockery::spy(Session::class);
         $this->logoutUser = new LogoutUser($this->guard, $this->session);
     }
 
