@@ -36,6 +36,6 @@ final readonly class AuthController
     {
         $this->logoutUser->handle();
 
-        return $this->redirector->to('/');
+        return $this->redirector->to('/login');
     }
 }

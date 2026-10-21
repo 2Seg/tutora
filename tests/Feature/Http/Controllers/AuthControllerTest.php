@@ -135,7 +135,7 @@ final class AuthControllerTest extends FeatureTestCase
         $actual->assertRedirect('/login');
     }
 
-    public function testItRedirectsAuthenticatedUserToHomeOnLogout(): void
+    public function testItRedirectsAuthenticatedUserToLoginOnLogout(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -144,7 +144,7 @@ final class AuthControllerTest extends FeatureTestCase
         $actual = $this->actingAs($user)->post('/logout');
 
         // Assert
-        $actual->assertRedirect('/');
+        $actual->assertRedirect('/login');
     }
 
     public function testItLogsAuthenticatedUserOut(): void
