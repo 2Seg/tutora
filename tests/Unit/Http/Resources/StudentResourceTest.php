@@ -80,6 +80,32 @@ final class StudentResourceTest extends TestCase
         $this->assertSame('Test', $actual['lastName']);
     }
 
+    public function testToArraySerializesStudentFullName(): void
+    {
+        // Arrange
+        $this->student->first_name = 'Test';
+        $this->student->last_name = 'Tested';
+
+        // Act
+        $actual = (new StudentResource($this->student))->toArray($this->request);
+
+        // Assert
+        $this->assertSame('Test Tested', $actual['fullName']);
+    }
+
+    public function testToArraySerializesStudentInitials(): void
+    {
+        // Arrange
+        $this->student->first_name = 'Test';
+        $this->student->last_name = 'Tested';
+
+        // Act
+        $actual = (new StudentResource($this->student))->toArray($this->request);
+
+        // Assert
+        $this->assertSame('TT', $actual['initials']);
+    }
+
     public function testToArraySerializesStudentPhone(): void
     {
         // Arrange

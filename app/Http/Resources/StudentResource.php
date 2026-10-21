@@ -23,6 +23,7 @@ final class StudentResource extends JsonResource
             'firstName' => $this->first_name,
             'lastName' => $this->last_name,
             'fullName' => $this->full_name,
+            'initials' => $this->initials,
             'phone' => $this->phone,
             'avatarImg' => $this->avatar_img,
             'timezone' => $this->timezone,
