@@ -167,4 +167,29 @@ final class StudentResourceTest extends UnitTestCase
         // Assert
         $this->assertSame('2000-01-01T00:00:00+00:00', $actual['updatedAt']);
     }
+
+    public function testItSerializesOnlySpecificFields(): void
+    {
+        // Arrange
+        $expected = [
+            'id',
+            'userId',
+            'email',
+            'firstName',
+            'lastName',
+            'fullName',
+            'initials',
+            'phone',
+            'avatarImg',
+            'timezone',
+            'createdAt',
+            'updatedAt',
+        ];
+
+        // Act
+        $actual = (new StudentResource($this->student))->toArray($this->request);
+
+        // Assert
+        $this->assertSame($expected, array_keys($actual));
+    }
 }
