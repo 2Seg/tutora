@@ -10,7 +10,7 @@ return [
     // Login
     'login' => [
         'title' => 'Login',
-        'subtitle' => 'Enter your email and password to log in',
+        'subtitle' => 'Enter your email and password below to log in',
         'email' => 'Email',
         'password' => 'Password',
         'remember' => 'Remember me',

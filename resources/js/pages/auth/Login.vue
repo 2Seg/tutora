@@ -34,10 +34,10 @@ import { Form } from '@inertiajs/vue3';
             </CardHeader>
             <CardHeader>
                 <CardTitle>
-                    <h1>Login</h1>
+                    <h1>{{ $t('auth.login.title') }}</h1>
                 </CardTitle>
                 <CardDescription class="text-primary">
-                    Enter your email and password below to login
+                    {{ $t('auth.login.subtitle') }}
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -80,13 +80,15 @@ import { Form } from '@inertiajs/vue3';
                     </div>
                     <div class="flex items-center gap-3">
                         <Checkbox id="remember" name="remember" value="1" />
-                        <Label for="remember">Remember me</Label>
+                        <Label for="remember">
+                            {{ $t('auth.login.remember') }}
+                        </Label>
                     </div>
                 </div>
             </CardContent>
             <CardFooter class="flex flex-col gap-2">
                 <Button :disabled="processing" class="w-full">
-                    Login
+                    {{ $t('auth.login.submit') }}
                     <LogIn />
                 </Button>
             </CardFooter>
