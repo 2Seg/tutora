@@ -12,7 +12,7 @@ final readonly class AuthenticateUser
 {
     public function __construct(
         private StatefulGuard $guard,
-        private Session       $session,
+        private Session $session,
     ) {}
 
     public function handle(array $credentials, bool $remember = false): void
