@@ -8,8 +8,8 @@ use RuntimeException;
 
 final class InvalidCredentials extends RuntimeException
 {
-    public function __construct()
+    public function __construct(public readonly string $translationKey = 'auth.failed')
     {
-        parent::__construct('Invalid credentials.');
+        parent::__construct($translationKey);
     }
 }

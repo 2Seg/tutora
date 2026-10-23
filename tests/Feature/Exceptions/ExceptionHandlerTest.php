@@ -12,26 +12,34 @@ use Tests\Feature\FeatureTestCase;
 
 final class ExceptionHandlerTest extends FeatureTestCase
 {
+    private ExceptionHandler $handler;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->handler = $this->app->make(ExceptionHandler::class);
+    }
+
     public function testItLeavesOtherExceptionsUntouched(): void
     {
         // Arrange
         $exception = new Exception();
 
         // Act
-        $actual = new ExceptionHandler()($exception);
+        $actual = ($this->handler)($exception);
 
         // Assert
-        $this->assertInstanceOf(Exception::class, $actual);
+        $this->assertSame($exception, $actual);
     }
 
     public function testItConvertsInvalidCredentialsExceptionIntoValidationException(): void
     {
         // Arrange
-        $expected = ['global' => ['Invalid credentials.']];
-        $invalidCredentials = new InvalidCredentials();
+        $expected = ['failed' => ['These credentials do not match our records.']];
 
         // Act
-        $actual = new ExceptionHandler()($invalidCredentials);
+        $actual = ($this->handler)(new InvalidCredentials());
 
         // Assert
         $this->assertInstanceOf(ValidationException::class, $actual);

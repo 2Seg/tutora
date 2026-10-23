@@ -21,5 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(fn(Request $request) => route('teacher.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->map(new ExceptionHandler()(...));
+        $exceptions->map(
+            fn(Throwable $exception): Throwable => app(ExceptionHandler::class)($exception),
+        );
     })->create();

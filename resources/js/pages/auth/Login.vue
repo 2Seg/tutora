@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
     Card,
     CardContent,
@@ -12,20 +12,25 @@ import AppLogo from '@/components/shared/AppLogo.vue';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LogIn } from '@lucide/vue';
-import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
+import {
+    InputGroup,
+    InputGroupAddon,
+    InputGroupInput,
+} from '@/components/ui/input-group';
 import { MailIcon, Lock } from '@lucide/vue';
 import { Form } from '@inertiajs/vue3';
 </script>
 
 <template>
     <Form
-        action="/login"
-        method="POST"
         #default="{ errors, processing }"
-        class="w-full max-w-sm">
+        action="/login"
+        class="w-full max-w-sm"
+        method="POST"
+    >
         <Card class="bg-card">
             <CardHeader class="flex items-center justify-center">
-                <AppLogo/>
+                <AppLogo />
             </CardHeader>
             <CardHeader>
                 <CardTitle>
@@ -37,49 +42,52 @@ import { Form } from '@inertiajs/vue3';
             </CardHeader>
             <CardContent>
                 <div class="grid w-full items-center gap-4">
-                    <p v-if="errors.global" class="text-sm text-center text-destructive">
-                        {{ errors.global }}
+                    <p
+                        v-if="errors.failed"
+                        class="text-sm text-center text-destructive"
+                    >
+                        {{ errors.failed }}
                     </p>
                     <div class="flex flex-col space-y-1.5">
                         <InputGroup>
                             <InputGroupInput
+                                :aria-invalid="!!errors.failed"
+                                autocomplete="email"
                                 name="email"
-                                type="email"
                                 placeholder="Email"
                                 required
-                                autocomplete="email"
-                                :aria-invalid="!!errors.global"
+                                type="email"
                             />
                             <InputGroupAddon>
-                                <MailIcon/>
+                                <MailIcon />
                             </InputGroupAddon>
                         </InputGroup>
                     </div>
                     <div class="flex flex-col space-y-1.5">
                         <InputGroup>
                             <InputGroupInput
+                                :aria-invalid="!!errors.failed"
+                                autocomplete="current-password"
                                 name="password"
-                                type="password"
                                 placeholder="******"
                                 required
-                                autocomplete="current-password"
-                                :aria-invalid="!!errors.global"
+                                type="password"
                             />
                             <InputGroupAddon>
-                                <Lock/>
+                                <Lock />
                             </InputGroupAddon>
                         </InputGroup>
                     </div>
                     <div class="flex items-center gap-3">
-                        <Checkbox id="remember" name="remember" value="1"/>
+                        <Checkbox id="remember" name="remember" value="1" />
                         <Label for="remember">Remember me</Label>
                     </div>
                 </div>
             </CardContent>
             <CardFooter class="flex flex-col gap-2">
-                <Button class="w-full" :disabled="processing">
+                <Button :disabled="processing" class="w-full">
                     Login
-                    <LogIn/>
+                    <LogIn />
                 </Button>
             </CardFooter>
         </Card>
