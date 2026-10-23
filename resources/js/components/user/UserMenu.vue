@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/navigation-menu';
 import { Settings, User as UserIcon, LogOut } from '@lucide/vue';
 import { Separator } from '@/components/ui/separator';
-import UserAvatar from '@/components/users/UserAvatar.vue';
+import UserAvatar from '@/components/user/UserAvatar.vue';
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 

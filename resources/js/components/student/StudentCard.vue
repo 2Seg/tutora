@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+<script lang="ts" setup>
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Student } from '@/types/Student';
-import UserAvatar from '@/components/users/UserAvatar.vue';
+import UserAvatar from '@/components/user/UserAvatar.vue';
 import { User } from '@/types/User';
 import {
     Item,
@@ -20,7 +20,7 @@ const props = defineProps<{ student: Student }>();
 <template>
     <Card class="gap-4 border-0 bg-secondary shadow-none min-h-full">
         <CardHeader class="flex flex-row items-center gap-4">
-            <UserAvatar class="size-16" :user="student as User" />
+            <UserAvatar :user="student as User" class="size-16" />
             <h1>{{ student.fullName }}</h1>
         </CardHeader>
 
@@ -61,9 +61,9 @@ const props = defineProps<{ student: Student }>();
 
                 <ItemActions>
                     <Button
-                        variant="ghost"
-                        size="sm"
                         class="font-semibold text-primary cursor-pointer"
+                        size="sm"
+                        variant="ghost"
                     >
                         View calendar
                     </Button>

@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import TeacherNavigationMenu from '@/components/teacher/TeacherNavigationMenu.vue';
+<script lang="ts" setup>
+import UserNavigationMenu from '@/components/user/UserNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
-import ProfileMenu from '@/components/users/UserMenu.vue';
+import ProfileMenu from '@/components/user/UserMenu.vue';
 import MainHeader from '@/components/shared/MainHeader.vue';
 import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
@@ -16,13 +16,13 @@ const { current } = useTeacherNavigation();
         </header>
 
         <div class="px-6 py-2">
-            <TeacherNavigationMenu></TeacherNavigationMenu>
+            <UserNavigationMenu></UserNavigationMenu>
         </div>
 
-        <section class="px-2 py-2" v-if="current">
+        <section v-if="current" class="px-2 py-2">
             <MainHeader
-                :title="current.title"
                 :description="current.description"
+                :title="current.title"
             />
         </section>
 

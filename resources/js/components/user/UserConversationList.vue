@@ -1,8 +1,8 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { Student } from '@/types/Student';
 import { cn } from '@/lib/utils';
 import SearchInput from '@/components/shared/SearchInput.vue';
-import UserAvatar from '@/components/users/UserAvatar.vue';
+import UserAvatar from '@/components/user/UserAvatar.vue';
 
 defineProps<{
     students: Student[];

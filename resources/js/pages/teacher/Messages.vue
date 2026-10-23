@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { computed, ref } from 'vue';
-import TeacherConversationList from '@/components/teacher/TeacherConversationList.vue';
+import UserConversationList from '@/components/user/UserConversationList.vue';
 import StudentCard from '@/components/student/StudentCard.vue';
 import MessageThread from '@/components/messages/MessageThread.vue';
 import {
@@ -18,20 +18,20 @@ const selected = computed(() =>
 
 <template>
     <div class="flex min-h-0 flex-1 gap-4">
-        <TeacherConversationList
-            class="w-72 shrink-0"
-            :students="students"
+        <UserConversationList
             :selected-student-id="selectedId"
+            :students="students"
+            class="w-72 shrink-0"
             @select="selectedId = $event"
         />
 
         <template v-if="selected">
             <div class="flex min-w-0 flex-1 flex-col gap-3">
                 <MessageThread
-                    class="min-h-0 flex-1 rounded-xl bg-card"
                     :key="selected.id"
                     :auth-user-id="authUserId"
                     :messages="messagesByStudent[selected.id] ?? []"
+                    class="min-h-0 flex-1 rounded-xl bg-card"
                 />
                 <MessageComposer class="shrink-0 min-w-full" />
             </div>
