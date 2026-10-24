@@ -6,9 +6,9 @@ import {
     NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Link } from '@inertiajs/vue3';
-import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
+import { useUserNavigation } from '@/composables/useUserNavigation';
 
-const { items, isActive } = useTeacherNavigation();
+const { items, isActive } = useUserNavigation();
 </script>
 
 <template>

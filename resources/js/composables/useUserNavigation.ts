@@ -19,7 +19,7 @@ const definitions: NavDefinition[] = [
     { key: 'earnings', href: '/teacher/earnings', icon: CircleDollarSign },
 ];
 
-export function useTeacherNavigation() {
+export function useUserNavigation() {
     const page = usePage();
     const path = computed(() => page.url.split('?')[0]);
 

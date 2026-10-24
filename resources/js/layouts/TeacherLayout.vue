@@ -3,9 +3,9 @@ import UserNavigationMenu from '@/components/user/UserNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import ProfileMenu from '@/components/user/UserMenu.vue';
 import MainHeader from '@/components/shared/MainHeader.vue';
-import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
+import { useUserNavigation } from '@/composables/useUserNavigation';
 
-const { current } = useTeacherNavigation();
+const { current } = useUserNavigation();
 </script>
 
 <template>
