@@ -8,6 +8,7 @@
         "test": "vitest run"
     },
     "devDependencies": {
+        "@laravel/vite-plugin-wayfinder": "^0.1.11",
         "@tailwindcss/vite": "^4.0.0",
         "@vitest/coverage-v8": "^5.0.5",
         "concurrently": "^10.0.3",
