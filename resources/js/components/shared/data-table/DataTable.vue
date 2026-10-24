@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender, useTable } from '@tanstack/vue-table';
 import { ChevronLeft, ChevronRight } from '@lucide/vue';
@@ -79,9 +79,9 @@ const to = computed(() =>
 <template>
     <div class="space-y-4">
         <SearchInput
-            class="mb-4"
-            :placeholder="searchPlaceholder"
             :model-value="table.atoms.globalFilter.get() ?? ''"
+            :placeholder="searchPlaceholder"
+            class="mb-4"
             @update:model-value="table.setGlobalFilter($event)"
         />
 
@@ -117,10 +117,10 @@ const to = computed(() =>
                             <TableCell
                                 v-for="cell in row.getVisibleCells()"
                                 :key="cell.id"
-                                class="px-3 py-2 gap-1 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
                                 :class="{
                                     'bg-accent/50': selectedRowId === row.id,
                                 }"
+                                class="px-3 py-2 gap-1 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
                             >
                                 <FlexRender :cell="cell" />
                             </TableCell>
@@ -139,16 +139,21 @@ const to = computed(() =>
 
             <div class="mt-auto flex items-center justify-between px-3">
                 <p class="text-sm text-primary">
-                    Showing {{ from }}–{{ to }} of {{ total }}
-                    {{ itemLabel ?? 'results' }}
+                    {{
+                        $tChoice('common.pagination.results', total, {
+                            from: String(from),
+                            to: String(to),
+                            total: String(total),
+                        })
+                    }}
                 </p>
 
                 <div class="flex items-center gap-1">
                     <Button
-                        variant="ghost"
-                        size="icon"
-                        class="size-8 text-primary"
                         :disabled="!table.getCanPreviousPage()"
+                        class="size-8 text-primary"
+                        size="icon"
+                        variant="ghost"
                         @click="table.previousPage()"
                     >
                         <ChevronLeft class="size-4" />
@@ -157,24 +162,24 @@ const to = computed(() =>
                     <Button
                         v-for="page in table.getPageCount()"
                         :key="page"
-                        variant="ghost"
-                        size="icon"
-                        class="size-8 text-sm"
                         :class="
                             page - 1 === pagination.pageIndex
                                 ? 'bg-accent font-semibold text-primary'
                                 : 'text-muted-foreground'
                         "
+                        class="size-8 text-sm"
+                        size="icon"
+                        variant="ghost"
                         @click="table.setPageIndex(page - 1)"
                     >
                         {{ page }}
                     </Button>
 
                     <Button
-                        variant="ghost"
-                        size="icon"
-                        class="size-8 text-primary"
                         :disabled="!table.getCanNextPage()"
+                        class="size-8 text-primary"
+                        size="icon"
+                        variant="ghost"
                         @click="table.nextPage()"
                     >
                         <ChevronRight class="size-4" />
