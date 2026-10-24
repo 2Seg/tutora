@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 return [
 
-    'user' => [
-        'profile' => 'Profile',
-        'settings' => 'Settings',
-        'logout' => 'Logout',
-    ],
+    'profile' => ['label' => 'Profile'],
+    'settings' => ['label' => 'Settings'],
+    'logout' => ['label' => 'Logout'],
 
     'home' => [
         'label' => 'Home',
