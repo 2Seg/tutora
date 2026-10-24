@@ -1,13 +1,14 @@
-import { NavDefinition } from '@/types/NavDefinition';
 import { LogOut, Settings, User as UserIcon } from '@lucide/vue';
-import { computed } from 'vue';
-import { NavItem } from '@/types/NavItem';
 import { trans } from 'laravel-vue-i18n';
+import { computed } from 'vue';
+import { logout } from '@/routes/login';
+import type { NavDefinition } from '@/types/NavDefinition';
+import type { NavItem } from '@/types/NavItem';
 
 const definitions: NavDefinition[] = [
     { key: 'profile', href: '/profile', icon: UserIcon },
     { key: 'settings', href: '/settings', icon: Settings },
-    { key: 'logout', href: '/logout', icon: LogOut, method: 'post' },
+    { key: 'logout', href: logout(), icon: LogOut, method: 'post' },
 ];
 
 export function useUserMenu() {

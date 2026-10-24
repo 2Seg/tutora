@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LogOut, Settings, User as UserIcon } from '@lucide/vue';
 import { useUserMenu } from '@/composables/useUserMenu';
 import { trans } from 'laravel-vue-i18n';
+import { logout } from '@/routes/login';
 
 vi.mock('laravel-vue-i18n', () => ({
     trans: vi.fn((key: string) => `translated:${key}`),
@@ -28,7 +29,7 @@ describe('useUserMenu', () => {
         expect(items.value).toMatchObject([
             { href: '/profile', icon: UserIcon },
             { href: '/settings', icon: Settings },
-            { href: '/logout', icon: LogOut },
+            { href: logout(), icon: LogOut },
         ]);
     });
 

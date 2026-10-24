@@ -28,13 +28,14 @@ const items = useUserMenu();
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                     <ul class="flex flex-col justify-evenly w-43 h-30">
-                        <template v-for="item in items" :key="item.key">
-                            <Separator v-if="item.method" />
+                        <template
+                            v-for="(item, index) in items"
+                            :key="item.key"
+                        >
+                            <Separator v-if="index === items.length - 1" />
                             <NavigationMenuLink as-child>
                                 <Link
-                                    :as="item.method ? 'button' : 'a'"
                                     :href="item.href"
-                                    :method="item.method"
                                     class="flex items-center gap-2 w-full cursor-pointer"
                                 >
                                     <component :is="item.icon" />
