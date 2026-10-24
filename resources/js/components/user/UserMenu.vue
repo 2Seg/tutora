@@ -7,14 +7,15 @@ import {
     NavigationMenuTrigger,
     NavigationMenuContent,
 } from '@/components/ui/navigation-menu';
-import { Settings, User as UserIcon, LogOut } from '@lucide/vue';
 import { Separator } from '@/components/ui/separator';
 import UserAvatar from '@/components/user/UserAvatar.vue';
 import { computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { useUserMenu } from '@/composables/useUserMenu';
 
 const page = usePage();
 const user = computed(() => page.props.auth.user);
+const items = useUserMenu();
 </script>
 
 <template>
@@ -27,26 +28,20 @@ const user = computed(() => page.props.auth.user);
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
                     <ul class="flex flex-col justify-evenly w-43 h-30">
-                        <NavigationMenuLink>
-                            <UserIcon />
-                            My profile
-                        </NavigationMenuLink>
-                        <NavigationMenuLink>
-                            <Settings />
-                            Parameters
-                        </NavigationMenuLink>
-                        <Separator />
-                        <NavigationMenuLink as-child>
-                            <Link
-                                as="button"
-                                class="flex items-center gap-2 w-full cursor-pointer"
-                                href="/logout"
-                                method="post"
-                            >
-                                <LogOut />
-                                Log out
-                            </Link>
-                        </NavigationMenuLink>
+                        <template v-for="item in items" :key="item.key">
+                            <Separator v-if="item.method" />
+                            <NavigationMenuLink as-child>
+                                <Link
+                                    :as="item.method ? 'button' : 'a'"
+                                    :href="item.href"
+                                    :method="item.method"
+                                    class="flex items-center gap-2 w-full cursor-pointer"
+                                >
+                                    <component :is="item.icon" />
+                                    {{ item.label }}
+                                </Link>
+                            </NavigationMenuLink>
+                        </template>
                     </ul>
                 </NavigationMenuContent>
             </NavigationMenuItem>
