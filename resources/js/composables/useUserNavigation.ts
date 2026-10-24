@@ -1,13 +1,7 @@
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import { trans } from 'laravel-vue-i18n';
-import {
-    CalendarDays,
-    CircleDollarSign,
-    House,
-    Mails,
-    Users,
-} from '@lucide/vue';
+import { CalendarDays, House, Users } from '@lucide/vue';
 import { NavDefinition } from '@/types/NavDefinition';
 import { NavItem } from '@/types/NavItem';
 
@@ -15,8 +9,6 @@ const definitions: NavDefinition[] = [
     { key: 'home', href: '/teacher', icon: House, exact: true },
     { key: 'students', href: '/teacher/students', icon: Users },
     { key: 'calendar', href: '/teacher/calendar', icon: CalendarDays },
-    { key: 'messages', href: '/teacher/messages', icon: Mails },
-    { key: 'earnings', href: '/teacher/earnings', icon: CircleDollarSign },
 ];
 
 export function useUserNavigation() {
