@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
     NavigationMenu,
     NavigationMenuItem,
@@ -8,14 +8,14 @@ import {
 import { Link } from '@inertiajs/vue3';
 import { useTeacherNavigation } from '@/composables/useTeacherNavigation';
 
-const { items, isActive } = useTeacherNavigation()
+const { items, isActive } = useTeacherNavigation();
 </script>
 
 <template>
     <NavigationMenu>
         <NavigationMenuList>
             <NavigationMenuItem v-for="item in items" :key="item.href">
-                <NavigationMenuLink as-child :active="isActive(item)">
+                <NavigationMenuLink :active="isActive(item)" as-child>
                     <Link
                         :href="item.href"
                         class="flex flex-row items-center gap-2"
