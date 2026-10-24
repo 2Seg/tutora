@@ -1,21 +1,24 @@
 import { usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
-import { trans } from 'laravel-vue-i18n';
 import { CalendarDays, House, Users } from '@lucide/vue';
-import { NavDefinition } from '@/types/NavDefinition';
-import { NavItem } from '@/types/NavItem';
+import { trans } from 'laravel-vue-i18n';
+import { computed } from 'vue';
+import { calendar, dashboard, students } from '@/routes/teacher';
+import type { NavDefinition } from '@/types/NavDefinition';
+import type { NavItem } from '@/types/NavItem';
 
 const definitions: NavDefinition[] = [
-    { key: 'home', href: '/teacher', icon: House, exact: true },
-    { key: 'students', href: '/teacher/students', icon: Users },
-    { key: 'calendar', href: '/teacher/calendar', icon: CalendarDays },
+    { key: 'home', href: dashboard(), icon: House, exact: true },
+    { key: 'students', href: students(), icon: Users },
+    { key: 'calendar', href: calendar(), icon: CalendarDays },
 ];
+
+const urlOf = ({ href }: NavDefinition): string =>
+    typeof href === 'string' ? href : href.url;
 
 export function useUserNavigation() {
     const page = usePage();
     const path = computed(() => page.url.split('?')[0]);
 
-    // Evaluated lazily at render time, and re-evaluated when the language loads or changes
     const items = computed<NavItem[]>(() =>
         definitions.map((definition) => ({
             ...definition,
@@ -25,11 +28,13 @@ export function useUserNavigation() {
         })),
     );
 
-    const isActive = (item: NavDefinition): boolean =>
-        item.exact
-            ? path.value === item.href
-            : path.value === item.href ||
-              path.value.startsWith(`${item.href}/`);
+    const isActive = (item: NavDefinition): boolean => {
+        const url = urlOf(item);
+
+        return item.exact
+            ? path.value === url
+            : path.value === url || path.value.startsWith(`${url}/`);
+    };
 
     const current = computed(() => items.value.find(isActive));
 
