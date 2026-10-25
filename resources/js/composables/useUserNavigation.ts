@@ -3,8 +3,8 @@ import { CalendarDays, House, Users } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
 import { calendar, dashboard, students } from '@/routes/teacher';
-import type { NavDefinition } from '@/types/NavDefinition';
-import type { NavItem } from '@/types/NavItem';
+import type { NavDefinition } from '@/types/navigation/NavDefinition';
+import type { NavItem } from '@/types/navigation/NavItem';
 
 const definitions: NavDefinition[] = [
     { key: 'home', href: dashboard(), icon: House, exact: true },
