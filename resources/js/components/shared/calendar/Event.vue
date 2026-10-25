@@ -1,0 +1,69 @@
+<script lang="ts" setup>
+import { Lock } from '@lucide/vue';
+import { computed, type Component } from 'vue';
+
+import type { BlockEvent, CalendarEvent, LessonStatus } from '@/types/calendar';
+
+const props = defineProps<{
+    event: CalendarEvent;
+    range: string;
+    isPast: boolean;
+    isCompact: boolean;
+}>();
+
+const lessonClasses: Record<LessonStatus, string> = {
+    planned: 'badge-secondary',
+    cancelled: 'badge-destructive',
+    requested: 'badge-warning',
+    draft: 'badge-outline',
+};
+const blockClasses: Record<BlockEvent['type'], string> = {
+    unavailability: 'badge-hashed',
+};
+const icons: Partial<Record<CalendarEvent['type'], Component>> = { unavailability: Lock };
+const defaultTitles: Record<CalendarEvent['type'], string> = {
+    lesson: 'Lesson',
+    unavailability: 'Unavailable',
+};
+const statusLabels: Record<LessonStatus, string> = {
+    draft: 'Draft',
+    requested: 'Requested',
+    planned: 'Planned',
+    cancelled: 'Cancelled',
+};
+
+const status = computed(() => (props.event.type === 'lesson' ? props.event.status : null));
+const classes = computed(() =>
+    status.value ? lessonClasses[status.value] : blockClasses[props.event.type as BlockEvent['type']],
+);
+const icon = computed(() => icons[props.event.type]);
+const title = computed(() => props.event.title ?? defaultTitles[props.event.type]);
+const description = computed(() =>
+    [title.value, props.event.subtitle, status.value && statusLabels[status.value], props.range]
+        .filter(Boolean)
+        .join(', '),
+);
+</script>
+
+<template>
+    <button
+        :aria-label="description"
+        :class="[
+            classes,
+            { 'opacity-60': isPast },
+            isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
+        ]"
+        :title="description"
+        class="flex min-h-4.5 min-w-0 cursor-pointer overflow-hidden rounded-lg border px-2.5 text-left text-xs leading-snug focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        data-event
+        type="button"
+    >
+        <span class="flex min-w-0 items-center gap-1.5 font-semibold">
+            <component :is="icon" v-if="icon" aria-hidden="true" class="size-3.5 shrink-0" />
+            <span class="truncate">{{ title }}</span>
+        </span>
+        <span v-if="event.subtitle && !isCompact" class="min-w-0 truncate text-[11px]">{{ event.subtitle }}</span>
+        <span v-if="status" class="min-w-0 truncate text-[11px]">{{ statusLabels[status] }}</span>
+        <span v-else-if="!isCompact" class="min-w-0 truncate text-[11px]">{{ range }}</span>
+    </button>
+</template>
