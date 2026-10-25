@@ -3,8 +3,7 @@ import { CalendarDays, House, Users } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
 import { calendar, dashboard, students } from '@/routes/teacher';
-import type { NavDefinition } from '@/types/navigation/NavDefinition';
-import type { NavItem } from '@/types/navigation/NavItem';
+import type { NavDefinition, NavItem } from '@/types/navigation';
 
 const definitions: NavDefinition[] = [
     { key: 'home', href: dashboard(), icon: House, exact: true },
@@ -12,8 +11,7 @@ const definitions: NavDefinition[] = [
     { key: 'calendar', href: calendar(), icon: CalendarDays },
 ];
 
-const urlOf = ({ href }: NavDefinition): string =>
-    typeof href === 'string' ? href : href.url;
+const urlOf = ({ href }: NavDefinition): string => (typeof href === 'string' ? href : href.url);
 
 export function useUserNavigation() {
     const page = usePage();
@@ -31,9 +29,7 @@ export function useUserNavigation() {
     const isActive = (item: NavDefinition): boolean => {
         const url = urlOf(item);
 
-        return item.exact
-            ? path.value === url
-            : path.value === url || path.value.startsWith(`${url}/`);
+        return item.exact ? path.value === url : path.value === url || path.value.startsWith(`${url}/`);
     };
 
     const current = computed(() => items.value.find(isActive));

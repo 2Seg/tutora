@@ -2,8 +2,7 @@ import { LogOut, Settings, User as UserIcon } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
 import { logout } from '@/routes/login';
-import type { NavDefinition } from '@/types/navigation/NavDefinition';
-import type { NavItem } from '@/types/navigation/NavItem';
+import type { NavDefinition, NavItem } from '@/types/navigation';
 
 const definitions: NavDefinition[] = [
     { key: 'profile', href: '/profile', icon: UserIcon },
