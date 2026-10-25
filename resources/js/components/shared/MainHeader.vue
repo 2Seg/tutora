@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import {
     Item,
     ItemActions,
@@ -8,13 +8,13 @@ import {
 
 withDefaults(
     defineProps<{
-        title: string,
-        description: string,
+        title: string | undefined;
+        description: string | undefined;
     }>(),
     {
         title: '',
         description: '',
-    }
+    },
 );
 </script>
 
