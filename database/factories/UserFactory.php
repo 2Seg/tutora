@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 /**
  * @extends Factory<User>
  */
-class UserFactory extends Factory
+final class UserFactory extends Factory
 {
     public function definition(): array
     {

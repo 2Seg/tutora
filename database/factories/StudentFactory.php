@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Student>
  */
-class StudentFactory extends Factory
+final class StudentFactory extends Factory
 {
     public function definition(): array
     {
