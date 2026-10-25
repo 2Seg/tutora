@@ -9,3 +9,9 @@ export interface NavDefinition {
     exact?: boolean;
     method?: Method;
 }
+
+export type NavItem = NavDefinition & {
+    label: string;
+    title?: string;
+    description?: string;
+};
