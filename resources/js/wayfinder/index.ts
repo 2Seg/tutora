@@ -10,7 +10,7 @@ export type QueryParams = {
 };
 
 type Method =
-    'get' | 'post' | 'put' | 'delete' | 'patch' | 'head' | 'options' | 'query';
+    "get" | "post" | "put" | "delete" | "patch" | "head" | "options" | "query";
 type UrlDefaults = Record<string, unknown>;
 
 let urlDefaults: () => UrlDefaults = () => ({});
@@ -31,11 +31,11 @@ export type RouteQueryOptions = {
 
 const getValue = (value: string | number | boolean) => {
     if (value === true) {
-        return '1';
+        return "1";
     }
 
     if (value === false) {
-        return '0';
+        return "0";
     }
 
     return value.toString();
@@ -53,9 +53,9 @@ const addNestedParams = (
 
         if (Array.isArray(value)) {
             value.forEach((v) => params.append(`${paramKey}[]`, getValue(v)));
-        } else if (value !== null && typeof value === 'object') {
+        } else if (value !== null && typeof value === "object") {
             addNestedParams(value, paramKey, params);
-        } else if (['string', 'number', 'boolean'].includes(typeof value)) {
+        } else if (["string", "number", "boolean"].includes(typeof value)) {
             params.set(paramKey, getValue(value as string | number | boolean));
         }
     });
@@ -75,16 +75,16 @@ const clearParamFamily = (params: URLSearchParams, key: string) => {
 
 export const queryParams = (options?: RouteQueryOptions) => {
     if (!options || (!options.query && !options.mergeQuery)) {
-        return '';
+        return "";
     }
 
     const query = options.query ?? options.mergeQuery;
     const includeExisting = options.mergeQuery !== undefined;
 
     const params = new URLSearchParams(
-        includeExisting && typeof window !== 'undefined'
+        includeExisting && typeof window !== "undefined"
             ? window.location.search
-            : '',
+            : "",
     );
 
     for (const key in query) {
@@ -102,7 +102,7 @@ export const queryParams = (options?: RouteQueryOptions) => {
             queryValue.forEach((value) => {
                 params.append(`${key}[]`, value.toString());
             });
-        } else if (typeof queryValue === 'object') {
+        } else if (typeof queryValue === "object") {
             addNestedParams(queryValue, key, params);
         } else {
             params.set(key, getValue(queryValue));
@@ -111,11 +111,11 @@ export const queryParams = (options?: RouteQueryOptions) => {
 
     const str = params.toString();
 
-    return str.length > 0 ? `?${str}` : '';
+    return str.length > 0 ? `?${str}` : "";
 };
 
 export const setUrlDefaults = (params: UrlDefaults | (() => UrlDefaults)) => {
-    urlDefaults = typeof params === 'function' ? params : () => params;
+    urlDefaults = typeof params === "function" ? params : () => params;
 };
 
 export const addUrlDefault = (
@@ -159,7 +159,7 @@ export const validateParameters = (
         return (
             value === undefined ||
             value === null ||
-            value === '' ||
+            value === "" ||
             value === false
         );
     });
@@ -168,7 +168,7 @@ export const validateParameters = (
     for (let i = 0; i < missing.length; i++) {
         if (missing[i] !== expectedMissing[i]) {
             throw Error(
-                'Unexpected optional parameters missing. Unable to generate a URL.',
+                "Unexpected optional parameters missing. Unable to generate a URL.",
             );
         }
     }
