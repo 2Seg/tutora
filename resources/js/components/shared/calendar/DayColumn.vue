@@ -2,7 +2,15 @@
 import { computed } from 'vue';
 import Event from '@/components/shared/calendar/Event.vue';
 import { useSlotSelection } from '@/composables/useSlotSelection';
-import { isSameDay, layoutOverlaps, minutesOfDay, percentOfDay, segmentForDay, toDate } from '@/lib/calendar-utils';
+import {
+    atMinutes,
+    isSameDay,
+    layoutOverlaps,
+    minutesOfDay,
+    percentOfDay,
+    segmentForDay,
+    toDate,
+} from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 
 const props = defineProps<{
@@ -17,9 +25,15 @@ const emit = defineEmits<{
     'event-click': [event: CalendarEvent];
 }>();
 
+const positionStyle = (startMin: number, endMin: number, col = 0, cols = 1) => ({
+    top: `calc(${percentOfDay(startMin)} + 1px)`,
+    height: `calc(${percentOfDay(endMin - startMin)} - 2px)`,
+    left: `calc(${(col / cols) * 100}% + 4px)`,
+    width: `calc(${100 / cols}% - 8px)`,
+});
+
 const isToday = computed(() => isSameDay(props.day, props.now));
 const nowStyle = computed(() => ({ top: percentOfDay(minutesOfDay(props.now)) }));
-
 const items = computed(() => {
     const segments = [];
 
@@ -34,19 +48,24 @@ const items = computed(() => {
         ...s,
         isPast: s.end.getTime() < props.now.getTime(),
         isCompact: s.endMin - s.startMin < 90,
-        style: {
-            top: `calc(${percentOfDay(s.startMin)} + 1px)`,
-            height: `calc(${percentOfDay(s.endMin - s.startMin)} - 2px)`,
-            left: `calc(${(s.col / s.cols) * 100}% + 4px)`,
-            width: `calc(${100 / s.cols}% - 8px)`,
-        },
+        style: positionStyle(s.startMin, s.endMin, s.col, s.cols),
     }));
 });
 
-const { selectionStyle, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } = useSlotSelection(
+const { selection, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } = useSlotSelection(
     () => props.day,
-    (selection) => emit('select-slot', selection),
+    (slot) => emit('select-slot', slot),
 );
+// While dragging, preview the lesson that would be created: a draft, like the one the parent adds.
+const preview = computed(() => {
+    if (!selection.value) return null;
+    const { startMin, endMin } = selection.value;
+    const start = atMinutes(props.day, startMin);
+    const end = atMinutes(props.day, endMin);
+    const event: CalendarEvent = { id: 'preview', type: 'lesson', status: 'draft', startTime: start, endTime: end };
+
+    return { event, start, end, compact: endMin - startMin < 90, style: positionStyle(startMin, endMin) };
+});
 </script>
 
 <template>
@@ -72,10 +91,14 @@ const { selectionStyle, onPointerDown, onPointerMove, onPointerUp, onPointerCanc
             @click="emit('event-click', item.event)"
         />
 
-        <div
-            v-if="selectionStyle"
-            :style="selectionStyle"
-            class="pointer-events-none absolute inset-x-1 z-10 rounded-lg border border-primary bg-primary/15"
+        <Event
+            v-if="preview"
+            :event="preview.event"
+            :is-compact="preview.compact"
+            :is-past="false"
+            :range="timeFormat.formatRange(preview.start, preview.end)"
+            :style="preview.style"
+            class="pointer-events-none absolute z-10"
         />
 
         <!-- Current time pointer -->

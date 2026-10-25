@@ -1,6 +1,6 @@
 import { computed, ref } from 'vue';
 
-import { atMinutes, MINUTES_PER_DAY, percentOfDay } from '@/lib/calendar-utils';
+import { atMinutes, MINUTES_PER_DAY } from '@/lib/calendar-utils';
 import type { SlotSelection } from '@/types/calendar';
 
 const SNAP_MINUTES = 15;
@@ -52,13 +52,14 @@ export function useSlotSelection(day: () => Date, onSelect: (selection: SlotSele
         drag.value = null;
     }
 
-    /** Position of the selection preview, or null when nothing is being selected. */
-    const selectionStyle = computed(() => {
+    /** The range being dragged, in minutes since midnight, or null when nothing is being selected. */
+    const selection = computed(() => {
         if (!drag.value) return null;
-        const start = Math.min(drag.value.anchor, drag.value.current);
-        const end = Math.max(drag.value.anchor, drag.value.current) + SNAP_MINUTES;
-        return { top: percentOfDay(start), height: percentOfDay(end - start) };
+        return {
+            startMin: Math.min(drag.value.anchor, drag.value.current),
+            endMin: Math.max(drag.value.anchor, drag.value.current) + SNAP_MINUTES,
+        };
     });
 
-    return { selectionStyle, onPointerDown, onPointerMove, onPointerUp, onPointerCancel };
+    return { selection, onPointerDown, onPointerMove, onPointerUp, onPointerCancel };
 }

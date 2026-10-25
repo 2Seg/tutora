@@ -19,7 +19,7 @@ function onSelectSlot({ startTime, endTime }: SlotSelection) {
         id: `added-${Date.now()}`,
         type: 'lesson',
         status: 'draft',
-        title: 'New lesson',
+        title: 'Lesson',
         startTime,
         endTime,
     });
