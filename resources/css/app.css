@@ -26,6 +26,8 @@
     --color-input: var(--input);
     --color-border: var(--border);
     --color-destructive: var(--destructive);
+    --color-warning: var(--warning);
+    --color-ok: var(--ok);
     --color-accent-foreground: var(--accent-foreground);
     --color-accent: var(--accent);
     --color-muted-foreground: var(--muted-foreground);
@@ -63,6 +65,8 @@
     --accent: oklch(0.94 0.028 303);
     --accent-foreground: oklch(0.518 0.168 299);
     --destructive: oklch(0.577 0.215 27);
+    --warning: oklch(0.75 0.16 75);
+    --ok: oklch(0.809 0.239 141.136);
     --border: oklch(0.925 0.018 96);
     --input: oklch(0.925 0.018 96);
     --ring: oklch(0.633 0.132 300);
@@ -140,11 +144,38 @@
     }
 }
 
-@layer base {
-    * {
-        @apply border-border outline-ring/50;
+@layer components {
+    .badge-outline {
+        @apply border-dashed border-muted-foreground/60 bg-card text-muted-foreground;
     }
-    body {
-        @apply bg-background text-foreground;
+
+    .badge-warning {
+        @apply border-warning/60 bg-warning/10 text-warning;
+    }
+
+    .badge-secondary {
+        @apply border-primary/20 bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90;
+    }
+
+    .badge-destructive {
+        @apply border-destructive/30 bg-destructive/10 text-destructive line-through;
+    }
+
+    .badge-hashed {
+        @apply border-dashed border-accent bg-muted/40 text-muted-foreground;
+        background-image: repeating-linear-gradient(
+            135deg,
+            var(--color-accent) 0 1px,
+            transparent 1px 15px
+        );
+    }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    }
+  body {
+    @apply bg-background text-foreground;
     }
 }
