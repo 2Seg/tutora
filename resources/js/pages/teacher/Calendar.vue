@@ -5,7 +5,7 @@ import { buildFakeEvents } from '@/hardcoded-data/calendar-events';
 import { startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 import { Badge } from '@/components/ui/badge';
-import { CalendarOff, Lock } from '@lucide/vue';
+import { Lock } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 
 const weekStart = ref(startOfWeek(new Date()));
@@ -19,7 +19,7 @@ function onSelectSlot({ startTime, endTime }: SlotSelection) {
         id: `added-${Date.now()}`,
         type: 'lesson',
         status: 'draft',
-        title: 'Lesson',
+        title: '(No title)',
         startTime,
         endTime,
     });

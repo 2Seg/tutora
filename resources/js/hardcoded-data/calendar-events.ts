@@ -75,7 +75,6 @@ function buildWeek(monday: Date, lessons: LessonSpec[], timeOff: TimeOffSpec[]):
             type: 'lesson',
             status,
             title: student,
-            subtitle: 'French',
             startTime: at(day, from),
             endTime: at(day, to),
         })),

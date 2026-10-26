@@ -22,7 +22,7 @@ const blockClasses: Record<BlockEvent['type'], string> = {
 };
 const icons: Partial<Record<CalendarEvent['type'], Component>> = { unavailability: Lock };
 const defaultTitles: Record<CalendarEvent['type'], string> = {
-    lesson: 'Lesson',
+    lesson: '(No title)',
     unavailability: 'Unavailable',
 };
 const statusLabels: Record<LessonStatus, string> = {
@@ -39,9 +39,7 @@ const classes = computed(() =>
 const icon = computed(() => icons[props.event.type]);
 const title = computed(() => props.event.title ?? defaultTitles[props.event.type]);
 const description = computed(() =>
-    [title.value, props.event.subtitle, status.value && statusLabels[status.value], props.range]
-        .filter(Boolean)
-        .join(', '),
+    [title.value, status.value && statusLabels[status.value], props.range].filter(Boolean).join(', '),
 );
 </script>
 
@@ -62,8 +60,7 @@ const description = computed(() =>
             <component :is="icon" v-if="icon" aria-hidden="true" class="size-3.5 shrink-0" />
             <span class="truncate">{{ title }}</span>
         </span>
-        <span v-if="event.subtitle && !isCompact" class="min-w-0 truncate text-[11px]">{{ event.subtitle }}</span>
-        <span v-if="status" class="min-w-0 truncate text-[11px]">{{ statusLabels[status] }}</span>
-        <span v-else-if="!isCompact" class="min-w-0 truncate text-[11px]">{{ range }}</span>
+        <span class="min-w-0 truncate text-[11px]">{{ range }}</span>
+        <span v-if="status && !isCompact" class="min-w-0 truncate text-[11px]">{{ statusLabels[status] }}</span>
     </button>
 </template>

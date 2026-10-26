@@ -7,7 +7,6 @@ interface BaseEvent {
     endTime: string | Date;
     type: EventType;
     title?: string;
-    subtitle?: string;
 }
 
 export interface LessonEvent extends BaseEvent {
