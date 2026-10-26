@@ -14,7 +14,7 @@ const { items, isActive } = useUserNavigation();
 <template>
     <NavigationMenu>
         <NavigationMenuList>
-            <NavigationMenuItem v-for="item in items" :key="item.href">
+            <NavigationMenuItem v-for="item in items" :key="item.key">
                 <NavigationMenuLink :active="isActive(item)" as-child>
                     <Link :href="item.href" class="flex flex-row items-center gap-2">
                         <component :is="item.icon" />
