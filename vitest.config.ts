@@ -7,5 +7,5 @@ export default defineConfig({
     resolve: {
         alias: { '@': fileURLToPath(new URL('./resources/js', import.meta.url)) },
     },
-    test: { environment: 'node' },
+    test: { environment: 'jsdom' },
 });
