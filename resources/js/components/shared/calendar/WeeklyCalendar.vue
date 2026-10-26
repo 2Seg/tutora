@@ -10,10 +10,21 @@ import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } fro
 withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
 
 const emit = defineEmits<{
-    'select-slot': [selection: SlotSelection];
     'event-click': [event: CalendarEvent];
-    'event-resize': [event: CalendarEvent, endTime: Date];
 }>();
+
+const draft = defineModel<SlotSelection | null>('draft', { default: null });
+
+function resizeDraft(_event: CalendarEvent, endTime: Date) {
+    if (draft.value) draft.value = { ...draft.value, endTime };
+}
+
+function discardDraftOnPointerDown(e: PointerEvent) {
+    if (draft.value && !(e.target as HTMLElement).closest('[data-draft]')) draft.value = null;
+}
+function discardDraftOnEscapeKey(e: KeyboardEvent) {
+    if (e.key === 'Escape' && draft.value) draft.value = null;
+}
 
 const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
 
@@ -51,8 +62,15 @@ let timer: number | undefined;
 onMounted(() => {
     if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;
     timer = window.setInterval(() => (now.value = new Date()), 60_000);
+
+    window.addEventListener('pointerdown', discardDraftOnPointerDown);
+    window.addEventListener('keydown', discardDraftOnEscapeKey);
 });
-onBeforeUnmount(() => window.clearInterval(timer));
+onBeforeUnmount(() => {
+    window.clearInterval(timer);
+    window.removeEventListener('pointerdown', discardDraftOnPointerDown);
+    window.removeEventListener('keydown', discardDraftOnEscapeKey);
+});
 </script>
 
 <template>
@@ -105,12 +123,13 @@ onBeforeUnmount(() => window.clearInterval(timer));
                         v-for="day in days"
                         :key="day.getTime()"
                         :day="day"
+                        :draft="draft"
                         :events="events"
                         :now="now"
                         :time-format="timeFormat"
                         @event-click="emit('event-click', $event)"
-                        @select-slot="emit('select-slot', $event)"
-                        @event-resize="(event, endTime) => emit('event-resize', event, endTime)"
+                        @event-resize="resizeDraft"
+                        @select-slot="draft = $event"
                     />
                 </div>
             </div>

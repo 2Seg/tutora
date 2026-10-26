@@ -19,6 +19,7 @@ const props = defineProps<{
     events: CalendarEvent[];
     now: Date;
     timeFormat: Intl.DateTimeFormat;
+    draft: SlotSelection | null;
 }>();
 
 const emit = defineEmits<{
@@ -26,6 +27,23 @@ const emit = defineEmits<{
     'event-click': [event: CalendarEvent];
     'event-resize': [event: CalendarEvent, endTime: Date];
 }>();
+
+const DRAFT_ID = 'draft';
+
+const allEvents = computed<CalendarEvent[]>(() =>
+    props.draft
+        ? [
+              ...props.events,
+              {
+                  id: DRAFT_ID,
+                  type: 'lesson',
+                  status: 'draft',
+                  startTime: props.draft.startTime,
+                  endTime: props.draft.endTime,
+              },
+          ]
+        : props.events,
+);
 
 const column = ref<HTMLElement | null>(null);
 const { resizing, onResizeStart } = useEventResize(
@@ -46,7 +64,7 @@ const nowStyle = computed(() => ({ top: percentOfDay(minutesOfDay(props.now)) })
 const items = computed(() => {
     const segments = [];
 
-    for (const event of props.events) {
+    for (const event of allEvents.value) {
         const start = toDate(event.startTime);
         const end =
             resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endTime);
@@ -93,14 +111,15 @@ const preview = computed(() => {
         <Event
             v-for="item in items"
             :key="item.event.id"
+            :data-draft="item.event.id === DRAFT_ID || undefined"
             :event="item.event"
             :is-compact="item.isCompact"
             :is-past="item.isPast"
-            :is-resizable="item.event.type === 'lesson' && item.event.status === 'draft'"
+            :is-resizable="item.event.id === DRAFT_ID"
             :range="timeFormat.formatRange(item.start, item.end)"
             :style="item.style"
             class="absolute"
-            @click="emit('event-click', item.event)"
+            @click="item.event.id !== DRAFT_ID && emit('event-click', item.event)"
             @resize-start="onResizeStart(item.event, $event)"
         />
 

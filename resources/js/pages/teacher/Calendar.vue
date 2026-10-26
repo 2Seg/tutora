@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { buildFakeEvents } from '@/hardcoded-data/calendar-events';
 import { startOfWeek } from '@/lib/calendar-utils';
@@ -9,29 +9,11 @@ import { Lock } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 
 const weekStart = ref(startOfWeek(new Date()));
-
-const fakeEvents = buildFakeEvents();
-const added = ref<CalendarEvent[]>([]);
-const events = computed<CalendarEvent[]>(() => [...fakeEvents, ...added.value]);
-
-function onSelectSlot({ startTime, endTime }: SlotSelection) {
-    added.value.push({
-        id: `added-${Date.now()}`,
-        type: 'lesson',
-        status: 'draft',
-        title: '(No title)',
-        startTime,
-        endTime,
-    });
-}
+const events = buildFakeEvents();
+const draft = ref<SlotSelection | null>(null);
 
 function onEventClick(event: CalendarEvent) {
     console.log('event', event);
-}
-
-function onEventResize(event: CalendarEvent, endTime: Date) {
-    const draft = added.value.find((e) => e.id === event.id);
-    if (draft) draft.endTime = endTime;
 }
 </script>
 
@@ -55,10 +37,9 @@ function onEventResize(event: CalendarEvent, endTime: Date) {
         <WeeklyCalendar
             v-model:week-start="weekStart"
             :events="events"
+            :v-model:draft="draft"
             class="min-w-0"
-            @select-slot="onSelectSlot"
             @event-click="onEventClick"
-            @event-resize="onEventResize"
         />
     </div>
 </template>
