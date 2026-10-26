@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { addDays, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { useDraftMove } from '@/composables/calendar/useDraftMove';
 
 withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
 
@@ -59,6 +60,12 @@ const body = ref<HTMLElement | null>(null);
 const now = ref(new Date());
 let timer: number | undefined;
 
+const { isMoving: isMovingDraft, onPointerDown: onDraftPointerDown } = useDraftMove({
+    body,
+    days: () => days.value,
+    draft,
+});
+
 onMounted(() => {
     if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;
     timer = window.setInterval(() => (now.value = new Date()), 60_000);
@@ -74,7 +81,10 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <section class="text-foreground overflow-x-auto">
+    <section
+        :class="{ '**:data-draft:z-10 **:data-draft:scale-105 **:data-draft:shadow-lg': isMovingDraft }"
+        class="text-foreground overflow-x-auto **:data-draft:transition-transform"
+    >
         <div class="min-w-175">
             <header class="mb-4 flex items-center gap-x-4 whitespace-nowrap">
                 <div class="flex items-center gap-1">
@@ -107,7 +117,7 @@ onBeforeUnmount(() => {
                     </div>
                 </div>
 
-                <div ref="body" :class="gridColumns">
+                <div ref="body" :class="gridColumns" @pointerdown="onDraftPointerDown">
                     <div class="sticky left-0 z-20 bg-card">
                         <div v-for="hour in hours" :key="hour" class="relative h-10">
                             <span
@@ -134,5 +144,8 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </div>
+
+        <!-- Carries the cursor while the draft is being moved -->
+        <div v-if="isMovingDraft" class="fixed inset-0 z-50 cursor-grabbing" />
     </section>
 </template>

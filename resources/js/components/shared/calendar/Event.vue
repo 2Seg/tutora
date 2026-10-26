@@ -53,9 +53,10 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
             classes,
             { 'opacity-60': isPast },
             isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
+            isResizable ? 'cursor-grab' : 'cursor-pointer',
         ]"
         :title="description"
-        class="flex min-h-4.5 min-w-0 cursor-pointer overflow-hidden rounded-lg border px-2.5 text-left text-xs leading-snug focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        class="flex min-h-4.5 min-w-0 overflow-hidden rounded-lg border px-2.5 text-left text-xs leading-snug focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         data-event
         type="button"
     >
