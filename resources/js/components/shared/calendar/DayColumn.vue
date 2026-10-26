@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
 import Event from '@/components/shared/calendar/Event.vue';
-import { useSlotSelection } from '@/composables/useSlotSelection';
-import { useEventResize } from '@/composables/useEventResize';
+import { useSlotSelection } from '@/composables/calendar/useSlotSelection';
+import { useEventResize } from '@/composables/calendar/useEventResize';
 import {
     atMinutes,
     isSameDay,

@@ -2,7 +2,7 @@
 import { describe, expect, it, vi } from 'vitest';
 import { ref } from 'vue';
 
-import { useEventResize } from '@/composables/useEventResize';
+import { useEventResize } from '@/composables/calendar/useEventResize';
 import type { CalendarEvent } from '@/types/calendar';
 
 // Older jsdom versions have no PointerEvent.

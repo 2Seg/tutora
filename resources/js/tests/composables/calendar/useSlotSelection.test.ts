@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { useSlotSelection } from '@/composables/useSlotSelection';
+import { useSlotSelection } from '@/composables/calendar/useSlotSelection';
 import { SlotSelection } from '@/types/calendar';
 
 const DAY = new Date(2024, 0, 15);
