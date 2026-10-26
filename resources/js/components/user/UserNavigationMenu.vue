@@ -6,7 +6,7 @@ import {
     NavigationMenuList,
 } from '@/components/ui/navigation-menu';
 import { Link } from '@inertiajs/vue3';
-import { useUserNavigation } from '@/composables/useUserNavigation';
+import { useUserNavigation } from '@/composables/navigation/useUserNavigation';
 
 const { items, isActive } = useUserNavigation();
 </script>
@@ -16,10 +16,7 @@ const { items, isActive } = useUserNavigation();
         <NavigationMenuList>
             <NavigationMenuItem v-for="item in items" :key="item.href">
                 <NavigationMenuLink :active="isActive(item)" as-child>
-                    <Link
-                        :href="item.href"
-                        class="flex flex-row items-center gap-2"
-                    >
+                    <Link :href="item.href" class="flex flex-row items-center gap-2">
                         <component :is="item.icon" />
                         {{ item.label }}
                     </Link>

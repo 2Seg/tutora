@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import { CalendarDays, House, Users } from '@lucide/vue';
-import { useUserNavigation } from '@/composables/useUserNavigation';
+import { useUserNavigation } from '@/composables/navigation/useUserNavigation';
 import { calendar, dashboard, students } from '@/routes/teacher';
 
 const mocks = vi.hoisted(() => ({ page: { url: '/teacher' } }));
@@ -23,11 +23,7 @@ describe('useUserNavigation', () => {
         it('returns the three items in order', () => {
             const { items } = useUserNavigation();
 
-            expect(items.value.map((item) => item.key)).toEqual([
-                'home',
-                'students',
-                'calendar',
-            ]);
+            expect(items.value.map((item) => item.key)).toEqual(['home', 'students', 'calendar']);
         });
 
         it('keeps href, icon and exact from the definitions', () => {

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LogOut, Settings, User as UserIcon } from '@lucide/vue';
-import { useUserMenu } from '@/composables/useUserMenu';
+import { useUserMenu } from '@/composables/navigation/useUserMenu';
 import { trans } from 'laravel-vue-i18n';
 import { logout } from '@/routes/login';
 
@@ -16,11 +16,7 @@ describe('useUserMenu', () => {
     it('returns the three menu items in order', () => {
         const items = useUserMenu();
 
-        expect(items.value.map((item) => item.key)).toEqual([
-            'profile',
-            'settings',
-            'logout',
-        ]);
+        expect(items.value.map((item) => item.key)).toEqual(['profile', 'settings', 'logout']);
     });
 
     it('keeps href and icon from the definitions', () => {
