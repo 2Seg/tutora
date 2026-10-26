@@ -52,9 +52,9 @@ export function useSlotSelection(day: () => Date, onSelect: (selection: SlotSele
         drag.value = null;
     }
 
-    /** The range being dragged, in minutes since midnight, or null when nothing is being selected. */
+    /** The range being dragged, in minutes since midnight. Null until the pointer leaves the cell it was pressed in. */
     const selection = computed(() => {
-        if (!drag.value) return null;
+        if (!drag.value || drag.value.anchor === drag.value.current) return null;
         return {
             startMin: Math.min(drag.value.anchor, drag.value.current),
             endMin: Math.max(drag.value.anchor, drag.value.current) + SNAP_MINUTES,
