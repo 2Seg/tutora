@@ -70,7 +70,7 @@ const preview = computed(() => {
 
 <template>
     <div
-        :class="{ 'bg-primary/5': isToday }"
+        :class="{ 'bg-primary/5': isToday, 'cursor-ns-resize': selection }"
         class="relative touch-pan-y border-l border-border select-none"
         @pointercancel="onPointerCancel"
         @pointerdown="onPointerDown"
