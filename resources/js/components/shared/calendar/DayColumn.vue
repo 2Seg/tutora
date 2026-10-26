@@ -1,7 +1,8 @@
 <script lang="ts" setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import Event from '@/components/shared/calendar/Event.vue';
 import { useSlotSelection } from '@/composables/useSlotSelection';
+import { useEventResize } from '@/composables/useEventResize';
 import {
     atMinutes,
     isSameDay,
@@ -23,7 +24,15 @@ const props = defineProps<{
 const emit = defineEmits<{
     'select-slot': [selection: SlotSelection];
     'event-click': [event: CalendarEvent];
+    'event-resize': [event: CalendarEvent, endTime: Date];
 }>();
+
+const column = ref<HTMLElement | null>(null);
+const { resizing, onResizeStart } = useEventResize(
+    column,
+    () => props.day,
+    (event, endTime) => emit('event-resize', event, endTime),
+);
 
 const positionStyle = (startMin: number, endMin: number, col = 0, cols = 1) => ({
     top: `calc(${percentOfDay(startMin)} + 1px)`,
@@ -39,7 +48,8 @@ const items = computed(() => {
 
     for (const event of props.events) {
         const start = toDate(event.startTime);
-        const end = toDate(event.endTime);
+        const end =
+            resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endTime);
         const segment = segmentForDay(start, end, props.day);
         if (segment) segments.push({ event, start, end, ...segment });
     }
@@ -70,6 +80,7 @@ const preview = computed(() => {
 
 <template>
     <div
+        ref="column"
         :class="{ 'bg-primary/5': isToday, 'cursor-ns-resize': selection }"
         class="relative touch-pan-y border-l border-border select-none"
         @pointercancel="onPointerCancel"
@@ -85,10 +96,12 @@ const preview = computed(() => {
             :event="item.event"
             :is-compact="item.isCompact"
             :is-past="item.isPast"
+            :is-resizable="item.event.type === 'lesson' && item.event.status === 'draft'"
             :range="timeFormat.formatRange(item.start, item.end)"
             :style="item.style"
             class="absolute"
             @click="emit('event-click', item.event)"
+            @resize-start="onResizeStart(item.event, $event)"
         />
 
         <Event

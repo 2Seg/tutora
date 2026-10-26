@@ -12,6 +12,7 @@ withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
 const emit = defineEmits<{
     'select-slot': [selection: SlotSelection];
     'event-click': [event: CalendarEvent];
+    'event-resize': [event: CalendarEvent, endTime: Date];
 }>();
 
 const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
@@ -109,6 +110,7 @@ onBeforeUnmount(() => window.clearInterval(timer));
                         :time-format="timeFormat"
                         @event-click="emit('event-click', $event)"
                         @select-slot="emit('select-slot', $event)"
+                        @event-resize="(event, endTime) => emit('event-resize', event, endTime)"
                     />
                 </div>
             </div>

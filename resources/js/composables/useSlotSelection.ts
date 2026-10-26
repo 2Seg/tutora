@@ -1,15 +1,8 @@
 import { computed, ref } from 'vue';
 
-import { atMinutes, MINUTES_PER_DAY } from '@/lib/calendar-utils';
+import { atMinutes, DEFAULT_SLOT_MINUTES, MINUTES_PER_DAY, SNAP_MINUTES } from '@/lib/calendar-utils';
 import type { SlotSelection } from '@/types/calendar';
 
-const SNAP_MINUTES = 15;
-const DEFAULT_SLOT_MINUTES = 50;
-
-/**
- * Click or drag on an empty part of a day column to select a time slot.
- * Bind the returned handlers on the column element.
- */
 export function useSlotSelection(day: () => Date, onSelect: (selection: SlotSelection) => void) {
     const drag = ref<{ anchor: number; current: number } | null>(null);
 

@@ -1,5 +1,4 @@
 import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
-import { percentOfDay } from '@/lib/calendar-utils';
 import { useSlotSelection } from '@/composables/useSlotSelection';
 import { SlotSelection } from '@/types/calendar';
 
@@ -50,45 +49,52 @@ describe('useSlotSelection', () => {
 
     describe('initial state', () => {
         it('has no selection preview', () => {
-            expect(setup().selectionStyle.value).toBeNull();
+            expect(setup().selection.value).toBeNull();
         });
     });
 
     describe('pointer down', () => {
-        it('starts a selection and captures the pointer', () => {
-            const { onPointerDown, selectionStyle } = setup();
+        it('captures the pointer but shows no selection yet', () => {
+            const { onPointerDown, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600), { pointerId: 7 }));
 
             expect(column.setPointerCapture).toHaveBeenCalledWith(7);
-            expect(selectionStyle.value).toEqual({
-                top: percentOfDay(600),
-                height: percentOfDay(15),
-            });
+            expect(selection.value).toBeNull();
         });
 
         it('ignores non-primary buttons', () => {
-            const { onPointerDown, selectionStyle } = setup();
+            const { onPointerDown, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600), { button: 2 }));
 
             expect(column.setPointerCapture).not.toHaveBeenCalled();
-            expect(selectionStyle.value).toBeNull();
+            expect(selection.value).toBeNull();
         });
 
         it('ignores presses that start on an existing event', () => {
-            const { onPointerDown, selectionStyle } = setup();
+            const { onPointerDown, selection } = setup();
             const closest = vi.fn((selector: string) => (selector === '[data-event]' ? {} : null));
 
             onPointerDown(pointerEvent(column, yFor(600), { target: { closest } }));
 
             expect(closest).toHaveBeenCalledWith('[data-event]');
             expect(column.setPointerCapture).not.toHaveBeenCalled();
-            expect(selectionStyle.value).toBeNull();
+            expect(selection.value).toBeNull();
         });
     });
 
     describe('snapping and clamping', () => {
+        /** Clicks at `clientY` and returns where the created slot starts. */
+        const clickStart = (target: HTMLElement, clientY: number) => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(target, clientY));
+            onPointerUp();
+
+            return onSelect.mock.calls[0][0].startTime;
+        };
+
         it.each([
             [0, 0],
             [14.9, 0],
@@ -96,36 +102,21 @@ describe('useSlotSelection', () => {
             [629, 615],
             [1439, 1425],
         ])('snaps %s minutes down to %s', (offset, expectedStart) => {
-            const { onPointerDown, selectionStyle } = setup();
-
-            onPointerDown(pointerEvent(column, TOP + offset));
-
-            expect(selectionStyle.value?.top).toBe(percentOfDay(expectedStart));
+            expect(clickStart(column, TOP + offset)).toEqual(at(expectedStart));
         });
 
         it('clamps pointers above the column to minute 0', () => {
-            const { onPointerDown, selectionStyle } = setup();
-
-            onPointerDown(pointerEvent(column, TOP - 200));
-
-            expect(selectionStyle.value?.top).toBe(percentOfDay(0));
+            expect(clickStart(column, TOP - 200)).toEqual(at(0));
         });
 
         it('clamps pointers below the column to the last slot of the day', () => {
-            const { onPointerDown, selectionStyle } = setup();
-
-            onPointerDown(pointerEvent(column, TOP + 2000));
-
-            expect(selectionStyle.value?.top).toBe(percentOfDay(1440 - 15));
+            expect(clickStart(column, TOP + 2000)).toEqual(at(1440 - 15));
         });
 
         it('scales with the column height', () => {
             const halfHeight = makeColumn(TOP, 720); // 1px === 2 minutes
-            const { onPointerDown, selectionStyle } = setup();
 
-            onPointerDown(pointerEvent(halfHeight, TOP + 302.5)); // ~605 minutes
-
-            expect(selectionStyle.value?.top).toBe(percentOfDay(600));
+            expect(clickStart(halfHeight, TOP + 302.5)).toEqual(at(600)); // ~605 minutes
         });
     });
 
@@ -232,47 +223,80 @@ describe('useSlotSelection', () => {
         });
     });
 
-    describe('selectionStyle', () => {
+    describe('selection', () => {
+        it('is null on a plain press', () => {
+            const { onPointerDown, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+
+            expect(selection.value).toBeNull();
+        });
+
+        it('is null while the pointer stays in the pressed slot', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, TOP + 601));
+            onPointerMove(pointerEvent(column, TOP + 612));
+
+            expect(selection.value).toBeNull();
+        });
+
+        it('appears as soon as the pointer enters another slot', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(615)));
+
+            expect(selection.value).toEqual({ startMin: 600, endMin: 630 });
+        });
+
         it('updates as the pointer moves', () => {
-            const { onPointerDown, onPointerMove, selectionStyle } = setup();
+            const { onPointerDown, onPointerMove, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
             onPointerMove(pointerEvent(column, yFor(690)));
 
-            expect(selectionStyle.value).toEqual({
-                top: percentOfDay(600),
-                height: percentOfDay(105),
-            });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 705 });
         });
 
-        it('anchors the top at the earlier slot when dragging upwards', () => {
-            const { onPointerDown, onPointerMove, selectionStyle } = setup();
+        it('anchors the start at the earlier slot when dragging upwards', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(690)));
             onPointerMove(pointerEvent(column, yFor(600)));
 
-            expect(selectionStyle.value).toEqual({
-                top: percentOfDay(600),
-                height: percentOfDay(105),
-            });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 705 });
+        });
+
+        it('disappears again when the pointer comes back to the pressed slot', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+            expect(selection.value).not.toBeNull();
+
+            onPointerMove(pointerEvent(column, yFor(600)));
+            expect(selection.value).toBeNull();
         });
 
         it('is null again after the selection completes', () => {
-            const { onPointerDown, onPointerUp, selectionStyle } = setup();
+            const { onPointerDown, onPointerMove, onPointerUp, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
-            onPointerUp();
+            onPointerMove(pointerEvent(column, yFor(690)));
+            expect(selection.value).not.toBeNull();
 
-            expect(selectionStyle.value).toBeNull();
+            onPointerUp();
+            expect(selection.value).toBeNull();
         });
     });
 
     describe('without an active drag', () => {
         it('pointer move is a no-op', () => {
-            const { onPointerMove, selectionStyle } = setup();
+            const { onPointerMove, selection } = setup();
 
             expect(() => onPointerMove(pointerEvent(column, yFor(600)))).not.toThrow();
-            expect(selectionStyle.value).toBeNull();
+            expect(selection.value).toBeNull();
         });
 
         it('pointer up does not call onSelect', () => {
@@ -296,12 +320,15 @@ describe('useSlotSelection', () => {
 
     describe('pointer cancel', () => {
         it('discards the selection without calling onSelect', () => {
-            const { onPointerDown, onPointerCancel, onPointerUp, selectionStyle } = setup();
+            const { onPointerDown, onPointerMove, onPointerCancel, onPointerUp, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+            expect(selection.value).not.toBeNull();
+
             onPointerCancel();
 
-            expect(selectionStyle.value).toBeNull();
+            expect(selection.value).toBeNull();
 
             onPointerUp();
             expect(onSelect).not.toHaveBeenCalled();

@@ -1,4 +1,6 @@
 export const MINUTES_PER_DAY: number = 24 * 60;
+export const SNAP_MINUTES = 15;
+export const DEFAULT_SLOT_MINUTES = 50;
 
 export function toDate(value: string | Date): Date {
     return value instanceof Date ? value : new Date(value);

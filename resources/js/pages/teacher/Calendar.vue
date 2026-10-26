@@ -28,6 +28,11 @@ function onSelectSlot({ startTime, endTime }: SlotSelection) {
 function onEventClick(event: CalendarEvent) {
     console.log('event', event);
 }
+
+function onEventResize(event: CalendarEvent, endTime: Date) {
+    const draft = added.value.find((e) => e.id === event.id);
+    if (draft) draft.endTime = endTime;
+}
 </script>
 
 <template>
@@ -53,6 +58,7 @@ function onEventClick(event: CalendarEvent) {
             class="min-w-0"
             @select-slot="onSelectSlot"
             @event-click="onEventClick"
+            @event-resize="onEventResize"
         />
     </div>
 </template>

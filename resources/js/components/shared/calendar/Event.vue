@@ -9,6 +9,7 @@ const props = defineProps<{
     range: string;
     isPast: boolean;
     isCompact: boolean;
+    isResizable?: boolean;
 }>();
 
 const lessonClasses: Record<LessonStatus, string> = {
@@ -41,6 +42,8 @@ const title = computed(() => props.event.title ?? defaultTitles[props.event.type
 const description = computed(() =>
     [title.value, status.value && statusLabels[status.value], props.range].filter(Boolean).join(', '),
 );
+
+const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
 </script>
 
 <template>
@@ -62,5 +65,12 @@ const description = computed(() =>
         </span>
         <span class="min-w-0 truncate text-[11px]">{{ range }}</span>
         <span v-if="status && !isCompact" class="min-w-0 truncate text-[11px]">{{ statusLabels[status] }}</span>
+        <span
+            v-if="isResizable"
+            aria-hidden="true"
+            class="absolute inset-x-0 bottom-0 h-2 cursor-ns-resize touch-none"
+            @click.stop
+            @pointerdown.stop.prevent="emit('resize-start', $event)"
+        />
     </button>
 </template>
