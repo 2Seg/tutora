@@ -1,14 +1,15 @@
 <script lang="ts" setup>
 import { getActiveLanguage } from 'laravel-vue-i18n';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import DayColumn from '@/components/shared/calendar/DayColumn.vue';
+import EventPopover from '@/components/shared/calendar/EventPopover.vue';
 import { Button } from '@/components/ui/button';
 import { addDays, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
 
-withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
+const props = withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
 
 const emit = defineEmits<{
     'event-click': [event: CalendarEvent];
@@ -21,7 +22,7 @@ function resizeDraft(_event: CalendarEvent, endTime: Date) {
 }
 
 function discardDraftOnPointerDown(e: PointerEvent) {
-    if (draft.value && !(e.target as HTMLElement).closest('[data-draft]')) draft.value = null;
+    if (draft.value && !(e.target as HTMLElement).closest('[data-draft], [data-keep-draft]')) draft.value = null;
 }
 function discardDraftOnEscapeKey(e: KeyboardEvent) {
     if (e.key === 'Escape' && draft.value) draft.value = null;
@@ -29,19 +30,28 @@ function discardDraftOnEscapeKey(e: KeyboardEvent) {
 
 const selectedEventId = ref<CalendarEvent['id'] | null>(null);
 
+const selectedEvent = computed(() => props.events.find((event) => event.id === selectedEventId.value) ?? null);
+
 function selectEvent(event: CalendarEvent) {
     selectedEventId.value = event.id;
     emit('event-click', event);
 }
 
+function closePopover() {
+    draft.value = null;
+    selectedEventId.value = null;
+}
+
 function clearSelectionOnPointerDown(e: PointerEvent) {
-    if (!(e.target as HTMLElement).closest('[data-event]')) selectedEventId.value = null;
+    if (!(e.target as HTMLElement).closest('[data-event], [data-keep-draft]')) selectedEventId.value = null;
 }
 function clearSelectionOnEscapeKey(e: KeyboardEvent) {
     if (e.key === 'Escape') selectedEventId.value = null;
 }
 
 const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
+
+watch(weekStart, closePopover);
 
 const gridColumns = 'grid min-w-[760px] grid-cols-[64px_repeat(7,minmax(96px,1fr))]';
 
@@ -163,6 +173,14 @@ onBeforeUnmount(() => {
                 </div>
             </div>
         </div>
+
+        <EventPopover
+            :container="body"
+            :draft="draft"
+            :event="selectedEvent"
+            :is-moving="isMovingDraft"
+            @close="closePopover"
+        />
 
         <!-- Carries the cursor while the draft is being moved -->
         <div v-if="isMovingDraft" class="fixed inset-0 z-50 cursor-grabbing" />

@@ -35,9 +35,9 @@ function onEventClick(event: CalendarEvent) {
         </div>
 
         <WeeklyCalendar
+            v-model:draft="draft"
             v-model:week-start="weekStart"
             :events="events"
-            :v-model:draft="draft"
             class="min-w-0"
             @event-click="onEventClick"
         />
