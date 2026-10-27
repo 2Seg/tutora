@@ -20,6 +20,7 @@ const props = defineProps<{
     now: Date;
     timeFormat: Intl.DateTimeFormat;
     draft: SlotSelection | null;
+    selectedEventId?: CalendarEvent['id'] | null;
 }>();
 
 const emit = defineEmits<{
@@ -123,6 +124,7 @@ const preview = computed(() => {
             :is-compact="item.isCompact"
             :is-past="item.isPast"
             :is-resizable="item.event.id === DRAFT_ID"
+            :is-selected="item.event.id === selectedEventId"
             :range="timeFormat.formatRange(item.start, item.end)"
             :style="item.style"
             class="absolute"

@@ -27,6 +27,20 @@ function discardDraftOnEscapeKey(e: KeyboardEvent) {
     if (e.key === 'Escape' && draft.value) draft.value = null;
 }
 
+const selectedEventId = ref<CalendarEvent['id'] | null>(null);
+
+function selectEvent(event: CalendarEvent) {
+    selectedEventId.value = event.id;
+    emit('event-click', event);
+}
+
+function clearSelectionOnPointerDown(e: PointerEvent) {
+    if (!(e.target as HTMLElement).closest('[data-event]')) selectedEventId.value = null;
+}
+function clearSelectionOnEscapeKey(e: KeyboardEvent) {
+    if (e.key === 'Escape') selectedEventId.value = null;
+}
+
 const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
 
 const gridColumns = 'grid min-w-[760px] grid-cols-[64px_repeat(7,minmax(96px,1fr))]';
@@ -72,11 +86,15 @@ onMounted(() => {
 
     window.addEventListener('pointerdown', discardDraftOnPointerDown);
     window.addEventListener('keydown', discardDraftOnEscapeKey);
+    window.addEventListener('pointerdown', clearSelectionOnPointerDown);
+    window.addEventListener('keydown', clearSelectionOnEscapeKey);
 });
 onBeforeUnmount(() => {
     window.clearInterval(timer);
     window.removeEventListener('pointerdown', discardDraftOnPointerDown);
     window.removeEventListener('keydown', discardDraftOnEscapeKey);
+    window.removeEventListener('pointerdown', clearSelectionOnPointerDown);
+    window.removeEventListener('keydown', clearSelectionOnEscapeKey);
 });
 </script>
 
@@ -136,8 +154,9 @@ onBeforeUnmount(() => {
                         :draft="draft"
                         :events="events"
                         :now="now"
+                        :selected-event-id="selectedEventId"
                         :time-format="timeFormat"
-                        @event-click="emit('event-click', $event)"
+                        @event-click="selectEvent"
                         @event-resize="resizeDraft"
                         @select-slot="draft = $event"
                     />

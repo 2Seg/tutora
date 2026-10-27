@@ -10,6 +10,7 @@ const props = defineProps<{
     isPast: boolean;
     isCompact: boolean;
     isResizable?: boolean;
+    isSelected?: boolean;
 }>();
 
 const lessonClasses: Record<LessonStatus, string> = {
@@ -54,9 +55,10 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
             { 'opacity-60': isPast },
             isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
             isResizable ? 'cursor-grab' : 'cursor-pointer',
+            isSelected && 'z-10 scale-105 shadow-lg',
         ]"
         :title="description"
-        class="flex min-h-4.5 min-w-0 overflow-hidden rounded-lg border px-2.5 text-left text-xs leading-snug focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+        class="flex min-h-4.5 min-w-0 overflow-hidden transition-transform rounded-lg border px-2.5 text-left text-xs leading-snug focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
         data-event
         type="button"
     >
