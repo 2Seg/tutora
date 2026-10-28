@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\Teacher\EventController;
 use App\Http\Controllers\Teacher\StudentController;
 use Illuminate\Routing\Router;
 
@@ -18,7 +19,7 @@ return function (Router $router) {
 
             $router->inertia('/teacher', 'teacher/Dashboard')->name('teacher.dashboard');
             $router->get('/teacher/students', [StudentController::class, 'index'])->name('teacher.students');
-            $router->inertia('/teacher/calendar', 'teacher/Calendar')->name('teacher.calendar');
+            $router->get('/teacher/calendar', [EventController::class, 'index'])->name('teacher.calendar');
         });
     });
 };

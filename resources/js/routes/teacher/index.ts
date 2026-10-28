@@ -88,8 +88,8 @@ students.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \Inertia\Controller::__invoke
-* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\Teacher\EventController::calendar
+* @see app/Http/Controllers/Teacher/EventController.php:15
 * @route '/teacher/calendar'
 */
 export const calendar = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -103,8 +103,8 @@ calendar.definition = {
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \Inertia\Controller::__invoke
-* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\Teacher\EventController::calendar
+* @see app/Http/Controllers/Teacher/EventController.php:15
 * @route '/teacher/calendar'
 */
 calendar.url = (options?: RouteQueryOptions) => {
@@ -112,8 +112,8 @@ calendar.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \Inertia\Controller::__invoke
-* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\Teacher\EventController::calendar
+* @see app/Http/Controllers/Teacher/EventController.php:15
 * @route '/teacher/calendar'
 */
 calendar.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -122,8 +122,8 @@ calendar.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 })
 
 /**
-* @see \Inertia\Controller::__invoke
-* @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
+* @see \App\Http\Controllers\Teacher\EventController::calendar
+* @see app/Http/Controllers/Teacher/EventController.php:15
 * @route '/teacher/calendar'
 */
 calendar.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
