@@ -1,9 +1,7 @@
 <script lang="ts" setup>
-import { Lock } from '@lucide/vue';
-import { computed, type Component } from 'vue';
-import { getEventTitle } from '@/lib/calendar-event';
-import { getStatusLabel } from '@/lib/calendar-status';
-import type { BlockEvent, CalendarEvent, LessonStatus } from '@/types/calendar';
+import { computed } from 'vue';
+import { getEventAppearance, getEventDescription } from '@/lib/calendar-event';
+import type { CalendarEvent } from '@/types/calendar';
 
 const props = defineProps<{
     event: CalendarEvent;
@@ -14,26 +12,8 @@ const props = defineProps<{
     isSelected?: boolean;
 }>();
 
-const lessonClasses: Record<LessonStatus, string> = {
-    planned: 'badge-secondary',
-    cancelled: 'badge-destructive',
-    requested: 'badge-warning',
-    draft: 'badge-outline',
-};
-const blockClasses: Record<BlockEvent['type'], string> = {
-    unavailable: 'badge-hashed',
-};
-const icons: Partial<Record<CalendarEvent['type'], Component>> = { unavailable: Lock };
-
-const status = computed(() => (props.event.type === 'lesson' ? props.event.status : null));
-const classes = computed(() =>
-    status.value ? lessonClasses[status.value] : blockClasses[props.event.type as BlockEvent['type']],
-);
-const icon = computed(() => icons[props.event.type]);
-const title = computed(() => getEventTitle(props.event));
-const description = computed(() =>
-    [title.value, status.value && getStatusLabel(status.value), props.range].filter(Boolean).join(', '),
-);
+const appearance = computed(() => getEventAppearance(props.event));
+const description = computed(() => getEventDescription(props.event, props.range));
 
 const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
 </script>
@@ -42,7 +22,7 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
     <button
         :aria-label="description"
         :class="[
-            classes,
+            appearance.className,
             { 'opacity-60': isPast },
             isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
             isResizable ? 'cursor-grab' : 'cursor-pointer',
@@ -55,11 +35,13 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
         type="button"
     >
         <span class="flex min-w-0 items-center gap-1.5 font-semibold">
-            <component :is="icon" v-if="icon" aria-hidden="true" class="size-3.5 shrink-0" />
-            <span class="truncate">{{ title }}</span>
+            <component :is="appearance.icon" v-if="appearance.icon" aria-hidden="true" class="size-3.5 shrink-0" />
+            <span class="truncate">{{ appearance.title }}</span>
         </span>
         <span class="min-w-0 truncate text-[11px]">{{ range }}</span>
-        <span v-if="status && !isCompact" class="min-w-0 truncate text-[11px]">{{ getStatusLabel(status) }}</span>
+        <span v-if="appearance.statusLabel && !isCompact" class="min-w-0 truncate text-[11px]">
+            {{ appearance.statusLabel }}
+        </span>
         <span
             v-if="isResizable"
             aria-hidden="true"

@@ -86,12 +86,10 @@ const { selection, onPointerDown, onPointerMove, onPointerUp, onPointerCancel } 
     (slot) => emit('select-slot', slot),
 );
 
-// While a draft exists, the press that discards it must not also start a new selection.
 function onColumnPointerDown(e: PointerEvent) {
     if (!props.draft) onPointerDown(e);
 }
 
-// While dragging, preview the lesson that would be created: a draft, like the one the parent adds.
 const preview = computed(() => {
     if (!selection.value) return null;
     const { startMin, endMin } = selection.value;
