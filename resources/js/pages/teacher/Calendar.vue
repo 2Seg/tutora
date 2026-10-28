@@ -1,11 +1,11 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
+import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { buildFakeEvents } from '@/hardcoded-data/calendar-events';
+import { statusVariants } from '@/lib/calendar-status';
 import { startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
-import { Badge } from '@/components/ui/badge';
-import { Lock } from '@lucide/vue';
 import { Button } from '@/components/ui/button';
 
 const weekStart = ref(startOfWeek(new Date()));
@@ -26,11 +26,7 @@ function onEventClick(event: CalendarEvent) {
             </div>
 
             <div class="flex flex-wrap w-full gap-2">
-                <Badge variant="secondary">Planned</Badge>
-                <Badge variant="destructive">Cancelled</Badge>
-                <Badge variant="warning">Requested</Badge>
-                <Badge variant="outline">Draft</Badge>
-                <Badge variant="hashed"><Lock />Unavailable</Badge>
+                <StatusBadge v-for="status in statusVariants" :key="status" :variant="status" />
             </div>
         </div>
 

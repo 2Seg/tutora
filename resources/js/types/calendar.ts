@@ -1,4 +1,4 @@
-export type EventType = 'lesson' | 'unavailability';
+export type EventType = 'lesson' | 'unavailable';
 export type LessonStatus = 'draft' | 'requested' | 'planned' | 'cancelled';
 
 interface BaseEvent {
@@ -15,7 +15,7 @@ export interface LessonEvent extends BaseEvent {
 }
 
 export interface BlockEvent extends BaseEvent {
-    type: 'unavailability';
+    type: 'unavailable';
 }
 
 export type CalendarEvent = LessonEvent | BlockEvent;
@@ -24,3 +24,5 @@ export interface SlotSelection {
     startTime: Date;
     endTime: Date;
 }
+
+export interface StatusBadge {}

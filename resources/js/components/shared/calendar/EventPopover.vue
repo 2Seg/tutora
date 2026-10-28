@@ -1,22 +1,18 @@
 <script lang="ts" setup>
-import { Lock, X } from '@lucide/vue';
+import { X } from '@lucide/vue';
 import { getActiveLanguage } from 'laravel-vue-i18n';
 import { computed, shallowRef, watch } from 'vue';
-
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
+import { getDefaultTitle, getEventTitle } from '@/lib/calendar-event';
 import { toDate } from '@/lib/calendar-utils';
-import type { CalendarEvent, LessonStatus, SlotSelection } from '@/types/calendar';
+import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
+import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 
 const props = defineProps<{
-    /** Element that contains the draft and the events: the anchor is looked up inside it. */
     container: HTMLElement | null;
-    /** The slot being created, not saved yet. */
     draft: SlotSelection | null;
-    /** The clicked event. */
     event: CalendarEvent | null;
-    /** The draft is being moved: it changes column, so its element is replaced. */
     isMoving: boolean;
 }>();
 
@@ -24,16 +20,16 @@ const emit = defineEmits<{
     close: [];
 }>();
 
-// Attached to the draft (`data-draft`) or, if there is none, to the selected event (`data-selected`).
 const anchor = shallowRef<HTMLElement | null>(null);
 
 watch(
     [() => props.draft, () => props.event, () => props.isMoving],
     () => {
         const selector = props.draft ? '[data-draft]' : '[data-selected]';
-        anchor.value = props.container?.querySelector<HTMLElement>(selector) ?? null;
+        const element = props.container?.querySelector<HTMLElement>(selector);
+        if (element) anchor.value = element;
     },
-    { flush: 'post' }, // after the DOM is updated, so the element exists
+    { flush: 'post' },
 );
 
 const isOpen = computed(
@@ -42,27 +38,20 @@ const isOpen = computed(
 
 const close = () => emit('close');
 
-const statusBadges: Record<
-    LessonStatus,
-    { label: string; variant: 'secondary' | 'destructive' | 'warning' | 'outline' }
-> = {
-    planned: { label: 'Planned', variant: 'secondary' },
-    cancelled: { label: 'Cancelled', variant: 'destructive' },
-    requested: { label: 'Requested', variant: 'warning' },
-    draft: { label: 'Draft', variant: 'outline' },
-};
-const defaultTitles: Record<CalendarEvent['type'], string> = {
-    lesson: '(No title)',
-    unavailability: 'Unavailable',
-};
+const shown = shallowRef<SlotSelection | CalendarEvent | null>(null);
+const savedEvent = shallowRef<CalendarEvent | null>(null);
 
-// The draft takes precedence: it is the one being edited.
-const shown = computed(() => props.draft ?? props.event);
-const savedEvent = computed(() => (props.draft ? null : props.event));
-
-const title = computed(() =>
-    savedEvent.value ? (savedEvent.value.title ?? defaultTitles[savedEvent.value.type]) : 'New lesson',
+watch(
+    [() => props.draft, () => props.event],
+    ([draft, event]) => {
+        if (!draft && !event) return;
+        shown.value = draft ?? event;
+        savedEvent.value = draft ? null : event;
+    },
+    { immediate: true },
 );
+
+const title = computed(() => (savedEvent.value ? getEventTitle(savedEvent.value) : getDefaultTitle('lesson')));
 
 const locale = computed(() => getActiveLanguage().replace('_', '-'));
 const dayFormat = computed(
@@ -103,10 +92,7 @@ const timeRange = computed(() =>
             </div>
 
             <div v-if="savedEvent" class="flex gap-2">
-                <Badge v-if="savedEvent.type === 'lesson'" :variant="statusBadges[savedEvent.status].variant">
-                    {{ statusBadges[savedEvent.status].label }}
-                </Badge>
-                <Badge v-else variant="hashed"><Lock />Unavailable</Badge>
+                <StatusBadge :variant="savedEvent.type === 'lesson' ? savedEvent.status : 'unavailable'" />
             </div>
         </PopoverContent>
     </Popover>

@@ -59,13 +59,13 @@ function buildWeek(monday: Date, lessons: LessonSpec[], timeOff: TimeOffSpec[]):
     return [
         // Unavailable every night
         ...[0, 1, 2, 3, 4, 5, 6].flatMap((day): CalendarEvent[] => [
-            { id: id(), type: 'unavailability', startTime: at(day, '00:00'), endTime: at(day, '06:00') },
-            { id: id(), type: 'unavailability', startTime: at(day, '22:00'), endTime: at(day, '24:00') },
+            { id: id(), type: 'unavailable', startTime: at(day, '00:00'), endTime: at(day, '06:00') },
+            { id: id(), type: 'unavailable', startTime: at(day, '22:00'), endTime: at(day, '24:00') },
         ]),
 
         ...timeOff.map(([day, from, to]): CalendarEvent => ({
             id: id(),
-            type: 'unavailability',
+            type: 'unavailable',
             startTime: at(day, from),
             endTime: at(day, to),
         })),
