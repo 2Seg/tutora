@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import { Lock } from '@lucide/vue';
 import { computed, type Component } from 'vue';
-
+import { getEventTitle } from '@/lib/calendar-event';
+import { getStatusLabel } from '@/lib/calendar-status';
 import type { BlockEvent, CalendarEvent, LessonStatus } from '@/types/calendar';
 
 const props = defineProps<{
@@ -20,28 +21,18 @@ const lessonClasses: Record<LessonStatus, string> = {
     draft: 'badge-outline',
 };
 const blockClasses: Record<BlockEvent['type'], string> = {
-    unavailability: 'badge-hashed',
+    unavailable: 'badge-hashed',
 };
-const icons: Partial<Record<CalendarEvent['type'], Component>> = { unavailability: Lock };
-const defaultTitles: Record<CalendarEvent['type'], string> = {
-    lesson: '(No title)',
-    unavailability: 'Unavailable',
-};
-const statusLabels: Record<LessonStatus, string> = {
-    draft: 'Draft',
-    requested: 'Requested',
-    planned: 'Planned',
-    cancelled: 'Cancelled',
-};
+const icons: Partial<Record<CalendarEvent['type'], Component>> = { unavailable: Lock };
 
 const status = computed(() => (props.event.type === 'lesson' ? props.event.status : null));
 const classes = computed(() =>
     status.value ? lessonClasses[status.value] : blockClasses[props.event.type as BlockEvent['type']],
 );
 const icon = computed(() => icons[props.event.type]);
-const title = computed(() => props.event.title ?? defaultTitles[props.event.type]);
+const title = computed(() => getEventTitle(props.event));
 const description = computed(() =>
-    [title.value, status.value && statusLabels[status.value], props.range].filter(Boolean).join(', '),
+    [title.value, status.value && getStatusLabel(status.value), props.range].filter(Boolean).join(', '),
 );
 
 const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
@@ -68,7 +59,7 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
             <span class="truncate">{{ title }}</span>
         </span>
         <span class="min-w-0 truncate text-[11px]">{{ range }}</span>
-        <span v-if="status && !isCompact" class="min-w-0 truncate text-[11px]">{{ statusLabels[status] }}</span>
+        <span v-if="status && !isCompact" class="min-w-0 truncate text-[11px]">{{ getStatusLabel(status) }}</span>
         <span
             v-if="isResizable"
             aria-hidden="true"
