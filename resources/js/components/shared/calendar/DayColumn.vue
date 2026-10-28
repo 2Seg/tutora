@@ -30,8 +30,7 @@ const emit = defineEmits<{
 }>();
 
 const DRAFT_ID = 'draft';
-
-const allEvents = computed<CalendarEvent[]>(() =>
+const eventsIncludingDrafts = computed<CalendarEvent[]>(() =>
     props.draft
         ? [
               ...props.events,
@@ -65,7 +64,7 @@ const nowStyle = computed(() => ({ top: percentOfDay(minutesOfDay(props.now)) })
 const items = computed(() => {
     const segments = [];
 
-    for (const event of allEvents.value) {
+    for (const event of eventsIncludingDrafts.value) {
         const start = toDate(event.startTime);
         const end =
             resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endTime);
@@ -90,7 +89,7 @@ function onColumnPointerDown(e: PointerEvent) {
     if (!props.draft) onPointerDown(e);
 }
 
-const preview = computed(() => {
+const dragEventPreview = computed(() => {
     if (!selection.value) return null;
     const { startMin, endMin } = selection.value;
     const start = atMinutes(props.day, startMin);
@@ -131,12 +130,12 @@ const preview = computed(() => {
         />
 
         <Event
-            v-if="preview"
-            :event="preview.event"
-            :is-compact="preview.compact"
+            v-if="dragEventPreview"
+            :event="dragEventPreview.event"
+            :is-compact="dragEventPreview.compact"
             :is-past="false"
-            :range="timeFormat.formatRange(preview.start, preview.end)"
-            :style="preview.style"
+            :range="timeFormat.formatRange(dragEventPreview.start, dragEventPreview.end)"
+            :style="dragEventPreview.style"
             class="pointer-events-none absolute z-10"
         />
 
