@@ -119,10 +119,14 @@ onMounted(() => {
                     <div
                         v-for="day in days"
                         :key="day.getTime()"
-                        :class="{ 'text-primary': isSameDay(day, now) }"
                         class="flex items-center justify-center text-sm font-semibold"
                     >
-                        {{ formats.weekday.format(day) }} {{ day.getDate() }}
+                        <span
+                            :class="{ 'bg-secondary text-secondary-foreground': isSameDay(day, now) }"
+                            class="inline-flex h-8 items-center rounded-md px-3"
+                        >
+                            {{ formats.weekday.format(day) }} {{ day.getDate() }}
+                        </span>
                     </div>
                 </div>
 

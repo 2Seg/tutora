@@ -103,7 +103,7 @@ const dragEventPreview = computed(() => {
 <template>
     <div
         ref="column"
-        :class="{ 'bg-primary/5': isToday, 'cursor-ns-resize': selection }"
+        :class="{ 'bg-secondary/20': isToday, 'cursor-ns-resize': selection }"
         class="relative touch-pan-y border-l border-border select-none"
         data-day
         @pointercancel="onPointerCancel"
