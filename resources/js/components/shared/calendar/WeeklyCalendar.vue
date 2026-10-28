@@ -1,6 +1,7 @@
 <script lang="ts" setup>
+import { useEventListener, useIntervalFn, useNow } from '@vueuse/core';
 import { getActiveLanguage } from 'laravel-vue-i18n';
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import DayColumn from '@/components/shared/calendar/DayColumn.vue';
 import EventPopover from '@/components/shared/calendar/EventPopover.vue';
 import { Button } from '@/components/ui/button';
@@ -11,66 +12,13 @@ import { useDraftMove } from '@/composables/calendar/useDraftMove';
 
 const props = withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
 
-const emit = defineEmits<{
-    'event-click': [event: CalendarEvent];
-}>();
+const emit = defineEmits<{ 'event-click': [event: CalendarEvent] }>();
 
 const draft = defineModel<SlotSelection | null>('draft', { default: null });
-
-function resizeDraft(_event: CalendarEvent, endTime: Date) {
-    if (draft.value) draft.value = { ...draft.value, endTime };
-}
-
-function discardDraftOnPointerDown(e: PointerEvent) {
-    if (draft.value && !(e.target as HTMLElement).closest('[data-draft], [data-keep-draft]')) draft.value = null;
-}
-function discardDraftOnEscapeKey(e: KeyboardEvent) {
-    if (e.key === 'Escape' && draft.value) draft.value = null;
-}
-
-const selectedEventId = ref<CalendarEvent['id'] | null>(null);
-
-const selectedEvent = computed(() => props.events.find((event) => event.id === selectedEventId.value) ?? null);
-
-function selectEvent(event: CalendarEvent) {
-    selectedEventId.value = event.id;
-    emit('event-click', event);
-}
-
-function closePopover() {
-    draft.value = null;
-    selectedEventId.value = null;
-}
-
-function clearSelectionOnPointerDown(e: PointerEvent) {
-    if (!(e.target as HTMLElement).closest('[data-event], [data-keep-draft]')) selectedEventId.value = null;
-}
-function clearSelectionOnEscapeKey(e: KeyboardEvent) {
-    if (e.key === 'Escape') selectedEventId.value = null;
-}
-
 const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
 
-watch(weekStart, closePopover);
-
-const gridColumns = 'grid min-w-[760px] grid-cols-[64px_repeat(7,minmax(96px,1fr))]';
-
-const locale = computed(() => getActiveLanguage().replace('_', '-'));
-
+// Week navigation
 const days = computed(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart.value, i)));
-const hours = Array.from({ length: 24 }, (_, h) => h);
-
-const timeFormat = computed(
-    () => new Intl.DateTimeFormat(locale.value, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),
-);
-const weekdayFormat = computed(() => new Intl.DateTimeFormat(locale.value, { weekday: 'short' }));
-const rangeFormat = computed(
-    () => new Intl.DateTimeFormat(locale.value, { day: 'numeric', month: 'long', year: 'numeric' }),
-);
-
-const hourLabel = (hour: number) => timeFormat.value.format(new Date(2000, 0, 1, hour));
-const rangeTitle = computed(() => rangeFormat.value.formatRange(days.value[0], days.value[6]));
-const timezoneLabel = computed(() => describeTimezone(weekStart.value));
 
 function shiftWeek(direction: number) {
     weekStart.value = addDays(weekStart.value, direction * 7);
@@ -79,10 +27,56 @@ function goToThisWeek() {
     weekStart.value = startOfWeek(new Date());
 }
 
+watch(weekStart, closePopover);
+
+// Draft and selection
+const selectedEventId = ref<CalendarEvent['id'] | null>(null);
+const selectedEvent = computed(() => props.events.find((event) => event.id === selectedEventId.value) ?? null);
+
+function selectEvent(event: CalendarEvent) {
+    selectedEventId.value = event.id;
+    emit('event-click', event);
+}
+
+function resizeDraft(_event: CalendarEvent, endTime: Date) {
+    if (draft.value) draft.value = { ...draft.value, endTime };
+}
+
+function closePopover() {
+    draft.value = null;
+    selectedEventId.value = null;
+}
+
+useEventListener(window, 'pointerdown', (e) => {
+    const target = e.target as HTMLElement;
+    if (!target.closest('[data-draft], [data-keep-draft]')) draft.value = null;
+    if (!target.closest('[data-event], [data-keep-draft]')) selectedEventId.value = null;
+});
+useEventListener(window, 'keydown', (e) => {
+    if (e.key === 'Escape') closePopover();
+});
+
+// Formatting
+const formats = computed(() => {
+    const locale = getActiveLanguage().replace('_', '-');
+    return {
+        time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),
+        weekday: new Intl.DateTimeFormat(locale, { weekday: 'short' }),
+        range: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }),
+    };
+});
+
+const hourLabels = computed(() =>
+    Array.from({ length: 24 }, (_, hour) => formats.value.time.format(new Date(2000, 0, 1, hour))),
+);
+const rangeTitle = computed(() => formats.value.range.formatRange(days.value[0], days.value[6]));
+const timezoneLabel = computed(() => describeTimezone(weekStart.value));
+
+// Grid
+const gridColumns = 'grid min-w-[760px] grid-cols-[64px_repeat(7,minmax(96px,1fr))]';
 const scroller = ref<HTMLElement | null>(null);
 const body = ref<HTMLElement | null>(null);
-const now = ref(new Date());
-let timer: number | undefined;
+const now = useNow({ scheduler: (tick) => useIntervalFn(tick, 60_000) });
 
 const { isMoving: isMovingDraft, onPointerDown: onDraftPointerDown } = useDraftMove({
     body,
@@ -92,19 +86,6 @@ const { isMoving: isMovingDraft, onPointerDown: onDraftPointerDown } = useDraftM
 
 onMounted(() => {
     if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;
-    timer = window.setInterval(() => (now.value = new Date()), 60_000);
-
-    window.addEventListener('pointerdown', discardDraftOnPointerDown);
-    window.addEventListener('keydown', discardDraftOnEscapeKey);
-    window.addEventListener('pointerdown', clearSelectionOnPointerDown);
-    window.addEventListener('keydown', clearSelectionOnEscapeKey);
-});
-onBeforeUnmount(() => {
-    window.clearInterval(timer);
-    window.removeEventListener('pointerdown', discardDraftOnPointerDown);
-    window.removeEventListener('keydown', discardDraftOnEscapeKey);
-    window.removeEventListener('pointerdown', clearSelectionOnPointerDown);
-    window.removeEventListener('keydown', clearSelectionOnEscapeKey);
 });
 </script>
 
@@ -141,18 +122,18 @@ onBeforeUnmount(() => {
                         :class="{ 'text-primary': isSameDay(day, now) }"
                         class="flex items-center justify-center text-sm font-semibold"
                     >
-                        {{ weekdayFormat.format(day) }} {{ day.getDate() }}
+                        {{ formats.weekday.format(day) }} {{ day.getDate() }}
                     </div>
                 </div>
 
                 <div ref="body" :class="gridColumns" @pointerdown="onDraftPointerDown">
                     <div class="sticky left-0 z-20 bg-card">
-                        <div v-for="hour in hours" :key="hour" class="relative h-10">
+                        <div v-for="(label, hour) in hourLabels" :key="hour" class="relative h-10">
                             <span
                                 v-if="hour > 0"
                                 class="absolute top-0 right-2.5 -translate-y-1/2 text-xs text-muted-foreground tabular-nums"
                             >
-                                {{ hourLabel(hour) }}
+                                {{ label }}
                             </span>
                         </div>
                     </div>
@@ -165,7 +146,7 @@ onBeforeUnmount(() => {
                         :events="events"
                         :now="now"
                         :selected-event-id="selectedEventId"
-                        :time-format="timeFormat"
+                        :time-format="formats.time"
                         @event-click="selectEvent"
                         @event-resize="resizeDraft"
                         @select-slot="draft = $event"
