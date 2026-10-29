@@ -1,28 +1,31 @@
-export type EventType = 'lesson' | 'unavailable';
+import { Student } from '@/types/Student';
+
+export type EventType = 'lesson' | 'blocked';
 export type LessonStatus = 'draft' | 'requested' | 'planned' | 'cancelled';
 
-interface BaseEvent {
+interface Event {
     id: string | number;
     startTime: string | Date;
     endTime: string | Date;
     type: EventType;
-    title?: string;
+    deletedAt?: string | Date;
 }
 
-export interface LessonEvent extends BaseEvent {
+export interface Lesson extends Event {
     type: 'lesson';
     status: LessonStatus;
+    student: Student;
+    title: string;
+    meetingUrl: string;
 }
 
-export interface BlockEvent extends BaseEvent {
-    type: 'unavailable';
+export interface Unavailability extends Event {
+    type: 'blocked';
 }
 
-export type CalendarEvent = LessonEvent | BlockEvent;
+export type CalendarEvent = Lesson | Unavailability;
 
 export interface SlotSelection {
     startTime: Date;
     endTime: Date;
 }
-
-export interface StatusBadge {}

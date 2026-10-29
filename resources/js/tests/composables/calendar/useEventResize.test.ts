@@ -4,6 +4,7 @@ import { ref } from 'vue';
 
 import { useEventResize } from '@/composables/calendar/useEventResize';
 import type { CalendarEvent } from '@/types/calendar';
+import type { Student } from '@/types/Student';
 
 // Older jsdom versions have no PointerEvent.
 const PointerEventImpl: typeof PointerEvent =
@@ -25,10 +26,26 @@ const yOf = (minutes: number) => (minutes / 60) * HOUR_PX;
 const at = (hours: number, minutes = 0) => new Date(2026, 9, 14, hours, minutes);
 const minutes = (hours: number, mins = 0) => hours * 60 + mins;
 
+const student: Student = {
+    id: 1,
+    userId: 1,
+    email: 'alice@example.com',
+    firstName: 'Alice',
+    lastName: 'Martin',
+    fullName: 'Alice Martin',
+    initials: 'AM',
+    phone: '',
+    avatarImg: '',
+    timezone: 'Europe/Paris',
+    createdAt: '2026-10-01T00:00:00',
+    updatedAt: '2026-10-01T00:00:00',
+};
+
 const lesson = (start: Date, end: Date): CalendarEvent => ({
     id: 'draft-1',
     type: 'lesson',
     status: 'draft',
+    student,
     startTime: start,
     endTime: end,
 });

@@ -9,22 +9,39 @@ import {
     getEventStatus,
     getEventTitle,
 } from '@/lib/calendar-event';
-import type { BlockEvent, LessonEvent, LessonStatus } from '@/types/calendar';
+import type { Lesson, LessonStatus, Unavailability } from '@/types/calendar';
+import type { Student } from '@/types/Student';
 
-const lesson = (status: LessonStatus, title?: string): LessonEvent => ({
+const student: Student = {
+    id: 1,
+    userId: 1,
+    email: 'alice@example.com',
+    firstName: 'Alice',
+    lastName: 'Martin',
+    fullName: 'Alice Martin',
+    initials: 'AM',
+    phone: '',
+    avatarImg: '',
+    timezone: 'Europe/Paris',
+    createdAt: '2026-10-01T00:00:00',
+    updatedAt: '2026-10-01T00:00:00',
+};
+
+const lesson = (status: LessonStatus, title?: string): Lesson => ({
     id: 1,
     startTime: '2026-10-28T09:00:00',
     endTime: '2026-10-28T10:00:00',
     type: 'lesson',
     status,
+    student,
     title,
 });
 
-const block: BlockEvent = {
+const block: Unavailability = {
     id: 2,
     startTime: '2026-10-28T12:00:00',
     endTime: '2026-10-28T13:00:00',
-    type: 'unavailable',
+    type: 'blocked',
 };
 
 vi.mock('laravel-vue-i18n', () => ({
@@ -36,7 +53,7 @@ describe('calendar-event', () => {
         vi.clearAllMocks();
     });
 
-    it.each(['lesson', 'unavailable'] as const)('translates the %s default title from its type key', (type) => {
+    it.each(['lesson', 'blocked'] as const)('translates the %s default title from its type key', (type) => {
         expect(getDefaultTitle(type)).toBe(`translated:calendar.event.default_title.${type}`);
         expect(trans).toHaveBeenCalledWith(`calendar.event.default_title.${type}`);
     });
@@ -46,7 +63,7 @@ describe('calendar-event', () => {
         expect(trans).not.toHaveBeenCalled();
     });
 
-    it.each(['lesson', 'unavailable'] as const)('falls back to the default title for an untitled %s', (type) => {
+    it.each(['lesson', 'blocked'] as const)('falls back to the default title for an untitled %s', (type) => {
         expect(getEventTitle({ type })).toBe(`translated:calendar.event.default_title.${type}`);
     });
 
@@ -74,7 +91,7 @@ describe('calendar-event', () => {
         expect(appearance.className).toBe('badge-hashed');
         expect(appearance.icon).toBe(Lock);
         expect(appearance.statusLabel).toBeNull();
-        expect(appearance.title).toBe('translated:calendar.event.default_title.unavailable');
+        expect(appearance.title).toBe('translated:calendar.event.default_title.blocked');
     });
 
     it('uses the lesson title in the appearance', () => {
@@ -89,7 +106,7 @@ describe('calendar-event', () => {
 
     it('describes a block with its title and range only', () => {
         expect(getEventDescription(block, '12:00 – 13:00')).toBe(
-            'translated:calendar.event.default_title.unavailable, 12:00 – 13:00',
+            'translated:calendar.event.default_title.blocked, 12:00 – 13:00',
         );
     });
 });
