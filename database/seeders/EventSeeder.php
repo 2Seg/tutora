@@ -60,18 +60,17 @@ final class EventSeeder extends Seeder
         $thisMonday = CarbonImmutable::now()->startOfWeek();
         $nextMonday = $thisMonday->addWeek();
 
+        // Blocked every night, starting with the Sunday night that covers this Monday morning
+        foreach (range(-1, 13) as $day) {
+            $this->createEvent(EventType::Blocked, $this->at($thisMonday, $day, '22:00'), $this->at($thisMonday, $day + 1, '06:00'));
+        }
+
         $this->seedWeek($thisMonday, self::THIS_WEEK_LESSONS, self::THIS_WEEK_BLOCKED);
         $this->seedWeek($nextMonday, self::NEXT_WEEK_LESSONS, self::NEXT_WEEK_BLOCKED);
     }
 
     private function seedWeek(CarbonImmutable $monday, array $lessons, array $blocked): void
     {
-        // Blocked every night
-        foreach (range(0, 6) as $day) {
-            $this->createEvent(EventType::Blocked, $this->at($monday, $day, '00:00'), $this->at($monday, $day, '06:00'));
-            $this->createEvent(EventType::Blocked, $this->at($monday, $day, '22:00'), $this->at($monday, $day, '24:00'));
-        }
-
         foreach ($blocked as [$day, $from, $to]) {
             $this->createEvent(EventType::Blocked, $this->at($monday, $day, $from), $this->at($monday, $day, $to));
         }
