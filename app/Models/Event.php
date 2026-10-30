@@ -15,11 +15,14 @@ final class Event extends Model
 {
     use HasTimestamps, HasFactory;
 
+    protected $with = ['lesson'];
+
     protected $casts = [
         'type' => EventType::class,
         'status' => EventStatus::class,
         'start_time' => 'datetime',
         'end_time' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     public function lesson(): HasOne
