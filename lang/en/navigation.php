@@ -23,15 +23,5 @@ return [
         'title' => 'Your calendar',
         'subtitle' => 'A easy view to see what happens next.',
     ],
-    'messages' => [
-        'label' => 'Messages',
-        'title' => 'Your messages',
-        'subtitle' => 'A great way to keep in touch with your students.',
-    ],
-    'earnings' => [
-        'label' => 'Earnings',
-        'title' => 'Your earnings',
-        'subtitle' => 'A direct way to keep track your budget.',
-    ],
 
 ];

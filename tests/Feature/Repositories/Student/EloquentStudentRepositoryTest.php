@@ -20,26 +20,28 @@ final class EloquentStudentRepositoryTest extends FeatureTestCase
         $this->studentRepository = new EloquentStudentRepository();
     }
 
-    function testItRetrievesStudentsFromUser() {
+    function testItRetrievesStudentsFromUser()
+    {
         // Arrange
         $user = User::factory()->create();
         $student = Student::factory()->create(['user_id' => $user->id]);
 
         // Act
-        $actual = $this->studentRepository->getStudentsFromUser($user);
+        $actual = $this->studentRepository->getAllFromUser($user);
 
         // Assert
         $this->assertTrue($actual->contains($student));
     }
 
-    function testItDoesNotRetrieveStudentsFromAnotherUser() {
+    function testItDoesNotRetrieveStudentsFromAnotherUser()
+    {
         // Arrange
         $user = User::factory()->create();
         $user2 = User::factory()->create();
         $student = Student::factory()->create(['user_id' => $user2->id]);
 
         // Act
-        $actual = $this->studentRepository->getStudentsFromUser($user);
+        $actual = $this->studentRepository->getAllFromUser($user);
 
         // Assert
         $this->assertFalse($actual->contains($student));

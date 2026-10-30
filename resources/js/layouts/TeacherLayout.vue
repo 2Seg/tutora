@@ -3,7 +3,7 @@ import UserNavigationMenu from '@/components/user/UserNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import ProfileMenu from '@/components/user/UserMenu.vue';
 import MainHeader from '@/components/shared/MainHeader.vue';
-import { useUserNavigation } from '@/composables/useUserNavigation';
+import { useUserNavigation } from '@/composables/navigation/useUserNavigation';
 
 const { current } = useUserNavigation();
 </script>
@@ -20,10 +20,7 @@ const { current } = useUserNavigation();
         </div>
 
         <section v-if="current" class="px-2 py-2">
-            <MainHeader
-                :description="current.description"
-                :title="current.title"
-            />
+            <MainHeader :description="current.description" :title="current.title" />
         </section>
 
         <!--        <main class="grid flex-1 grid-cols-3 content-start gap-6 px-6 pb-6">-->
