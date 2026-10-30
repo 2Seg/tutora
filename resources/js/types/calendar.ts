@@ -8,6 +8,8 @@ interface Event {
     startTime: string | Date;
     endTime: string | Date;
     type: EventType;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
     deletedAt?: string | Date;
 }
 
