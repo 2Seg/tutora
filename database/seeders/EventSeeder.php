@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\EventStatus;
 use App\Enums\EventType;
+use App\Enums\LessonStatus;
 use App\Models\Event;
 use App\Models\Lesson;
 use App\Models\Student;
@@ -17,13 +17,13 @@ final class EventSeeder extends Seeder
 {
     // [day of the week (0 = Monday), from, to, student, status]
     private const array THIS_WEEK_LESSONS = [
-        [0, '10:00', '11:00', 'Maya Chen', EventStatus::Planned],
-        [1, '14:00', '15:00', 'Oliver James', EventStatus::Planned],
-        [2, '10:00', '11:00', 'Sophie Martin', EventStatus::Planned],
-        [3, '11:00', '12:00', 'Lucas Rossi', EventStatus::Cancelled],
-        [4, '10:00', '11:00', 'Amira Patel', EventStatus::Planned],
-        [5, '10:00', '11:00', 'Maya Chen', EventStatus::Cancelled],
-        [6, '09:00', '10:30', 'Amira Patel', EventStatus::Planned],
+        [0, '10:00', '11:00', 'Maya Chen', LessonStatus::Planned],
+        [1, '14:00', '15:00', 'Oliver James', LessonStatus::Planned],
+        [2, '10:00', '11:00', 'Sophie Martin', LessonStatus::Planned],
+        [3, '11:00', '12:00', 'Lucas Rossi', LessonStatus::Cancelled],
+        [4, '10:00', '11:00', 'Amira Patel', LessonStatus::Planned],
+        [5, '10:00', '11:00', 'Maya Chen', LessonStatus::Cancelled],
+        [6, '09:00', '10:30', 'Amira Patel', LessonStatus::Planned],
     ];
 
     // [day of the week (0 = Monday), from, to]
@@ -34,13 +34,13 @@ final class EventSeeder extends Seeder
     ];
 
     private const array NEXT_WEEK_LESSONS = [
-        [0, '09:00', '10:00', 'Lucas Rossi', EventStatus::Planned],
-        [0, '15:00', '16:00', 'Sophie Martin', EventStatus::Requested],
-        [1, '10:00', '11:00', 'Amira Patel', EventStatus::Requested],
-        [2, '14:00', '15:00', 'Oliver James', EventStatus::Planned],
-        [3, '10:00', '11:00', 'Maya Chen', EventStatus::Cancelled],
-        [4, '16:00', '17:00', 'Sophie Martin', EventStatus::Requested],
-        [5, '11:00', '12:30', 'Lucas Rossi', EventStatus::Planned],
+        [0, '09:00', '10:00', 'Lucas Rossi', LessonStatus::Planned],
+        [0, '15:00', '16:00', 'Sophie Martin', LessonStatus::Requested],
+        [1, '10:00', '11:00', 'Amira Patel', LessonStatus::Requested],
+        [2, '14:00', '15:00', 'Oliver James', LessonStatus::Planned],
+        [3, '10:00', '11:00', 'Maya Chen', LessonStatus::Cancelled],
+        [4, '16:00', '17:00', 'Sophie Martin', LessonStatus::Requested],
+        [5, '11:00', '12:30', 'Lucas Rossi', LessonStatus::Planned],
     ];
 
     private const array NEXT_WEEK_BLOCKED = [

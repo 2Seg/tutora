@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\EventStatus;
 use App\Enums\EventType;
+use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,7 +19,7 @@ final class Event extends Model
 
     protected $casts = [
         'type' => EventType::class,
-        'status' => EventStatus::class,
+        'status' => LessonStatus::class,
         'start_time' => 'datetime',
         'end_time' => 'datetime',
         'deleted_at' => 'datetime',
