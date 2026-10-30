@@ -89,7 +89,7 @@ students.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 /**
 * @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:15
+* @see app/Http/Controllers/Teacher/EventController.php:19
 * @route '/teacher/calendar'
 */
 export const calendar = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -104,7 +104,7 @@ calendar.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:15
+* @see app/Http/Controllers/Teacher/EventController.php:19
 * @route '/teacher/calendar'
 */
 calendar.url = (options?: RouteQueryOptions) => {
@@ -113,7 +113,7 @@ calendar.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:15
+* @see app/Http/Controllers/Teacher/EventController.php:19
 * @route '/teacher/calendar'
 */
 calendar.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -123,7 +123,7 @@ calendar.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:15
+* @see app/Http/Controllers/Teacher/EventController.php:19
 * @route '/teacher/calendar'
 */
 calendar.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
