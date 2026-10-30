@@ -20,7 +20,7 @@ final readonly class StudentController
     {
         return $this->inertia->render('teacher/students/Index', [
             'students' => $this->studentRepository
-                ->getStudentsFromUser($request->user())
+                ->getAllFromUser($request->user())
                 ->toResourceCollection()
                 ->resolve(),
         ]);
