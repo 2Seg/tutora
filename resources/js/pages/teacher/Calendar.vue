@@ -2,14 +2,13 @@
 import { ref } from 'vue';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
-import { buildFakeEvents } from '@/hardcoded-data/calendar-events';
 import { statusVariants } from '@/lib/calendar-status';
 import { startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 import { Button } from '@/components/ui/button';
 
+const props = defineProps<{ events: CalendarEvent[] }>();
 const weekStart = ref(startOfWeek(new Date()));
-const events = buildFakeEvents();
 const draft = ref<SlotSelection | null>(null);
 
 function onEventClick(event: CalendarEvent) {
@@ -33,7 +32,7 @@ function onEventClick(event: CalendarEvent) {
         <WeeklyCalendar
             v-model:draft="draft"
             v-model:week-start="weekStart"
-            :events="events"
+            :events="props.events"
             class="min-w-0"
             @event-click="onEventClick"
         />
