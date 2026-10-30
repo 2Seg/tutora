@@ -10,6 +10,8 @@ const props = defineProps<{
     isCompact: boolean;
     isResizable?: boolean;
     isSelected?: boolean;
+    continuesBefore?: boolean;
+    continuesAfter?: boolean;
 }>();
 
 const appearance = computed(() => getEventAppearance(props.event));
@@ -27,6 +29,8 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
             isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
             isResizable ? 'cursor-grab' : 'cursor-pointer',
             isSelected && 'z-10 scale-105 shadow-lg',
+            continuesBefore && 'rounded-t-none border-t-0',
+            continuesAfter && 'rounded-b-none border-b-0',
         ]"
         :data-selected="isSelected || undefined"
         :title="description"

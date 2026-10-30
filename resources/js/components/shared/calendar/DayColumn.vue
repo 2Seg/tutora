@@ -52,9 +52,10 @@ const { resizing, onResizeStart } = useEventResize(
     (event, endTime) => emit('event-resize', event, endTime),
 );
 
-const positionStyle = (startMin: number, endMin: number, col = 0, cols = 1) => ({
-    top: `calc(${percentOfDay(startMin)} + 1px)`,
-    height: `calc(${percentOfDay(endMin - startMin)} - 2px)`,
+// Edges that continue into the previous or next day touch midnight, so both halves read as one event
+const positionStyle = (startMin: number, endMin: number, col = 0, cols = 1, continuesBefore = false, continuesAfter = false) => ({
+    top: `calc(${percentOfDay(startMin)} + ${continuesBefore ? 0 : 1}px)`,
+    height: `calc(${percentOfDay(endMin - startMin)} - ${(continuesBefore ? 0 : 1) + (continuesAfter ? 0 : 1)}px)`,
     left: `calc(${(col / cols) * 100}% + 4px)`,
     width: `calc(${100 / cols}% - 8px)`,
 });
@@ -76,7 +77,7 @@ const items = computed(() => {
         ...s,
         isPast: s.end.getTime() < props.now.getTime(),
         isCompact: s.endMin - s.startMin < 90,
-        style: positionStyle(s.startMin, s.endMin, s.col, s.cols),
+        style: positionStyle(s.startMin, s.endMin, s.col, s.cols, s.continuesBefore, s.continuesAfter),
     }));
 });
 
@@ -116,6 +117,8 @@ const dragEventPreview = computed(() => {
         <Event
             v-for="item in items"
             :key="item.event.id"
+            :continues-after="item.continuesAfter"
+            :continues-before="item.continuesBefore"
             :data-draft="item.event.id === DRAFT_ID || undefined"
             :event="item.event"
             :is-compact="item.isCompact"
