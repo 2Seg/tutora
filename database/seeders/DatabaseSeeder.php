@@ -13,6 +13,13 @@ final class DatabaseSeeder extends Seeder
 
     public function run(): void
     {
-        $this->call([StudentSeeder::class]);
+        if (app()->isLocal()) {
+            $this->call(UserSeeder::class);
+        }
+
+        $this->call([
+            StudentSeeder::class,
+            EventSeeder::class,
+        ]);
     }
 }
