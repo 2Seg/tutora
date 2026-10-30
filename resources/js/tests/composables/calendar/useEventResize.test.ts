@@ -18,12 +18,12 @@ const PointerEventImpl: typeof PointerEvent =
         }
     } as unknown as typeof PointerEvent);
 
-const DAY = new Date(2026, 9, 14); // Wednesday, local midnight
+const DAY = new Date(Date.UTC(2026, 9, 14)); // Wednesday, UTC midnight
 const HOUR_PX = 40;
 const COLUMN_HEIGHT = 24 * HOUR_PX;
 
 const yOf = (minutes: number) => (minutes / 60) * HOUR_PX;
-const at = (hours: number, minutes = 0) => new Date(2026, 9, 14, hours, minutes);
+const at = (hours: number, minutes = 0) => new Date(Date.UTC(2026, 9, 14, hours, minutes));
 const minutes = (hours: number, mins = 0) => hours * 60 + mins;
 
 const student: Student = {
@@ -46,6 +46,8 @@ const lesson = (start: Date, end: Date): CalendarEvent => ({
     type: 'lesson',
     status: 'draft',
     student,
+    title: 'Title',
+    meetingUrl: '',
     startTime: start,
     endTime: end,
 });
@@ -108,7 +110,7 @@ describe('useEventResize', () => {
         });
 
         it('treats an end at the next midnight as the end of the day', () => {
-            const { resizing, press } = setup(lesson(at(22), new Date(2026, 9, 15)));
+            const { resizing, press } = setup(lesson(at(22), new Date(Date.UTC(2026, 9, 15))));
 
             press();
 
@@ -199,7 +201,7 @@ describe('useEventResize', () => {
             moveTo(minutes(30));
             release();
 
-            expect(onCommit).toHaveBeenCalledWith(expect.anything(), new Date(2026, 9, 15));
+            expect(onCommit).toHaveBeenCalledWith(expect.anything(), new Date(Date.UTC(2026, 9, 15)));
         });
 
         it('commits the unchanged end when the pointer did not move', () => {

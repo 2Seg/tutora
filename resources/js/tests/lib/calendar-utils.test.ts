@@ -13,7 +13,7 @@ import {
     toDate,
 } from '@/lib/calendar-utils';
 
-const d = (y: number, m: number, day: number, h = 0, min = 0, s = 0) => new Date(y, m - 1, day, h, min, s);
+const d = (y: number, m: number, day: number, h = 0, min = 0, s = 0) => new Date(Date.UTC(y, m - 1, day, h, min, s));
 
 describe('MINUTES_PER_DAY', () => {
     it('is 1440', () => {
@@ -109,9 +109,9 @@ describe('addDays', () => {
 
     it('drops the time of day', () => {
         const result = addDays(d(2024, 1, 10, 23, 59, 59), 1);
-        expect(result.getHours()).toBe(0);
-        expect(result.getMinutes()).toBe(0);
-        expect(result.getSeconds()).toBe(0);
+        expect(result.getUTCHours()).toBe(0);
+        expect(result.getUTCMinutes()).toBe(0);
+        expect(result.getUTCSeconds()).toBe(0);
     });
 
     it('does not mutate its input', () => {
@@ -207,19 +207,19 @@ describe('atMinutes', () => {
 
 describe('segmentForDay', () => {
     const day = d(2024, 1, 15);
+    const segment = (startMin: number, endMin: number, continuesBefore = false, continuesAfter = false) => ({
+        startMin,
+        endMin,
+        continuesBefore,
+        continuesAfter,
+    });
 
     it('returns the segment for an event fully inside the day', () => {
-        expect(segmentForDay(d(2024, 1, 15, 10, 0), d(2024, 1, 15, 11, 30), day)).toEqual({
-            startMin: 600,
-            endMin: 690,
-        });
+        expect(segmentForDay(d(2024, 1, 15, 10, 0), d(2024, 1, 15, 11, 30), day)).toEqual(segment(600, 690));
     });
 
     it('handles an event starting exactly at midnight', () => {
-        expect(segmentForDay(d(2024, 1, 15, 0, 0), d(2024, 1, 15, 1, 0), day)).toEqual({
-            startMin: 0,
-            endMin: 60,
-        });
+        expect(segmentForDay(d(2024, 1, 15, 0, 0), d(2024, 1, 15, 1, 0), day)).toEqual(segment(0, 60));
     });
 
     it('returns null for an event on the previous day', () => {
@@ -238,32 +238,22 @@ describe('segmentForDay', () => {
         expect(segmentForDay(d(2024, 1, 16, 0, 0), d(2024, 1, 16, 1, 0), day)).toBeNull();
     });
 
-    it('clamps an event that started the previous day to 0', () => {
-        expect(segmentForDay(d(2024, 1, 14, 22, 0), d(2024, 1, 15, 2, 0), day)).toEqual({
-            startMin: 0,
-            endMin: 120,
-        });
+    it('clamps an event that started the previous day to 0 and marks it as continuing before', () => {
+        expect(segmentForDay(d(2024, 1, 14, 22, 0), d(2024, 1, 15, 2, 0), day)).toEqual(segment(0, 120, true));
     });
 
-    it('clamps an event that ends the next day to 1440', () => {
-        expect(segmentForDay(d(2024, 1, 15, 22, 0), d(2024, 1, 16, 2, 0), day)).toEqual({
-            startMin: 1320,
-            endMin: 1440,
-        });
+    it('clamps an event that ends the next day to 1440 and marks it as continuing after', () => {
+        expect(segmentForDay(d(2024, 1, 15, 22, 0), d(2024, 1, 16, 2, 0), day)).toEqual(
+            segment(1320, 1440, false, true),
+        );
     });
 
-    it('treats an event ending exactly at the next midnight as ending at 1440', () => {
-        expect(segmentForDay(d(2024, 1, 15, 22, 0), d(2024, 1, 16, 0, 0), day)).toEqual({
-            startMin: 1320,
-            endMin: 1440,
-        });
+    it('treats an event ending exactly at the next midnight as ending at 1440, without continuing after', () => {
+        expect(segmentForDay(d(2024, 1, 15, 22, 0), d(2024, 1, 16, 0, 0), day)).toEqual(segment(1320, 1440));
     });
 
     it('covers the whole day for an event spanning it entirely', () => {
-        expect(segmentForDay(d(2024, 1, 14, 12, 0), d(2024, 1, 16, 12, 0), day)).toEqual({
-            startMin: 0,
-            endMin: 1440,
-        });
+        expect(segmentForDay(d(2024, 1, 14, 12, 0), d(2024, 1, 16, 12, 0), day)).toEqual(segment(0, 1440, true, true));
     });
 
     it('returns null for a zero-length event', () => {
@@ -278,17 +268,16 @@ describe('segmentForDay', () => {
         const start = d(2024, 1, 15, 20, 0);
         const end = d(2024, 1, 17, 8, 0);
 
-        expect(segmentForDay(start, end, d(2024, 1, 15))).toEqual({ startMin: 1200, endMin: 1440 });
-        expect(segmentForDay(start, end, d(2024, 1, 16))).toEqual({ startMin: 0, endMin: 1440 });
-        expect(segmentForDay(start, end, d(2024, 1, 17))).toEqual({ startMin: 0, endMin: 480 });
+        expect(segmentForDay(start, end, d(2024, 1, 15))).toEqual(segment(1200, 1440, false, true));
+        expect(segmentForDay(start, end, d(2024, 1, 16))).toEqual(segment(0, 1440, true, true));
+        expect(segmentForDay(start, end, d(2024, 1, 17))).toEqual(segment(0, 480, true));
         expect(segmentForDay(start, end, d(2024, 1, 18))).toBeNull();
     });
 
     it('ignores the time of day on the `day` argument', () => {
-        expect(segmentForDay(d(2024, 1, 15, 10, 0), d(2024, 1, 15, 11, 0), d(2024, 1, 15, 18, 30))).toEqual({
-            startMin: 600,
-            endMin: 660,
-        });
+        expect(segmentForDay(d(2024, 1, 15, 10, 0), d(2024, 1, 15, 11, 0), d(2024, 1, 15, 18, 30))).toEqual(
+            segment(600, 660),
+        );
     });
 });
 
@@ -390,15 +379,14 @@ describe('describeTimezone', () => {
         vi.restoreAllMocks();
     });
 
-    /** Stubs Intl.DateTimeFormat so results don't depend on the machine's timezone or ICU data. */
-    function mockIntl(opts: { timeZone: string; short?: string; longOffset?: string }) {
+    /** Stubs Intl.DateTimeFormat so results don't depend on ICU data. */
+    function mockIntl(opts: { short?: string; longOffset?: string }) {
         const formatToParts = vi.fn((_at?: Date) => [] as { type: string; value: string }[]);
         vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (
             _locale?: unknown,
             options?: Intl.DateTimeFormatOptions,
         ) {
             return {
-                resolvedOptions: () => ({ timeZone: opts.timeZone }),
                 formatToParts: (at?: Date) => {
                     formatToParts(at);
                     const value = options?.timeZoneName === 'short' ? opts.short : opts.longOffset;
@@ -409,49 +397,49 @@ describe('describeTimezone', () => {
         return formatToParts;
     }
 
-    it('smoke test with the real Intl: returns "<city> time · <zone>"', () => {
-        expect(describeTimezone(new Date('2024-07-01T12:00:00Z'))).toMatch(/^.+ time · .+$/);
+    it('describes the calendar timezone (UTC) by default, with the real Intl', () => {
+        expect(describeTimezone(new Date('2024-07-01T12:00:00Z'))).toBe('UTC time · UTC+0');
     });
 
     it('shows the abbreviation and offset when an abbreviation exists', () => {
-        mockIntl({ timeZone: 'Europe/Paris', short: 'CEST', longOffset: 'GMT+02:00' });
-        expect(describeTimezone()).toBe('Paris time · CEST (UTC+2)');
+        mockIntl({ short: 'CEST', longOffset: 'GMT+02:00' });
+        expect(describeTimezone(undefined, 'Europe/Paris')).toBe('Paris time · CEST (UTC+2)');
     });
 
     it('formats negative offsets', () => {
-        mockIntl({ timeZone: 'America/New_York', short: 'EDT', longOffset: 'GMT-04:00' });
-        expect(describeTimezone()).toBe('New York time · EDT (UTC-4)');
+        mockIntl({ short: 'EDT', longOffset: 'GMT-04:00' });
+        expect(describeTimezone(undefined, 'America/New_York')).toBe('New York time · EDT (UTC-4)');
     });
 
     it('replaces underscores and uses the last path segment as the city', () => {
-        mockIntl({ timeZone: 'America/Argentina/Buenos_Aires', short: 'GMT-3', longOffset: 'GMT-03:00' });
-        expect(describeTimezone()).toBe('Buenos Aires time · UTC-3');
+        mockIntl({ short: 'GMT-3', longOffset: 'GMT-03:00' });
+        expect(describeTimezone(undefined, 'America/Argentina/Buenos_Aires')).toBe('Buenos Aires time · UTC-3');
     });
 
     it('omits the abbreviation when it is just a GMT±N offset, and keeps minutes', () => {
-        mockIntl({ timeZone: 'Asia/Kolkata', short: 'GMT+5:30', longOffset: 'GMT+05:30' });
-        expect(describeTimezone()).toBe('Kolkata time · UTC+5:30');
+        mockIntl({ short: 'GMT+5:30', longOffset: 'GMT+05:30' });
+        expect(describeTimezone(undefined, 'Asia/Kolkata')).toBe('Kolkata time · UTC+5:30');
     });
 
     it('falls back to plain "UTC" when there is no offset (e.g. London in winter)', () => {
-        mockIntl({ timeZone: 'Europe/London', short: 'GMT', longOffset: 'GMT' });
-        expect(describeTimezone()).toBe('London time · UTC');
+        mockIntl({ short: 'GMT', longOffset: 'GMT' });
+        expect(describeTimezone(undefined, 'Europe/London')).toBe('London time · UTC');
     });
 
     it('handles the UTC zone itself', () => {
-        mockIntl({ timeZone: 'UTC', short: 'UTC', longOffset: 'GMT' });
-        expect(describeTimezone()).toBe('UTC time · UTC');
+        mockIntl({ short: 'UTC', longOffset: 'GMT' });
+        expect(describeTimezone(undefined, 'UTC')).toBe('UTC time · UTC');
     });
 
     it('degrades gracefully when Intl returns no timeZoneName parts', () => {
-        mockIntl({ timeZone: 'Europe/Paris' });
-        expect(describeTimezone()).toBe('Paris time · UTC');
+        mockIntl({});
+        expect(describeTimezone(undefined, 'Europe/Paris')).toBe('Paris time · UTC');
     });
 
     it('formats the given date (so DST is evaluated at that moment)', () => {
-        const formatToParts = mockIntl({ timeZone: 'Europe/Paris', short: 'CET', longOffset: 'GMT+01:00' });
+        const formatToParts = mockIntl({ short: 'CET', longOffset: 'GMT+01:00' });
         const at = new Date('2024-01-15T12:00:00Z');
-        describeTimezone(at);
+        describeTimezone(at, 'Europe/Paris');
         expect(formatToParts).toHaveBeenCalledWith(at);
     });
 });

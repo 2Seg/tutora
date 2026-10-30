@@ -5,7 +5,7 @@ import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
 import { getDefaultTitle, getEventStatus, getEventTitle } from '@/lib/calendar-event';
-import { toDate } from '@/lib/calendar-utils';
+import { CALENDAR_TIME_ZONE, toDate } from '@/lib/calendar-utils';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 
@@ -44,13 +44,19 @@ const details = computed(() => {
     const start = toDate(range.startTime);
     return {
         title: event ? getEventTitle(event) : getDefaultTitle('lesson'),
-        day: new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(start),
+        day: new Intl.DateTimeFormat(locale, {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            timeZone: CALENDAR_TIME_ZONE,
+        }).format(start),
         timeRange: new Intl.DateTimeFormat(locale, {
             hour: '2-digit',
             minute: '2-digit',
             hourCycle: 'h23',
+            timeZone: CALENDAR_TIME_ZONE,
         }).formatRange(start, toDate(range.endTime)),
-        status: event ? (getEventStatus(event) ?? ('unavailable' as const)) : null,
+        status: event ? (getEventStatus(event) ?? ('blocked' as const)) : null,
     };
 });
 </script>

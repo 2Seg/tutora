@@ -5,7 +5,7 @@ import { computed, onMounted, ref, watch } from 'vue';
 import DayColumn from '@/components/shared/calendar/DayColumn.vue';
 import EventPopover from '@/components/shared/calendar/EventPopover.vue';
 import { Button } from '@/components/ui/button';
-import { addDays, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
+import { addDays, atMinutes, CALENDAR_TIME_ZONE, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, SlotSelection } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
@@ -59,15 +59,16 @@ useEventListener(window, 'keydown', (e) => {
 // Formatting
 const formats = computed(() => {
     const locale = getActiveLanguage().replace('_', '-');
+    const timeZone = CALENDAR_TIME_ZONE;
     return {
-        time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }),
-        weekday: new Intl.DateTimeFormat(locale, { weekday: 'short' }),
-        range: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric' }),
+        time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone }),
+        weekday: new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone }),
+        range: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone }),
     };
 });
 
 const hourLabels = computed(() =>
-    Array.from({ length: 24 }, (_, hour) => formats.value.time.format(new Date(2000, 0, 1, hour))),
+    Array.from({ length: 24 }, (_, hour) => formats.value.time.format(atMinutes(weekStart.value, hour * 60))),
 );
 const rangeTitle = computed(() => formats.value.range.formatRange(days.value[0], days.value[6]));
 const timezoneLabel = computed(() => describeTimezone(weekStart.value));
@@ -125,7 +126,7 @@ onMounted(() => {
                             :class="{ 'bg-secondary text-secondary-foreground': isSameDay(day, now) }"
                             class="inline-flex h-8 items-center rounded-md px-3"
                         >
-                            {{ formats.weekday.format(day) }} {{ day.getDate() }}
+                            {{ formats.weekday.format(day) }} {{ day.getUTCDate() }}
                         </span>
                     </div>
                 </div>

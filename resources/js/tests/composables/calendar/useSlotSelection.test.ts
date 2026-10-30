@@ -2,11 +2,12 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { useSlotSelection } from '@/composables/calendar/useSlotSelection';
 import { SlotSelection } from '@/types/calendar';
 
-const DAY = new Date(2024, 0, 15);
+const DAY = new Date(Date.UTC(2024, 0, 15));
 const TOP = 100; // column's top offset in the viewport
 const HEIGHT = 1440; // 1px === 1 minute, which keeps the maths readable
 
-const at = (minutes: number, day = DAY) => new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, minutes);
+const at = (minutes: number, day = DAY) => 
+    new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), 0, minutes));
 
 /**
  * clientY that lands 5 minutes into the bucket starting at `minute`.
@@ -355,16 +356,16 @@ describe('useSlotSelection', () => {
 
     describe('day getter', () => {
         it('is read when the selection completes, not when the composable is created', () => {
-            let current = new Date(2024, 0, 15);
+            let current = new Date(Date.UTC(2024, 0, 15));
             const { onPointerDown, onPointerUp } = setup(() => current);
 
             onPointerDown(pointerEvent(column, yFor(600)));
-            current = new Date(2024, 0, 16);
+            current = new Date(Date.UTC(2024, 0, 16));
             onPointerUp();
 
             expect(onSelect).toHaveBeenCalledWith({
-                startTime: at(600, new Date(2024, 0, 16)),
-                endTime: at(650, new Date(2024, 0, 16)),
+                startTime: at(600, new Date(Date.UTC(2024, 0, 16))),
+                endTime: at(650, new Date(Date.UTC(2024, 0, 16))),
             });
         });
 
@@ -375,7 +376,7 @@ describe('useSlotSelection', () => {
             onPointerUp();
 
             const { endTime } = onSelect.mock.calls[0][0];
-            expect(endTime).toEqual(new Date(2024, 0, 16, 0, 0));
+            expect(endTime).toEqual(new Date(Date.UTC(2024, 0, 16, 0, 0)));
         });
     });
 });

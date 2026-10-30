@@ -20,7 +20,7 @@ const COLUMN_WIDTH = 100;
 const COLUMN_COUNT = 7;
 
 /** `minutes` after local midnight of the column's day (column 0 is Monday 12 October 2026). */
-const at = (column: number, minutes: number) => new Date(2026, 9, 12 + column, 0, minutes);
+const at = (column: number, minutes: number) => new Date(Date.UTC(2026, 9, 12 + column, 0, minutes));
 const DAYS = Array.from({ length: COLUMN_COUNT }, (_, column) => at(column, 0));
 
 const xIn = (column: number) => column * COLUMN_WIDTH + COLUMN_WIDTH / 2;
@@ -189,7 +189,7 @@ describe('useDraftMove', () => {
             fire('pointermove', { x: xIn(1), y: yAt(5000) });
 
             expect(draft.value).toEqual(draftOf(1, 1380, 1440));
-            expect(draft.value?.endTime).toEqual(new Date(2026, 9, 14, 0, 0));
+            expect(draft.value?.endTime).toEqual(new Date(Date.UTC(2026, 9, 14, 0, 0)));
         });
     });
 
