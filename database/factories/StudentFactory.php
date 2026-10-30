@@ -14,7 +14,7 @@ final class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::first()->id,
+            'user_id' => fn() => User::first()?->id ?? User::factory(),
             'email' => $this->faker->unique()->safeEmail(),
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
