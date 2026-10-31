@@ -3,6 +3,7 @@ import { trans } from 'laravel-vue-i18n';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+    formatEventSchedule,
     getDefaultTitle,
     getEventAppearance,
     getEventDescription,
@@ -46,6 +47,7 @@ const block: Unavailability = {
 
 vi.mock('laravel-vue-i18n', () => ({
     trans: vi.fn((key: string) => `translated:${key}`),
+    getActiveLanguage: vi.fn(() => 'en_GB'),
 }));
 
 describe('calendar-event', () => {
@@ -108,5 +110,21 @@ describe('calendar-event', () => {
         expect(getEventDescription(block, '12:00 – 13:00')).toBe(
             'translated:calendar.event.default_title.blocked, 12:00 – 13:00',
         );
+    });
+
+    it('formats the day and the 24h time range of an event in the calendar time zone', () => {
+        const { day, timeRange } = formatEventSchedule(lesson('planned'));
+
+        expect(day).toBe('Wednesday 28 October');
+        expect(timeRange).toMatch(/^09:00\s*–\s*10:00$/);
+    });
+
+    it('formats a slot selection given as dates', () => {
+        const { timeRange } = formatEventSchedule({
+            startsAt: new Date('2026-10-28T14:30:00Z'),
+            endsAt: new Date('2026-10-28T15:15:00Z'),
+        });
+
+        expect(timeRange).toMatch(/^14:30\s*–\s*15:15$/);
     });
 });
