@@ -52,6 +52,9 @@ const { resizing, onResizeStart } = useEventResize(
     (event, endAt) => emit('event-resize', event, endAt),
 );
 
+// Leaves an empty strip on the right so a new slot can still be dragged next to existing events
+const RIGHT_GUTTER = 12;
+
 // Edges that continue into the previous or next day touch midnight, so both halves read as one event
 const positionStyle = (
     startMin: number,
@@ -63,8 +66,8 @@ const positionStyle = (
 ) => ({
     top: `calc(${percentOfDay(startMin)} + ${continuesBefore ? 0 : 1}px)`,
     height: `calc(${percentOfDay(endMin - startMin)} - ${(continuesBefore ? 0 : 1) + (continuesAfter ? 0 : 1)}px)`,
-    left: `calc(${(col / cols) * 100}% + 4px)`,
-    width: `calc(${100 / cols}% - 8px)`,
+    left: `calc(${col} * (100% - ${RIGHT_GUTTER}px) / ${cols} + 4px)`,
+    width: `calc((100% - ${RIGHT_GUTTER}px) / ${cols} - 8px)`,
 });
 
 const isToday = computed(() => isSameDay(props.day, props.now));
