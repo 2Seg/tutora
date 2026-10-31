@@ -16,9 +16,9 @@ interface Event {
 export interface Lesson extends Event {
     type: 'lesson';
     status: LessonStatus;
-    student: Student;
-    title: string;
-    meetingUrl: string;
+    student?: Student;
+    title?: string;
+    meetingUrl?: string;
 }
 
 export interface Unavailability extends Event {

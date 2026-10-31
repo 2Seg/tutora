@@ -1,7 +1,6 @@
 import { Lock } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import type { Component } from 'vue';
-
 import { getStatusLabel } from '@/lib/calendar-status';
 import type { CalendarEvent, EventType, Lesson, LessonStatus, Unavailability } from '@/types/calendar';
 
