@@ -1,5 +1,5 @@
 export const MINUTES_PER_DAY: number = 24 * 60;
-export const SNAP_MINUTES = 15;
+export const SNAP_MINUTES = 10;
 export const DEFAULT_SLOT_MINUTES = 50;
 
 /**
