@@ -5,8 +5,8 @@ export type LessonStatus = 'draft' | 'requested' | 'planned' | 'cancelled';
 
 interface Event {
     id: string | number;
-    startTime: string | Date;
-    endTime: string | Date;
+    startAt: string | Date;
+    endAt: string | Date;
     type: EventType;
     createdAt?: string | Date;
     updatedAt?: string | Date;
@@ -28,6 +28,6 @@ export interface Unavailability extends Event {
 export type CalendarEvent = Lesson | Unavailability;
 
 export interface SlotSelection {
-    startTime: Date;
-    endTime: Date;
+    startAt: Date;
+    endAt: Date;
 }

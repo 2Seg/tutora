@@ -20,8 +20,8 @@ final class EventFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'start_time' => $startTime = $this->getStartTime(),
-            'end_time' => $startTime->addMinutes(50),
+            'start_at' => $startAt = $this->getStartAt(),
+            'end_at' => $startAt->addMinutes(50),
             'type' => EventType::Lesson,
         ];
     }
@@ -39,12 +39,12 @@ final class EventFactory extends Factory
     {
         return $this->state(fn(array $attributes) => [
             'type' => EventType::Blocked,
-            'start_time' => $startTime = $this->getStartTime(),
-            'end_time' => $startTime->addMinutes($this->faker->randomElement([60, 180])),
+            'start_at' => $startAt = $this->getStartAt(),
+            'end_at' => $startAt->addMinutes($this->faker->randomElement([60, 180])),
         ]);
     }
 
-    private function getStartTime(): CarbonImmutable
+    private function getStartAt(): CarbonImmutable
     {
         $randomDay = CarbonImmutable::instance(
             $this->faker->dateTimeBetween('monday this week', 'sunday next week')

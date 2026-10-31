@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('users', 'id', 'fk_events_user_id_users_id');
 
-            $table->timestamp('start_time');
-            $table->timestamp('end_time');
+            $table->timestamp('start_at');
+            $table->timestamp('end_at');
             $table->string('type');
 
             $table->timestamps();

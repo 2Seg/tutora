@@ -11,7 +11,7 @@ import type { CalendarEvent } from '@/types/calendar';
 export function useEventResize(
     column: Ref<HTMLElement | null>,
     day: () => Date,
-    onCommit: (event: CalendarEvent, endTime: Date) => void,
+    onCommit: (event: CalendarEvent, endAt: Date) => void,
 ) {
     const resizing = ref<{ id: CalendarEvent['id']; endMin: number } | null>(null);
 
@@ -22,8 +22,8 @@ export function useEventResize(
         const handle = e.currentTarget as HTMLElement;
         handle.setPointerCapture(e.pointerId);
 
-        const start = toDate(event.startTime);
-        const end = toDate(event.endTime);
+        const start = toDate(event.startAt);
+        const end = toDate(event.endAt);
         const startMin = minutesOfDay(start);
         resizing.value = { id: event.id, endMin: isSameDay(end, day()) ? minutesOfDay(end) : MINUTES_PER_DAY };
 

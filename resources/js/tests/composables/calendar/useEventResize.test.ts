@@ -48,8 +48,8 @@ const lesson = (start: Date, end: Date): CalendarEvent => ({
     student,
     title: 'Title',
     meetingUrl: '',
-    startTime: start,
-    endTime: end,
+    startAt: start,
+    endAt: end,
 });
 
 function setup(event: CalendarEvent = lesson(at(10), at(11)), { hasColumn = true } = {}) {

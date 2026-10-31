@@ -26,8 +26,8 @@ const DAYS = Array.from({ length: COLUMN_COUNT }, (_, column) => at(column, 0));
 const xIn = (column: number) => column * COLUMN_WIDTH + COLUMN_WIDTH / 2;
 const yAt = (minute: number) => TOP + minute;
 const draftOf = (column: number, from: number, to: number): SlotSelection => ({
-    startTime: at(column, from),
-    endTime: at(column, to),
+    startAt: at(column, from),
+    endAt: at(column, to),
 });
 
 function makeBody() {
@@ -189,7 +189,7 @@ describe('useDraftMove', () => {
             fire('pointermove', { x: xIn(1), y: yAt(5000) });
 
             expect(draft.value).toEqual(draftOf(1, 1380, 1440));
-            expect(draft.value?.endTime).toEqual(new Date(Date.UTC(2026, 9, 14, 0, 0)));
+            expect(draft.value?.endAt).toEqual(new Date(Date.UTC(2026, 9, 14, 0, 0)));
         });
     });
 

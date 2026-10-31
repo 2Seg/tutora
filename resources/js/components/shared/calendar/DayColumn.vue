@@ -26,7 +26,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     'select-slot': [selection: SlotSelection];
     'event-click': [event: CalendarEvent];
-    'event-resize': [event: CalendarEvent, endTime: Date];
+    'event-resize': [event: CalendarEvent, endAt: Date];
 }>();
 
 const DRAFT_ID = 'draft';
@@ -38,8 +38,8 @@ const eventsIncludingDrafts = computed<CalendarEvent[]>(() =>
                   id: DRAFT_ID,
                   type: 'lesson',
                   status: 'draft',
-                  startTime: props.draft.startTime,
-                  endTime: props.draft.endTime,
+                  startAt: props.draft.startAt,
+                  endAt: props.draft.endAt,
               },
           ]
         : props.events,
@@ -49,11 +49,18 @@ const column = ref<HTMLElement | null>(null);
 const { resizing, onResizeStart } = useEventResize(
     column,
     () => props.day,
-    (event, endTime) => emit('event-resize', event, endTime),
+    (event, endAt) => emit('event-resize', event, endAt),
 );
 
 // Edges that continue into the previous or next day touch midnight, so both halves read as one event
-const positionStyle = (startMin: number, endMin: number, col = 0, cols = 1, continuesBefore = false, continuesAfter = false) => ({
+const positionStyle = (
+    startMin: number,
+    endMin: number,
+    col = 0,
+    cols = 1,
+    continuesBefore = false,
+    continuesAfter = false,
+) => ({
     top: `calc(${percentOfDay(startMin)} + ${continuesBefore ? 0 : 1}px)`,
     height: `calc(${percentOfDay(endMin - startMin)} - ${(continuesBefore ? 0 : 1) + (continuesAfter ? 0 : 1)}px)`,
     left: `calc(${(col / cols) * 100}% + 4px)`,
@@ -66,9 +73,8 @@ const items = computed(() => {
     const segments = [];
 
     for (const event of eventsIncludingDrafts.value) {
-        const start = toDate(event.startTime);
-        const end =
-            resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endTime);
+        const start = toDate(event.startAt);
+        const end = resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endAt);
         const segment = segmentForDay(start, end, props.day);
         if (segment) segments.push({ event, start, end, ...segment });
     }
@@ -95,7 +101,7 @@ const dragEventPreview = computed(() => {
     const { startMin, endMin } = selection.value;
     const start = atMinutes(props.day, startMin);
     const end = atMinutes(props.day, endMin);
-    const event: CalendarEvent = { id: 'preview', type: 'lesson', status: 'draft', startTime: start, endTime: end };
+    const event: CalendarEvent = { id: 'preview', type: 'lesson', status: 'draft', startAt: start, endAt: end };
 
     return { event, start, end, compact: endMin - startMin < 90, style: positionStyle(startMin, endMin) };
 });

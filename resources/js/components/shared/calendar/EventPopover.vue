@@ -41,7 +41,7 @@ const details = computed(() => {
     if (!shown.value) return null;
     const { range, event } = shown.value;
     const locale = getActiveLanguage().replace('_', '-');
-    const start = toDate(range.startTime);
+    const start = toDate(range.startAt);
     return {
         title: event ? getEventTitle(event) : getDefaultTitle('lesson'),
         day: new Intl.DateTimeFormat(locale, {
@@ -55,7 +55,7 @@ const details = computed(() => {
             minute: '2-digit',
             hourCycle: 'h23',
             timeZone: CALENDAR_TIME_ZONE,
-        }).formatRange(start, toDate(range.endTime)),
+        }).formatRange(start, toDate(range.endAt)),
         status: event ? (getEventStatus(event) ?? ('blocked' as const)) : null,
     };
 });
