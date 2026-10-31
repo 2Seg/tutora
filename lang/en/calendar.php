@@ -6,14 +6,14 @@ return [
     'event' => [
         'default_title' => [
             'lesson' => '(No title)',
-            'blocked' => 'Unavailable',
+            'time_off' => 'Time off',
         ],
         'status' => [
             'planned' => 'Planned',
             'requested' => 'Requested',
             'cancelled' => 'Cancelled',
             'draft' => 'Draft',
-            'blocked' => 'Unavailable',
+            'time_off' => 'Time off',
         ],
     ],
     'popover' => [

@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 import { formatEventSchedule, getEventTitle } from '@/lib/calendar-event';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
-import type { Unavailability } from '@/types/calendar';
+import type { TimeOff } from '@/types/calendar';
 
 const props = defineProps<{
-    event: Unavailability;
+    event: TimeOff;
 }>();
 
 const schedule = computed(() => formatEventSchedule(props.event));
@@ -20,6 +20,6 @@ const schedule = computed(() => formatEventSchedule(props.event));
     </div>
 
     <div class="flex gap-2">
-        <StatusBadge variant="blocked" />
+        <StatusBadge variant="time_off" />
     </div>
 </template>

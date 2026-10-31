@@ -29,16 +29,16 @@ final class EventFactory extends Factory
     public function configure(): static
     {
         return $this->afterCreating(function (Event $event) {
-            if ($event->type !== EventType::Blocked && $event->lesson()->doesntExist()) {
+            if ($event->type !== EventType::TimeOff && $event->lesson()->doesntExist()) {
                 Lesson::factory()->create(['event_id' => $event->id]);
             }
         });
     }
 
-    public function blocked(): static
+    public function timeOff(): static
     {
         return $this->state(fn(array $attributes) => [
-            'type' => EventType::Blocked,
+            'type' => EventType::TimeOff,
             'starts_at' => $startsAt = $this->getStartsAt(),
             'ends_at' => $startsAt->addMinutes($this->faker->randomElement([60, 180])),
         ]);

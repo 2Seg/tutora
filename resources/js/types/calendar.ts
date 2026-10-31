@@ -1,6 +1,6 @@
 import { Student } from '@/types/Student';
 
-export type EventType = 'lesson' | 'blocked';
+export type EventType = 'lesson' | 'time_off';
 export type LessonStatus = 'draft' | 'requested' | 'planned' | 'cancelled';
 
 interface Event {
@@ -21,11 +21,11 @@ export interface Lesson extends Event {
     meetingUrl?: string;
 }
 
-export interface Unavailability extends Event {
-    type: 'blocked';
+export interface TimeOff extends Event {
+    type: 'time_off';
 }
 
-export type CalendarEvent = Lesson | Unavailability;
+export type CalendarEvent = Lesson | TimeOff;
 
 export interface SlotSelection {
     startsAt: Date;

@@ -27,7 +27,7 @@ final class EventSeeder extends Seeder
     ];
 
     // [day of the week (0 = Monday), from, to]
-    private const array THIS_WEEK_BLOCKED = [
+    private const array THIS_WEEK_TIME_OFF = [
         [2, '12:00', '14:00'],
         [4, '13:00', '17:00'],
         [6, '13:00', '17:00'],
@@ -43,7 +43,7 @@ final class EventSeeder extends Seeder
         [5, '11:00', '12:30', 'Lucas Rossi', LessonStatus::Planned],
     ];
 
-    private const array NEXT_WEEK_BLOCKED = [
+    private const array NEXT_WEEK_TIME_OFF = [
         [3, '13:00', '17:00'],
         [5, '14:00', '18:00'],
     ];
@@ -60,19 +60,19 @@ final class EventSeeder extends Seeder
         $thisMonday = CarbonImmutable::now()->startOfWeek();
         $nextMonday = $thisMonday->addWeek();
 
-        // Blocked every night, starting with the Sunday night that covers this Monday morning
+        // Time off every night, starting with the Sunday night that covers this Monday morning
         foreach (range(-1, 13) as $day) {
-            $this->createEvent(EventType::Blocked, $this->at($thisMonday, $day, '22:00'), $this->at($thisMonday, $day + 1, '06:00'));
+            $this->createEvent(EventType::TimeOff, $this->at($thisMonday, $day, '22:00'), $this->at($thisMonday, $day + 1, '06:00'));
         }
 
-        $this->seedWeek($thisMonday, self::THIS_WEEK_LESSONS, self::THIS_WEEK_BLOCKED);
-        $this->seedWeek($nextMonday, self::NEXT_WEEK_LESSONS, self::NEXT_WEEK_BLOCKED);
+        $this->seedWeek($thisMonday, self::THIS_WEEK_LESSONS, self::THIS_WEEK_TIME_OFF);
+        $this->seedWeek($nextMonday, self::NEXT_WEEK_LESSONS, self::NEXT_WEEK_TIME_OFF);
     }
 
-    private function seedWeek(CarbonImmutable $monday, array $lessons, array $blocked): void
+    private function seedWeek(CarbonImmutable $monday, array $lessons, array $timeOff): void
     {
-        foreach ($blocked as [$day, $from, $to]) {
-            $this->createEvent(EventType::Blocked, $this->at($monday, $day, $from), $this->at($monday, $day, $to));
+        foreach ($timeOff as [$day, $from, $to]) {
+            $this->createEvent(EventType::TimeOff, $this->at($monday, $day, $from), $this->at($monday, $day, $to));
         }
 
         foreach ($lessons as [$day, $from, $to, $name, $status]) {

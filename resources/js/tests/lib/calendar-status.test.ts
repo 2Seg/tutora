@@ -14,7 +14,7 @@ describe('calendar-status', () => {
     });
 
     it('lists the statuses in legend order', () => {
-        expect(statusVariants).toEqual(['planned', 'cancelled', 'requested', 'draft', 'blocked']);
+        expect(statusVariants).toEqual(['planned', 'cancelled', 'requested', 'draft', 'time_off']);
     });
 
     it.each(statusVariants)('translates the %s label from its status key', (status) => {
@@ -27,7 +27,7 @@ describe('calendar-status', () => {
         ['cancelled', 'destructive'],
         ['requested', 'warning'],
         ['draft', 'outline'],
-        ['blocked', 'hashed'],
+        ['time_off', 'hashed'],
     ] as const)('maps %s to the %s badge variant', (status, variant) => {
         expect(getStatusBadge(status).variant).toBe(variant);
     });
@@ -37,7 +37,7 @@ describe('calendar-status', () => {
         ['cancelled', undefined],
         ['requested', undefined],
         ['draft', undefined],
-        ['blocked', Lock],
+        ['time_off', Lock],
     ] as const)('gives %s the expected icon', (status, icon) => {
         expect(getStatusBadge(status).icon).toBe(icon);
     });

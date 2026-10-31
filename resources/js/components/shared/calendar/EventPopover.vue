@@ -3,15 +3,15 @@ import { X } from '@lucide/vue';
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
-import BlockedTimeDetails from '@/components/shared/calendar/popover/BlockedTimeDetails.vue';
+import TimeOffDetails from '@/components/shared/calendar/popover/TimeOffDetails.vue';
 import DraftForm from '@/components/shared/calendar/popover/DraftForm.vue';
 import LessonDetails from '@/components/shared/calendar/popover/LessonDetails.vue';
-import type { CalendarEvent, Lesson, SlotSelection, Unavailability } from '@/types/calendar';
+import type { CalendarEvent, Lesson, SlotSelection, TimeOff } from '@/types/calendar';
 
 type Shown =
     | { kind: 'draft'; range: SlotSelection }
     | { kind: 'lesson'; event: Lesson }
-    | { kind: 'blocked'; event: Unavailability };
+    | { kind: 'time_off'; event: TimeOff };
 
 const props = defineProps<{
     container: HTMLElement | null;
@@ -36,7 +36,7 @@ watch(
             shown.value =
                 props.event.type === 'lesson'
                     ? { kind: 'lesson', event: props.event }
-                    : { kind: 'blocked', event: props.event };
+                    : { kind: 'time_off', event: props.event };
         } else {
             return;
         }
@@ -86,7 +86,7 @@ const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draf
 
             <DraftForm v-if="shown?.kind === 'draft'" :range="shown.range" @cancel="emit('close')" />
             <LessonDetails v-else-if="shown?.kind === 'lesson'" :event="shown.event" />
-            <BlockedTimeDetails v-else-if="shown?.kind === 'blocked'" :event="shown.event" />
+            <TimeOffDetails v-else-if="shown?.kind === 'time_off'" :event="shown.event" />
         </PopoverContent>
     </Popover>
 </template>

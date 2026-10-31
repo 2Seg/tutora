@@ -10,7 +10,7 @@ import {
     getEventStatus,
     getEventTitle,
 } from '@/lib/calendar-event';
-import type { Lesson, LessonStatus, Unavailability } from '@/types/calendar';
+import type { Lesson, LessonStatus, TimeOff } from '@/types/calendar';
 import type { Student } from '@/types/Student';
 
 const student: Student = {
@@ -38,11 +38,11 @@ const lesson = (status: LessonStatus, title?: string): Lesson => ({
     title,
 });
 
-const block: Unavailability = {
+const timeOff: TimeOff = {
     id: 2,
     startsAt: '2026-10-28T12:00:00',
     endsAt: '2026-10-28T13:00:00',
-    type: 'blocked',
+    type: 'time_off',
 };
 
 vi.mock('laravel-vue-i18n', () => ({
@@ -55,7 +55,7 @@ describe('calendar-event', () => {
         vi.clearAllMocks();
     });
 
-    it.each(['lesson', 'blocked'] as const)('translates the %s default title from its type key', (type) => {
+    it.each(['lesson', 'time_off'] as const)('translates the %s default title from its type key', (type) => {
         expect(getDefaultTitle(type)).toBe(`translated:calendar.event.default_title.${type}`);
         expect(trans).toHaveBeenCalledWith(`calendar.event.default_title.${type}`);
     });
@@ -65,13 +65,13 @@ describe('calendar-event', () => {
         expect(trans).not.toHaveBeenCalled();
     });
 
-    it.each(['lesson', 'blocked'] as const)('falls back to the default title for an untitled %s', (type) => {
+    it.each(['lesson', 'time_off'] as const)('falls back to the default title for an untitled %s', (type) => {
         expect(getEventTitle({ type })).toBe(`translated:calendar.event.default_title.${type}`);
     });
 
-    it('returns the status of a lesson and null for a block', () => {
+    it('returns the status of a lesson and null for a time off', () => {
         expect(getEventStatus(lesson('requested'))).toBe('requested');
-        expect(getEventStatus(block)).toBeNull();
+        expect(getEventStatus(timeOff)).toBeNull();
     });
 
     it.each([
@@ -87,13 +87,13 @@ describe('calendar-event', () => {
         expect(appearance.statusLabel).toBe(`translated:calendar.event.status.${status}`);
     });
 
-    it('gives a block the hashed class, the lock icon and no status label', () => {
-        const appearance = getEventAppearance(block);
+    it('gives a time off the hashed class, the lock icon and no status label', () => {
+        const appearance = getEventAppearance(timeOff);
 
         expect(appearance.className).toBe('badge-hashed');
         expect(appearance.icon).toBe(Lock);
         expect(appearance.statusLabel).toBeNull();
-        expect(appearance.title).toBe('translated:calendar.event.default_title.blocked');
+        expect(appearance.title).toBe('translated:calendar.event.default_title.time_off');
     });
 
     it('uses the lesson title in the appearance', () => {
@@ -106,9 +106,9 @@ describe('calendar-event', () => {
         );
     });
 
-    it('describes a block with its title and range only', () => {
-        expect(getEventDescription(block, '12:00 – 13:00')).toBe(
-            'translated:calendar.event.default_title.blocked, 12:00 – 13:00',
+    it('describes a time off with its title and range only', () => {
+        expect(getEventDescription(timeOff, '12:00 – 13:00')).toBe(
+            'translated:calendar.event.default_title.time_off, 12:00 – 13:00',
         );
     });
 

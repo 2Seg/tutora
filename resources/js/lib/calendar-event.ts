@@ -3,19 +3,19 @@ import { getActiveLanguage, trans } from 'laravel-vue-i18n';
 import type { Component } from 'vue';
 import { getStatusLabel } from '@/lib/calendar-status';
 import { CALENDAR_TIME_ZONE, toDate } from '@/lib/calendar-utils';
-import type { CalendarEvent, EventType, Lesson, LessonStatus, Unavailability } from '@/types/calendar';
+import type { CalendarEvent, EventType, Lesson, LessonStatus, TimeOff } from '@/types/calendar';
 
-const eventAppearances: Record<LessonStatus | Unavailability['type'], { className: string; icon?: Component }> = {
+const eventAppearances: Record<LessonStatus | TimeOff['type'], { className: string; icon?: Component }> = {
     planned: { className: 'badge-secondary' },
     cancelled: { className: 'badge-destructive' },
     requested: { className: 'badge-warning' },
     draft: { className: 'badge-outline' },
-    blocked: { className: 'badge-hashed', icon: Lock },
+    time_off: { className: 'badge-hashed', icon: Lock },
 };
 
 export const getDefaultTitle = (type: EventType) => trans(`calendar.event.default_title.${type}`);
 
-export const getEventTitle = (event: Pick<Lesson, 'type' | 'title'> | Pick<Unavailability, 'type'>) =>
+export const getEventTitle = (event: Pick<Lesson, 'type' | 'title'> | Pick<TimeOff, 'type'>) =>
     (event.type === 'lesson' && event.title) || getDefaultTitle(event.type);
 
 export const getEventStatus = (event: CalendarEvent) => (event.type === 'lesson' ? event.status : null);

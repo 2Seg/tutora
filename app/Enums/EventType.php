@@ -7,5 +7,5 @@ namespace App\Enums;
 enum EventType: string
 {
     case Lesson = 'lesson';
-    case Blocked = 'blocked';
+    case TimeOff = 'time_off';
 }

@@ -65,13 +65,13 @@ final class EventResourceTest extends UnitTestCase
     public function testItSerializesType(): void
     {
         // Arrange
-        $this->event->type = 'blocked';
+        $this->event->type = 'time_off';
 
         // Act
         $actual = (new EventResource($this->event))->resolve($this->request);
 
         // Assert
-        $this->assertSame(EventType::Blocked, $actual['type']);
+        $this->assertSame(EventType::TimeOff, $actual['type']);
     }
 
     public function testItSerializesCreatedAt(): void
@@ -227,7 +227,7 @@ final class EventResourceTest extends UnitTestCase
         $this->assertSame($expected, array_keys($actual));
     }
 
-    public function testItDoesNotSerializeLessonAttributesIfTypeIsBlocked(): void
+    public function testItDoesNotSerializeLessonAttributesIfTypeIsTimeOff(): void
     {
         // Arrange
         $expected = [
@@ -239,7 +239,7 @@ final class EventResourceTest extends UnitTestCase
             'updatedAt',
             'deletedAt',
         ];
-        $this->event->type = 'blocked';
+        $this->event->type = 'time_off';
 
         // Act
         $actual = (new EventResource($this->event))->resolve($this->request);
