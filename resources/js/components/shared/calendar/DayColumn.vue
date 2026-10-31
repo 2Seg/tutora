@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
 import Event from '@/components/shared/calendar/Event.vue';
 import { useSlotSelection } from '@/composables/calendar/useSlotSelection';
 import { useEventResize } from '@/composables/calendar/useEventResize';
@@ -27,6 +27,7 @@ const emit = defineEmits<{
     'select-slot': [selection: SlotSelection];
     'event-click': [event: CalendarEvent];
     'event-resize': [event: CalendarEvent, endsAt: Date];
+    'draft-resizing': [endsAt: Date | null];
 }>();
 
 const DRAFT_ID = 'draft';
@@ -50,6 +51,12 @@ const { resizing, onResizeStart } = useEventResize(
     column,
     () => props.day,
     (event, endsAt) => emit('event-resize', event, endsAt),
+);
+
+// Only the draft is resizable, so this is its live end (null once released)
+watch(
+    () => resizing.value?.endMin,
+    (endMin) => emit('draft-resizing', endMin === undefined ? null : atMinutes(props.day, endMin)),
 );
 
 // Leaves an empty strip on the right so a new slot can still be dragged next to existing events

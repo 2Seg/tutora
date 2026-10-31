@@ -42,6 +42,12 @@ function resizeDraft(_event: CalendarEvent, endsAt: Date) {
     if (draft.value) draft.value = { ...draft.value, endsAt };
 }
 
+// The draft as shown in the popover, following the resize before it is committed
+const draftResizeEnd = ref<Date | null>(null);
+const shownDraft = computed(() =>
+    draft.value && draftResizeEnd.value ? { ...draft.value, endsAt: draftResizeEnd.value } : draft.value,
+);
+
 function closePopover() {
     draft.value = null;
     selectedEventId.value = null;
@@ -153,6 +159,7 @@ onMounted(() => {
                         :selected-event-id="selectedEventId"
                         :time-format="formats.time"
                         @event-click="selectEvent"
+                        @draft-resizing="draftResizeEnd = $event"
                         @event-resize="resizeDraft"
                         @select-slot="draft = $event"
                     />
@@ -162,7 +169,7 @@ onMounted(() => {
 
         <EventPopover
             :container="body"
-            :draft="draft"
+            :draft="shownDraft"
             :event="selectedEvent"
             :is-moving="isMovingDraft"
             @close="closePopover"
