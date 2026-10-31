@@ -1,7 +1,8 @@
 import { Lock } from '@lucide/vue';
-import { trans } from 'laravel-vue-i18n';
+import { getActiveLanguage, trans } from 'laravel-vue-i18n';
 import type { Component } from 'vue';
 import { getStatusLabel } from '@/lib/calendar-status';
+import { CALENDAR_TIME_ZONE, toDate } from '@/lib/calendar-utils';
 import type { CalendarEvent, EventType, Lesson, LessonStatus, Unavailability } from '@/types/calendar';
 
 const eventAppearances: Record<LessonStatus | Unavailability['type'], { className: string; icon?: Component }> = {
@@ -31,4 +32,23 @@ export const getEventAppearance = (event: CalendarEvent) => {
 export const getEventDescription = (event: CalendarEvent, range: string) => {
     const { title, statusLabel } = getEventAppearance(event);
     return [title, statusLabel, range].filter(Boolean).join(', ');
+};
+
+export const formatEventSchedule = (range: Pick<CalendarEvent, 'startsAt' | 'endsAt'>) => {
+    const locale = getActiveLanguage().replace('_', '-');
+    const start = toDate(range.startsAt);
+    return {
+        day: new Intl.DateTimeFormat(locale, {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            timeZone: CALENDAR_TIME_ZONE,
+        }).format(start),
+        timeRange: new Intl.DateTimeFormat(locale, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hourCycle: 'h23',
+            timeZone: CALENDAR_TIME_ZONE,
+        }).formatRange(start, toDate(range.endsAt)),
+    };
 };

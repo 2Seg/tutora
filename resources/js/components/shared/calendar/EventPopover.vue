@@ -1,13 +1,17 @@
 <script lang="ts" setup>
 import { X } from '@lucide/vue';
-import { getActiveLanguage } from 'laravel-vue-i18n';
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
-import { getDefaultTitle, getEventStatus, getEventTitle } from '@/lib/calendar-event';
-import { CALENDAR_TIME_ZONE, toDate } from '@/lib/calendar-utils';
-import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
-import type { CalendarEvent, SlotSelection } from '@/types/calendar';
+import BlockedTimeDetails from '@/components/shared/calendar/popover/BlockedTimeDetails.vue';
+import DraftForm from '@/components/shared/calendar/popover/DraftForm.vue';
+import LessonDetails from '@/components/shared/calendar/popover/LessonDetails.vue';
+import type { CalendarEvent, Lesson, SlotSelection, Unavailability } from '@/types/calendar';
+
+type Shown =
+    | { kind: 'draft'; range: SlotSelection }
+    | { kind: 'lesson'; event: Lesson }
+    | { kind: 'blocked'; event: Unavailability };
 
 const props = defineProps<{
     container: HTMLElement | null;
@@ -21,81 +25,68 @@ const emit = defineEmits<{
 }>();
 
 const anchor = shallowRef<HTMLElement>();
-const shown = shallowRef<{ range: SlotSelection | CalendarEvent; event: CalendarEvent | null }>();
+const shown = shallowRef<Shown>();
 
 watch(
     () => [props.draft, props.event, props.isMoving],
     () => {
-        const range = props.draft ?? props.event;
-        if (!range) return;
-        shown.value = { range, event: props.draft ? null : props.event };
+        if (props.draft) {
+            shown.value = { kind: 'draft', range: props.draft };
+        } else if (props.event) {
+            shown.value =
+                props.event.type === 'lesson'
+                    ? { kind: 'lesson', event: props.event }
+                    : { kind: 'blocked', event: props.event };
+        } else {
+            return;
+        }
         const selector = props.draft ? '[data-draft]' : '[data-selected]';
         anchor.value = props.container?.querySelector<HTMLElement>(selector) ?? anchor.value;
     },
     { flush: 'post', immediate: true },
 );
 
-const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draft ?? props.event));
-
-const details = computed(() => {
-    if (!shown.value) return null;
-    const { range, event } = shown.value;
-    const locale = getActiveLanguage().replace('_', '-');
-    const start = toDate(range.startsAt);
+const reference = computed(() => {
+    const element = anchor.value;
+    if (!element) return undefined;
+    let lastRect = element.getBoundingClientRect();
     return {
-        title: event ? getEventTitle(event) : getDefaultTitle('lesson'),
-        day: new Intl.DateTimeFormat(locale, {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            timeZone: CALENDAR_TIME_ZONE,
-        }).format(start),
-        timeRange: new Intl.DateTimeFormat(locale, {
-            hour: '2-digit',
-            minute: '2-digit',
-            hourCycle: 'h23',
-            timeZone: CALENDAR_TIME_ZONE,
-        }).formatRange(start, toDate(range.endsAt)),
-        status: event ? (getEventStatus(event) ?? ('blocked' as const)) : null,
+        contextElement: element,
+        getBoundingClientRect: () => {
+            if (element.isConnected) lastRect = element.getBoundingClientRect();
+            return lastRect;
+        },
     };
 });
+
+const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draft ?? props.event));
 </script>
 
 <template>
     <Popover :open="isOpen">
-        <PopoverAnchor :reference="anchor" />
+        <PopoverAnchor :reference="reference" />
 
         <PopoverContent
             align="start"
-            class="flex w-80 flex-col gap-3"
+            class="relative flex w-80 flex-col gap-3"
             data-keep-draft
             hide-when-detached
             side="right"
             @interact-outside.prevent
         >
-            <template v-if="details">
-                <div class="flex items-start gap-2">
-                    <h3 class="m-0 min-w-0 flex-1 truncate font-semibold">{{ details.title }}</h3>
-                    <Button
-                        aria-label="Close"
-                        class="-mt-1 -mr-2"
-                        size="icon-sm"
-                        variant="ghost"
-                        @click="emit('close')"
-                    >
-                        <X />
-                    </Button>
-                </div>
+            <Button
+                :aria-label="$t('calendar.popover.close')"
+                class="absolute top-2 right-2"
+                size="icon-sm"
+                variant="ghost"
+                @click="emit('close')"
+            >
+                <X />
+            </Button>
 
-                <div class="text-sm">
-                    <p class="m-0">{{ details.day }}</p>
-                    <p class="m-0 text-muted-foreground tabular-nums">{{ details.timeRange }}</p>
-                </div>
-
-                <div v-if="details.status" class="flex gap-2">
-                    <StatusBadge :variant="details.status" />
-                </div>
-            </template>
+            <DraftForm v-if="shown?.kind === 'draft'" :range="shown.range" @cancel="emit('close')" />
+            <LessonDetails v-else-if="shown?.kind === 'lesson'" :event="shown.event" />
+            <BlockedTimeDetails v-else-if="shown?.kind === 'blocked'" :event="shown.event" />
         </PopoverContent>
     </Popover>
 </template>

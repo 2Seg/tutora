@@ -16,4 +16,11 @@ return [
             'blocked' => 'Unavailable',
         ],
     ],
+    'popover' => [
+        'title' => ['placeholder' => 'Add title'],
+        'cancel' => 'Cancel',
+        'create' => 'Create',
+        'close' => 'Close',
+        'join_meeting' => 'Join meeting',
+    ],
 ];
