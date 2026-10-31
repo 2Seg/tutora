@@ -26,7 +26,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     'select-slot': [selection: SlotSelection];
     'event-click': [event: CalendarEvent];
-    'event-resize': [event: CalendarEvent, endAt: Date];
+    'event-resize': [event: CalendarEvent, endsAt: Date];
 }>();
 
 const DRAFT_ID = 'draft';
@@ -38,8 +38,8 @@ const eventsIncludingDrafts = computed<CalendarEvent[]>(() =>
                   id: DRAFT_ID,
                   type: 'lesson',
                   status: 'draft',
-                  startAt: props.draft.startAt,
-                  endAt: props.draft.endAt,
+                  startsAt: props.draft.startsAt,
+                  endsAt: props.draft.endsAt,
               },
           ]
         : props.events,
@@ -49,7 +49,7 @@ const column = ref<HTMLElement | null>(null);
 const { resizing, onResizeStart } = useEventResize(
     column,
     () => props.day,
-    (event, endAt) => emit('event-resize', event, endAt),
+    (event, endsAt) => emit('event-resize', event, endsAt),
 );
 
 // Leaves an empty strip on the right so a new slot can still be dragged next to existing events
@@ -76,8 +76,8 @@ const items = computed(() => {
     const segments = [];
 
     for (const event of eventsIncludingDrafts.value) {
-        const start = toDate(event.startAt);
-        const end = resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endAt);
+        const start = toDate(event.startsAt);
+        const end = resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endsAt);
         const segment = segmentForDay(start, end, props.day);
         if (segment) segments.push({ event, start, end, ...segment });
     }
@@ -104,7 +104,7 @@ const dragEventPreview = computed(() => {
     const { startMin, endMin } = selection.value;
     const start = atMinutes(props.day, startMin);
     const end = atMinutes(props.day, endMin);
-    const event: CalendarEvent = { id: 'preview', type: 'lesson', status: 'draft', startAt: start, endAt: end };
+    const event: CalendarEvent = { id: 'preview', type: 'lesson', status: 'draft', startsAt: start, endsAt: end };
 
     return { event, start, end, compact: endMin - startMin < 90, style: positionStyle(startMin, endMin) };
 });

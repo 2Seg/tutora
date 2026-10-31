@@ -85,15 +85,15 @@ final class EventSeeder extends Seeder
         }
     }
 
-    private function createEvent(EventType $type, CarbonImmutable $startAt, CarbonImmutable $endAt): Event
+    private function createEvent(EventType $type, CarbonImmutable $startsAt, CarbonImmutable $endsAt): Event
     {
         return Event::factory()
             ->withoutAfterCreating()
             ->create([
                 'user_id' => $this->user->id,
                 'type' => $type,
-                'start_at' => $startAt,
-                'end_at' => $endAt,
+                'starts_at' => $startsAt,
+                'ends_at' => $endsAt,
             ]);
     }
 

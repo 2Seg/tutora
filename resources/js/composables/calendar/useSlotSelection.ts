@@ -38,7 +38,7 @@ export function useSlotSelection(day: () => Date, onSelect: (selection: SlotSele
             MINUTES_PER_DAY,
         );
 
-        onSelect({ startAt: atMinutes(day(), start), endAt: atMinutes(day(), end) });
+        onSelect({ startsAt: atMinutes(day(), start), endsAt: atMinutes(day(), end) });
     }
 
     function onPointerCancel() {

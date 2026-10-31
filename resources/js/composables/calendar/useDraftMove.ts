@@ -45,8 +45,8 @@ export function useDraftMove(options: {
         const where = locate(e);
         if (!where) return;
 
-        grab = where.minute - minutesOfDay(draft.value.startAt);
-        duration = (draft.value.endAt.getTime() - draft.value.startAt.getTime()) / 60_000;
+        grab = where.minute - minutesOfDay(draft.value.startsAt);
+        duration = (draft.value.endsAt.getTime() - draft.value.startsAt.getTime()) / 60_000;
         isMoving.value = true;
 
         window.addEventListener('pointermove', onPointerMove);
@@ -68,11 +68,11 @@ export function useDraftMove(options: {
             MINUTES_PER_DAY - duration,
         );
         const day = days()[where.index];
-        const startAt = atMinutes(day, startMin);
-        const endAt = atMinutes(day, startMin + duration);
+        const startsAt = atMinutes(day, startMin);
+        const endsAt = atMinutes(day, startMin + duration);
 
-        if (startAt.getTime() !== current.startAt.getTime() || endAt.getTime() !== current.endAt.getTime()) {
-            draft.value = { startAt, endAt };
+        if (startsAt.getTime() !== current.startsAt.getTime() || endsAt.getTime() !== current.endsAt.getTime()) {
+            draft.value = { startsAt, endsAt };
         }
     }
 

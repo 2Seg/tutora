@@ -29,8 +29,8 @@ const student: Student = {
 
 const lesson = (status: LessonStatus, title?: string): Lesson => ({
     id: 1,
-    startAt: '2026-10-28T09:00:00',
-    endAt: '2026-10-28T10:00:00',
+    startsAt: '2026-10-28T09:00:00',
+    endsAt: '2026-10-28T10:00:00',
     type: 'lesson',
     status,
     student,
@@ -39,8 +39,8 @@ const lesson = (status: LessonStatus, title?: string): Lesson => ({
 
 const block: Unavailability = {
     id: 2,
-    startAt: '2026-10-28T12:00:00',
-    endAt: '2026-10-28T13:00:00',
+    startsAt: '2026-10-28T12:00:00',
+    endsAt: '2026-10-28T13:00:00',
     type: 'blocked',
 };
 

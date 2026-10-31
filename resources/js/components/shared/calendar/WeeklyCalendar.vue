@@ -38,8 +38,8 @@ function selectEvent(event: CalendarEvent) {
     emit('event-click', event);
 }
 
-function resizeDraft(_event: CalendarEvent, endAt: Date) {
-    if (draft.value) draft.value = { ...draft.value, endAt };
+function resizeDraft(_event: CalendarEvent, endsAt: Date) {
+    if (draft.value) draft.value = { ...draft.value, endsAt };
 }
 
 function closePopover() {

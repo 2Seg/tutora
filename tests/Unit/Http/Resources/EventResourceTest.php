@@ -36,30 +36,30 @@ final class EventResourceTest extends UnitTestCase
         $this->assertSame(1, $actual['id']);
     }
 
-    public function testItSerializesStartAt(): void
+    public function testItSerializesStartsAt(): void
     {
         // Arrange
         $this->event->setDateFormat('Y-m-d H:i:s');
-        $this->event->start_at = '2000-01-01T00:00:00+00:00';
+        $this->event->starts_at = '2000-01-01T00:00:00+00:00';
 
         // Act
         $actual = (new EventResource($this->event))->resolve($this->request);
 
         // Assert
-        $this->assertSame('2000-01-01T00:00:00+00:00', $actual['startAt']);
+        $this->assertSame('2000-01-01T00:00:00+00:00', $actual['startsAt']);
     }
 
-    public function testItSerializesEndAt(): void
+    public function testItSerializesEndsAt(): void
     {
         // Arrange
         $this->event->setDateFormat('Y-m-d H:i:s');
-        $this->event->end_at = '2000-01-01T00:00:00+00:00';
+        $this->event->ends_at = '2000-01-01T00:00:00+00:00';
 
         // Act
         $actual = (new EventResource($this->event))->resolve($this->request);
 
         // Assert
-        $this->assertSame('2000-01-01T00:00:00+00:00', $actual['endAt']);
+        $this->assertSame('2000-01-01T00:00:00+00:00', $actual['endsAt']);
     }
 
     public function testItSerializesType(): void
@@ -182,8 +182,8 @@ final class EventResourceTest extends UnitTestCase
         // Arrange
         $expected = [
             'id',
-            'startAt',
-            'endAt',
+            'startsAt',
+            'endsAt',
             'type',
             'createdAt',
             'updatedAt',
@@ -210,8 +210,8 @@ final class EventResourceTest extends UnitTestCase
         // Arrange
         $expected = [
             'id',
-            'startAt',
-            'endAt',
+            'startsAt',
+            'endsAt',
             'type',
             'createdAt',
             'updatedAt',
@@ -232,8 +232,8 @@ final class EventResourceTest extends UnitTestCase
         // Arrange
         $expected = [
             'id',
-            'startAt',
-            'endAt',
+            'startsAt',
+            'endsAt',
             'type',
             'createdAt',
             'updatedAt',

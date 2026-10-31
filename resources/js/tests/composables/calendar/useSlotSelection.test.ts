@@ -93,7 +93,7 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(target, clientY));
             onPointerUp();
 
-            return onSelect.mock.calls[0][0].startAt;
+            return onSelect.mock.calls[0][0].startsAt;
         };
 
         it.each([
@@ -129,7 +129,7 @@ describe('useSlotSelection', () => {
             onPointerUp();
 
             expect(onSelect).toHaveBeenCalledTimes(1);
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(600), endAt: at(650) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
         });
 
         it('treats movement within the same 15 minute slot as a click', () => {
@@ -139,7 +139,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, TOP + 612));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(600), endAt: at(650) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
         });
 
         it('caps the default slot at the end of the day', () => {
@@ -148,7 +148,7 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, yFor(1425)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(1425), endAt: at(1440) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1425), endsAt: at(1440) });
         });
 
         it('selects midnight to 00:50 when clicking the top of the column', () => {
@@ -157,7 +157,7 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, TOP));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(0), endAt: at(50) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(50) });
         });
     });
 
@@ -169,7 +169,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(690)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(600), endAt: at(705) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(705) });
         });
 
         it('produces the same range when dragging upwards', () => {
@@ -179,7 +179,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(600)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(600), endAt: at(705) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(705) });
         });
 
         it('uses the latest pointer position', () => {
@@ -190,7 +190,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(660)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(600), endAt: at(675) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(675) });
         });
 
         it('selects a single extra slot when dragging by one slot', () => {
@@ -200,7 +200,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(615)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(600), endAt: at(630) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(630) });
         });
 
         it('ends exactly at midnight when dragged past the bottom of the column', () => {
@@ -210,7 +210,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, TOP + 5000));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(1290), endAt: at(1440) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1290), endsAt: at(1440) });
         });
 
         it('starts at midnight when dragged past the top of the column', () => {
@@ -220,7 +220,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, TOP - 500));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(0), endAt: at(135) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(135) });
         });
     });
 
@@ -350,7 +350,7 @@ describe('useSlotSelection', () => {
             onPointerUp();
 
             expect(onSelect).toHaveBeenCalledTimes(1);
-            expect(onSelect).toHaveBeenCalledWith({ startAt: at(300), endAt: at(350) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(300), endsAt: at(350) });
         });
     });
 
@@ -364,8 +364,8 @@ describe('useSlotSelection', () => {
             onPointerUp();
 
             expect(onSelect).toHaveBeenCalledWith({
-                startAt: at(600, new Date(Date.UTC(2024, 0, 16))),
-                endAt: at(650, new Date(Date.UTC(2024, 0, 16))),
+                startsAt: at(600, new Date(Date.UTC(2024, 0, 16))),
+                endsAt: at(650, new Date(Date.UTC(2024, 0, 16))),
             });
         });
 
@@ -375,8 +375,8 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, yFor(1425)));
             onPointerUp();
 
-            const { endAt } = onSelect.mock.calls[0][0];
-            expect(endAt).toEqual(new Date(Date.UTC(2024, 0, 16, 0, 0)));
+            const { endsAt } = onSelect.mock.calls[0][0];
+            expect(endsAt).toEqual(new Date(Date.UTC(2024, 0, 16, 0, 0)));
         });
     });
 });

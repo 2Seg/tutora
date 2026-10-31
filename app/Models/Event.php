@@ -20,8 +20,8 @@ final class Event extends Model
     protected $casts = [
         'type' => EventType::class,
         'status' => LessonStatus::class,
-        'start_at' => 'datetime',
-        'end_at' => 'datetime',
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
         'deleted_at' => 'datetime',
     ];
 

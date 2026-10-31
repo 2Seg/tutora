@@ -14,8 +14,8 @@ final class EventResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'startAt' => $this->start_at?->toIso8601String(),
-            'endAt' => $this->end_at?->toIso8601String(),
+            'startsAt' => $this->starts_at?->toIso8601String(),
+            'endsAt' => $this->ends_at?->toIso8601String(),
             'type' => $this->type,
             'createdAt' => $this->created_at?->toIso8601String(),
             'updatedAt' => $this->updated_at?->toIso8601String(),
