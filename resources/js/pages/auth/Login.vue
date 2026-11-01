@@ -19,14 +19,14 @@ import {
 } from '@/components/ui/input-group';
 import { MailIcon, Lock } from '@lucide/vue';
 import { Form } from '@inertiajs/vue3';
+import { submit } from '@/routes/login';
 </script>
 
 <template>
     <Form
         #default="{ errors, processing }"
-        action="/login"
+        :action="submit()"
         class="w-full max-w-sm"
-        method="POST"
     >
         <Card class="bg-card">
             <CardHeader class="flex items-center justify-center">
