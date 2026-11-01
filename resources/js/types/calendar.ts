@@ -2,6 +2,7 @@ import { Student } from '@/types/Student';
 
 export type EventType = 'lesson' | 'time_off';
 export type LessonStatus = 'draft' | 'requested' | 'planned' | 'cancelled';
+export type SelectLessonStatus = Extract<LessonStatus, 'requested' | 'planned' | 'cancelled'>;
 
 interface Event {
     id: string | number;
@@ -31,3 +32,10 @@ export interface SlotSelection {
     startsAt: Date;
     endsAt: Date;
 }
+
+export interface Draft extends SlotSelection {
+    type: EventType;
+    title?: string;
+}
+
+export type DraftUpdate = Partial<Pick<Draft, 'type' | 'title'>>;
