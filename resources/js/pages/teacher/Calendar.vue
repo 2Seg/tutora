@@ -4,16 +4,12 @@ import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { statusVariants } from '@/lib/calendar-status';
 import { startOfWeek } from '@/lib/calendar-utils';
-import type { CalendarEvent, SlotSelection } from '@/types/calendar';
+import type { CalendarEvent, Draft } from '@/types/calendar';
 import { Button } from '@/components/ui/button';
 
 const props = defineProps<{ events: CalendarEvent[] }>();
 const weekStart = ref(startOfWeek(new Date()));
-const draft = ref<SlotSelection | null>(null);
-
-function onEventClick(event: CalendarEvent) {
-    console.log('event', event);
-}
+const draft = ref<Draft | null>(null);
 </script>
 
 <template>
@@ -34,7 +30,6 @@ function onEventClick(event: CalendarEvent) {
             v-model:week-start="weekStart"
             :events="props.events"
             class="min-w-0"
-            @event-click="onEventClick"
         />
     </div>
 </template>

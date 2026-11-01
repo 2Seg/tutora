@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref, shallowRef, watch } from 'vue';
 
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
-import type { SlotSelection } from '@/types/calendar';
+import type { Draft, SlotSelection } from '@/types/calendar';
 
 // The composable registers an unmount hook, but there is no component here: collect the hooks to run them by hand.
 const hooks = vi.hoisted(() => ({ unmount: [] as Array<() => void> }));
@@ -161,6 +161,16 @@ describe('useDraftMove', () => {
 
             fire('pointermove', { x: xIn(1), y: yAt(660) });
             expect(draft.value).toEqual(draftOf(1, 615, 675));
+        });
+
+        it('keeps the other draft fields when moving', () => {
+            const initial: Draft = { ...draftOf(1, 600, 660), type: 'time_off', title: 'Kept' };
+            const { onPointerDown, draft } = setup(initial);
+
+            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(1), y: yAt(645) });
+
+            expect(draft.value).toEqual({ ...draftOf(1, 615, 675), type: 'time_off', title: 'Kept' });
         });
 
         it('only updates the draft when its position changes', () => {

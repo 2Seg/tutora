@@ -12,10 +12,10 @@ const clamp = (value: number, min: number, max: number) => Math.min(Math.max(val
  * Bind `onPointerDown` on the element that contains the day columns. While `isMoving` is true, cover the page
  * with a layer that carries the cursor: the draft changes column while it moves, so its element can't hold it.
  */
-export function useDraftMove(options: {
+export function useDraftMove<T extends SlotSelection>(options: {
     body: Ref<HTMLElement | null>;
     days: () => Date[];
-    draft: Ref<SlotSelection | null>;
+    draft: Ref<T | null>;
 }) {
     const { body, days, draft } = options;
     const isMoving = ref(false);
@@ -72,7 +72,7 @@ export function useDraftMove(options: {
         const endsAt = atMinutes(day, startMin + duration);
 
         if (startsAt.getTime() !== current.startsAt.getTime() || endsAt.getTime() !== current.endsAt.getTime()) {
-            draft.value = { startsAt, endsAt };
+            draft.value = { ...current, startsAt, endsAt };
         }
     }
 

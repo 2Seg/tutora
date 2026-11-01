@@ -12,14 +12,14 @@ import {
     segmentForDay,
     toDate,
 } from '@/lib/calendar-utils';
-import type { CalendarEvent, SlotSelection } from '@/types/calendar';
+import type { CalendarEvent, Draft, SlotSelection } from '@/types/calendar';
 
 const props = defineProps<{
     day: Date;
     events: CalendarEvent[];
     now: Date;
     timeFormat: Intl.DateTimeFormat;
-    draft: SlotSelection | null;
+    draft: Draft | null;
     selectedEventId?: CalendarEvent['id'] | null;
 }>();
 
@@ -31,19 +31,15 @@ const emit = defineEmits<{
 }>();
 
 const DRAFT_ID = 'draft';
+const draftEvent = computed<CalendarEvent | null>(() => {
+    if (!props.draft) return null;
+    const { type, title, startsAt, endsAt } = props.draft;
+    return type === 'time_off'
+        ? { id: DRAFT_ID, type, startsAt, endsAt }
+        : { id: DRAFT_ID, type, status: 'draft', title, startsAt, endsAt };
+});
 const eventsIncludingDrafts = computed<CalendarEvent[]>(() =>
-    props.draft
-        ? [
-              ...props.events,
-              {
-                  id: DRAFT_ID,
-                  type: 'lesson',
-                  status: 'draft',
-                  startsAt: props.draft.startsAt,
-                  endsAt: props.draft.endsAt,
-              },
-          ]
-        : props.events,
+    draftEvent.value ? [...props.events, draftEvent.value] : props.events,
 );
 
 const column = ref<HTMLElement | null>(null);

@@ -6,7 +6,7 @@ import DayColumn from '@/components/shared/calendar/DayColumn.vue';
 import EventPopover from '@/components/shared/calendar/EventPopover.vue';
 import { Button } from '@/components/ui/button';
 import { addDays, atMinutes, CALENDAR_TIME_ZONE, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
-import type { CalendarEvent, SlotSelection } from '@/types/calendar';
+import type { CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
 
@@ -14,7 +14,7 @@ const props = withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events
 
 const emit = defineEmits<{ 'event-click': [event: CalendarEvent] }>();
 
-const draft = defineModel<SlotSelection | null>('draft', { default: null });
+const draft = defineModel<Draft | null>('draft', { default: null });
 const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
 
 // Week navigation
@@ -42,6 +42,10 @@ function resizeDraft(_event: CalendarEvent, endsAt: Date) {
     if (draft.value) draft.value = { ...draft.value, endsAt };
 }
 
+function updateDraft(update: DraftUpdate) {
+    if (draft.value) draft.value = { ...draft.value, ...update };
+}
+
 // The draft as shown in the popover, following the resize before it is committed
 const draftResizeEnd = ref<Date | null>(null);
 const shownDraft = computed(() =>
@@ -54,6 +58,7 @@ function closePopover() {
 }
 
 useEventListener(window, 'pointerdown', (e) => {
+    if (document.body.style.pointerEvents === 'none') return;
     const target = e.target as HTMLElement;
     if (!target.closest('[data-draft], [data-keep-draft]')) draft.value = null;
     if (!target.closest('[data-event], [data-keep-draft]')) selectedEventId.value = null;
@@ -161,7 +166,7 @@ onMounted(() => {
                         @event-click="selectEvent"
                         @draft-resizing="draftResizeEnd = $event"
                         @event-resize="resizeDraft"
-                        @select-slot="draft = $event"
+                        @select-slot="draft = { ...$event, type: 'lesson' }"
                     />
                 </div>
             </div>
@@ -173,6 +178,7 @@ onMounted(() => {
             :event="selectedEvent"
             :is-moving="isMovingDraft"
             @close="closePopover"
+            @update-draft="updateDraft"
         />
 
         <!-- Carries the cursor while the draft is being moved -->
