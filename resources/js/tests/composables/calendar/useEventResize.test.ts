@@ -137,12 +137,12 @@ describe('useEventResize', () => {
 
     describe('moving', () => {
         it.each([
-            ['rounds down below the middle of a step', minutes(12, 7), minutes(12)],
-            ['rounds up above the middle of a step', minutes(12, 8), minutes(12, 15)],
-            ['rounds down when shrinking', minutes(11, 22), minutes(11, 15)],
-            ['rounds up when shrinking', minutes(11, 23), minutes(11, 30)],
+            ['rounds down below the middle of a step', minutes(12, 4), minutes(12)],
+            ['rounds up above the middle of a step', minutes(12, 6), minutes(12, 10)],
+            ['rounds down when shrinking', minutes(11, 24), minutes(11, 20)],
+            ['rounds up when shrinking', minutes(11, 26), minutes(11, 30)],
             ['lands exactly on a line', minutes(14), minutes(14)],
-        ])('snaps to 15 minutes: %s', (_name, pointerMinute, expectedEnd) => {
+        ])('snaps to 10 minutes: %s', (_name, pointerMinute, expectedEnd) => {
             const { resizing, press, moveTo } = setup();
 
             press();
@@ -155,11 +155,11 @@ describe('useEventResize', () => {
             const { resizing, press, moveTo } = setup(); // starts at 10:00
 
             press();
-            moveTo(minutes(10, 5));
-            expect(resizing.value?.endMin).toBe(minutes(10, 15));
+            moveTo(minutes(10, 3));
+            expect(resizing.value?.endMin).toBe(minutes(10, 10));
 
             moveTo(0);
-            expect(resizing.value?.endMin).toBe(minutes(10, 15));
+            expect(resizing.value?.endMin).toBe(minutes(10, 10));
         });
 
         it('stops at midnight', () => {

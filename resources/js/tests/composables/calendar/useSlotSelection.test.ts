@@ -98,10 +98,10 @@ describe('useSlotSelection', () => {
 
         it.each([
             [0, 0],
-            [14.9, 0],
-            [614, 600],
-            [629, 615],
-            [1439, 1425],
+            [9.9, 0],
+            [614, 610],
+            [629, 620],
+            [1439, 1430],
         ])('snaps %s minutes down to %s', (offset, expectedStart) => {
             expect(clickStart(column, TOP + offset)).toEqual(at(expectedStart));
         });
@@ -111,7 +111,7 @@ describe('useSlotSelection', () => {
         });
 
         it('clamps pointers below the column to the last slot of the day', () => {
-            expect(clickStart(column, TOP + 2000)).toEqual(at(1440 - 15));
+            expect(clickStart(column, TOP + 2000)).toEqual(at(1440 - 10));
         });
 
         it('scales with the column height', () => {
@@ -132,11 +132,11 @@ describe('useSlotSelection', () => {
             expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
         });
 
-        it('treats movement within the same 15 minute slot as a click', () => {
+        it('treats movement within the same 10 minute slot as a click', () => {
             const { onPointerDown, onPointerMove, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, TOP + 601));
-            onPointerMove(pointerEvent(column, TOP + 612));
+            onPointerMove(pointerEvent(column, TOP + 608));
             onPointerUp();
 
             expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
@@ -145,10 +145,10 @@ describe('useSlotSelection', () => {
         it('caps the default slot at the end of the day', () => {
             const { onPointerDown, onPointerUp } = setup();
 
-            onPointerDown(pointerEvent(column, yFor(1425)));
+            onPointerDown(pointerEvent(column, yFor(1430)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1425), endsAt: at(1440) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1430), endsAt: at(1440) });
         });
 
         it('selects midnight to 00:50 when clicking the top of the column', () => {
@@ -169,7 +169,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(690)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(705) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(700) });
         });
 
         it('produces the same range when dragging upwards', () => {
@@ -179,7 +179,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(600)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(705) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(700) });
         });
 
         it('uses the latest pointer position', () => {
@@ -190,17 +190,17 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(660)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(675) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(670) });
         });
 
         it('selects a single extra slot when dragging by one slot', () => {
             const { onPointerDown, onPointerMove, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
-            onPointerMove(pointerEvent(column, yFor(615)));
+            onPointerMove(pointerEvent(column, yFor(610)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(630) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(620) });
         });
 
         it('ends exactly at midnight when dragged past the bottom of the column', () => {
@@ -220,7 +220,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, TOP - 500));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(135) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(130) });
         });
     });
 
@@ -237,7 +237,7 @@ describe('useSlotSelection', () => {
             const { onPointerDown, onPointerMove, selection } = setup();
 
             onPointerDown(pointerEvent(column, TOP + 601));
-            onPointerMove(pointerEvent(column, TOP + 612));
+            onPointerMove(pointerEvent(column, TOP + 608));
 
             expect(selection.value).toBeNull();
         });
@@ -246,9 +246,9 @@ describe('useSlotSelection', () => {
             const { onPointerDown, onPointerMove, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
-            onPointerMove(pointerEvent(column, yFor(615)));
+            onPointerMove(pointerEvent(column, yFor(610)));
 
-            expect(selection.value).toEqual({ startMin: 600, endMin: 630 });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 620 });
         });
 
         it('updates as the pointer moves', () => {
@@ -257,7 +257,7 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, yFor(600)));
             onPointerMove(pointerEvent(column, yFor(690)));
 
-            expect(selection.value).toEqual({ startMin: 600, endMin: 705 });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 700 });
         });
 
         it('anchors the start at the earlier slot when dragging upwards', () => {
@@ -266,7 +266,7 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, yFor(690)));
             onPointerMove(pointerEvent(column, yFor(600)));
 
-            expect(selection.value).toEqual({ startMin: 600, endMin: 705 });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 700 });
         });
 
         it('disappears again when the pointer comes back to the pressed slot', () => {
@@ -372,7 +372,7 @@ describe('useSlotSelection', () => {
         it('yields the next midnight as end time when the slot reaches the end of the day', () => {
             const { onPointerDown, onPointerUp } = setup();
 
-            onPointerDown(pointerEvent(column, yFor(1425)));
+            onPointerDown(pointerEvent(column, yFor(1430)));
             onPointerUp();
 
             const { endsAt } = onSelect.mock.calls[0][0];

@@ -137,11 +137,11 @@ describe('useDraftMove', () => {
         });
 
         it.each([
-            [727, 690],
-            [728, 705],
-            [712, 675],
-            [713, 690],
-        ])('snaps to 15 minutes: pointer at minute %s puts the draft at %s', (pointerMinute, expectedStart) => {
+            [724, 690],
+            [726, 700],
+            [714, 680],
+            [716, 690],
+        ])('snaps to 10 minutes: pointer at minute %s puts the draft at %s', (pointerMinute, expectedStart) => {
             const { onPointerDown, draft } = setup();
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) })); // grabbed 30 minutes into the draft
@@ -159,8 +159,8 @@ describe('useDraftMove', () => {
             expect(draft.value).toEqual(draftOf(1, 600, 660));
             expect(changes).not.toHaveBeenCalled();
 
-            fire('pointermove', { x: xIn(1), y: yAt(660) });
-            expect(draft.value).toEqual(draftOf(1, 615, 675));
+            fire('pointermove', { x: xIn(1), y: yAt(655) });
+            expect(draft.value).toEqual(draftOf(1, 610, 670));
         });
 
         it('keeps the other draft fields when moving', () => {
@@ -168,9 +168,9 @@ describe('useDraftMove', () => {
             const { onPointerDown, draft } = setup(initial);
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) }));
-            fire('pointermove', { x: xIn(1), y: yAt(645) });
+            fire('pointermove', { x: xIn(1), y: yAt(640) });
 
-            expect(draft.value).toEqual({ ...draftOf(1, 615, 675), type: 'time_off', title: 'Kept' });
+            expect(draft.value).toEqual({ ...draftOf(1, 610, 670), type: 'time_off', title: 'Kept' });
         });
 
         it('only updates the draft when its position changes', () => {
@@ -178,7 +178,7 @@ describe('useDraftMove', () => {
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) }));
             fire('pointermove', { x: xIn(1), y: yAt(722) });
-            fire('pointermove', { x: xIn(1), y: yAt(725) }); // same 15 minute step
+            fire('pointermove', { x: xIn(1), y: yAt(724) }); // same 10 minute step
 
             expect(changes).toHaveBeenCalledTimes(1);
         });
@@ -260,7 +260,7 @@ describe('useDraftMove', () => {
             onPointerDown(press({ x: xIn(1), y: yAt(620) })); // grabbed 20 minutes into the draft
             fire('pointermove', { x: xIn(1), y: yAt(700) });
 
-            expect(draft.value).toEqual(draftOf(1, 675, 725));
+            expect(draft.value).toEqual(draftOf(1, 680, 730));
         });
 
         it('ends exactly at midnight when a 50 minute draft is dragged to the bottom', () => {
@@ -269,7 +269,6 @@ describe('useDraftMove', () => {
             onPointerDown(press({ x: xIn(1), y: yAt(1310) }));
             fire('pointermove', { x: xIn(1), y: yAt(5000) });
 
-            // The start is not on a 15 minute line here: the length wins over the snapping.
             expect(draft.value).toEqual(draftOf(1, 1390, 1440));
         });
 
@@ -279,7 +278,7 @@ describe('useDraftMove', () => {
             onPointerDown(press({ x: xIn(1), y: yAt(1400) })); // grabbed 20 minutes into the draft
             fire('pointermove', { x: xIn(1), y: yAt(1000) });
 
-            expect(draft.value).toEqual(draftOf(1, 975, 1035));
+            expect(draft.value).toEqual(draftOf(1, 980, 1040));
         });
 
         it('only changes the day of a draft that lasts the whole day', () => {

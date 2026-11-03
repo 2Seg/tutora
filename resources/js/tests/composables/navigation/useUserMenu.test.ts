@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { LogOut, Settings, User as UserIcon } from '@lucide/vue';
 import { useUserMenu } from '@/composables/navigation/useUserMenu';
 import { trans } from 'laravel-vue-i18n';
-import { logout } from '@/routes/login';
+import { logout } from '@/routes/auth';
 
 vi.mock('laravel-vue-i18n', () => ({
     trans: vi.fn((key: string) => `translated:${key}`),
