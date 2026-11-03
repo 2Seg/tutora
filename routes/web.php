@@ -7,19 +7,19 @@ use App\Http\Controllers\Teacher\EventController;
 use App\Http\Controllers\Teacher\StudentController;
 use Illuminate\Routing\Router;
 
-return function (Router $router) {
-    $router->middleware('web')->group(function ($router) {
-        $router->middleware('guest')->group(function ($router) {
-            $router->inertia('/login', 'auth/Login')->name('login');
-            $router->post('/login', [AuthController::class, 'login'])->name('login.submit');
-        });
+/** @var Router $router */
 
-        $router->middleware('auth')->group(function ($router) {
-            $router->post('/logout', [AuthController::class, 'logout'])->name('login.logout');
+$router->middleware('guest')->name('auth.')->group(function (Router $router) {
+    $router->inertia('/login', 'auth/Login')->name('show');
+    $router->post('/login', [AuthController::class, 'login'])->name('login');
+});
 
-            $router->inertia('/teacher', 'teacher/Dashboard')->name('teacher.dashboard');
-            $router->get('/teacher/students', [StudentController::class, 'index'])->name('teacher.students');
-            $router->get('/teacher/calendar', [EventController::class, 'index'])->name('teacher.calendar');
-        });
+$router->middleware('auth')->group(function (Router $router) {
+    $router->post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
+
+    $router->prefix('teacher')->name('teacher.')->group(function (Router $router) {
+        $router->inertia('/', 'teacher/Dashboard')->name('dashboard');
+        $router->get('/students', [StudentController::class, 'index'])->name('students');
+        $router->get('/calendar', [EventController::class, 'index'])->name('calendar');
     });
-};
+});
