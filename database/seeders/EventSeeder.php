@@ -15,22 +15,17 @@ use Illuminate\Database\Seeder;
 
 final class EventSeeder extends Seeder
 {
-    // [day of the week (0 = Monday), from, to, student, status]
     private const array THIS_WEEK_LESSONS = [
         [0, '10:00', '11:00', 'Maya Chen', LessonStatus::Planned],
         [1, '14:00', '15:00', 'Oliver James', LessonStatus::Planned],
         [2, '10:00', '11:00', 'Sophie Martin', LessonStatus::Planned],
         [3, '11:00', '12:00', 'Lucas Rossi', LessonStatus::Cancelled],
         [4, '10:00', '11:00', 'Amira Patel', LessonStatus::Planned],
-        [5, '10:00', '11:00', 'Maya Chen', LessonStatus::Cancelled],
-        [6, '09:00', '10:30', 'Amira Patel', LessonStatus::Planned],
     ];
 
-    // [day of the week (0 = Monday), from, to]
     private const array THIS_WEEK_TIME_OFF = [
         [2, '12:00', '14:00'],
         [4, '13:00', '17:00'],
-        [6, '13:00', '17:00'],
     ];
 
     private const array NEXT_WEEK_LESSONS = [
@@ -40,12 +35,10 @@ final class EventSeeder extends Seeder
         [2, '14:00', '15:00', 'Oliver James', LessonStatus::Planned],
         [3, '10:00', '11:00', 'Maya Chen', LessonStatus::Cancelled],
         [4, '16:00', '17:00', 'Sophie Martin', LessonStatus::Requested],
-        [5, '11:00', '12:30', 'Lucas Rossi', LessonStatus::Planned],
     ];
 
     private const array NEXT_WEEK_TIME_OFF = [
         [3, '13:00', '17:00'],
-        [5, '14:00', '18:00'],
     ];
 
     private User $user;
@@ -59,11 +52,6 @@ final class EventSeeder extends Seeder
 
         $thisMonday = CarbonImmutable::now()->startOfWeek();
         $nextMonday = $thisMonday->addWeek();
-
-        // Time off every night, starting with the Sunday night that covers this Monday morning
-        foreach (range(-1, 13) as $day) {
-            $this->createEvent(EventType::TimeOff, $this->at($thisMonday, $day, '22:00'), $this->at($thisMonday, $day + 1, '06:00'));
-        }
 
         $this->seedWeek($thisMonday, self::THIS_WEEK_LESSONS, self::THIS_WEEK_TIME_OFF);
         $this->seedWeek($nextMonday, self::NEXT_WEEK_LESSONS, self::NEXT_WEEK_TIME_OFF);
@@ -113,7 +101,6 @@ final class EventSeeder extends Seeder
     {
         [$hours, $minutes] = array_map(intval(...), explode(':', $time));
 
-        // setTime(24, 0) rolls over to midnight of the next day
         return $monday->addDays($day)->setTime($hours, $minutes);
     }
 }
