@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Actions;
+namespace Tests\Unit\Actions\Event;
 
-use App\Actions\StoreEventAction;
+use App\Actions\Event\StoreEventAction;
 use App\Data\EventData;
 use App\Data\LessonData;
 use App\Enums\EventType;

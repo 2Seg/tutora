@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Actions\Auth;
 
-use App\Actions\LogoutUserAction;
+use App\Actions\Auth\LogoutUserAction;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
 use Mockery;

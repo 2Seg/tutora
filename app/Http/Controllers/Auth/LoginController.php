@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Actions\AuthenticateUserAction;
+use App\Actions\Auth\AuthenticateUserAction;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\RedirectResponse;

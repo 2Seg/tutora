@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Actions\Auth;
 
-use App\Actions\AuthenticateUserAction;
+use App\Actions\Auth\AuthenticateUserAction;
 use App\Exceptions\InvalidCredentials;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;

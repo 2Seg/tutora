@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Teacher\Event;
 
-use App\Actions\StoreEventAction;
+use App\Actions\Event\StoreEventAction;
 use App\Http\Requests\CreateEventRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;

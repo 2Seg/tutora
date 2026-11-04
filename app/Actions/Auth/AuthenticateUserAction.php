@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Actions;
+namespace App\Actions\Auth;
 
 use App\Exceptions\InvalidCredentials;
 use Illuminate\Contracts\Auth\StatefulGuard;

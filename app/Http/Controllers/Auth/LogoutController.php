@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Auth;
 
-use App\Actions\LogoutUserAction;
+use App\Actions\Auth\LogoutUserAction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
