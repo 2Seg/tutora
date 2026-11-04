@@ -162,7 +162,7 @@
     }
 
     .badge-hashed {
-        @apply border-dashed border-accent bg-muted/40 text-muted-foreground;
+        @apply border-dashed border-accent bg-muted/50 text-muted-foreground;
         background-image: repeating-linear-gradient(
             135deg,
             var(--color-accent) 0 1px,

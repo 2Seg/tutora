@@ -25,7 +25,7 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
         :aria-label="description"
         :class="[
             appearance.className,
-            { 'opacity-60': isPast },
+            { 'opacity-70': isPast },
             isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
             isResizable ? 'cursor-grab' : 'cursor-pointer',
             isSelected && 'z-10 scale-105 shadow-lg',
