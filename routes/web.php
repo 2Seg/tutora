@@ -2,25 +2,30 @@
 
 declare(strict_types=1);
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\Teacher\StudentController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Teacher\Calendar\CreateEventController;
+use App\Http\Controllers\Teacher\Calendar\ShowCalendarController;
+use App\Http\Controllers\Teacher\Student\ListStudentsController;
 use Illuminate\Routing\Router;
 
-return function (Router $router) {
-    $router->middleware('web')->group(function ($router) {
-        $router->middleware('guest')->group(function ($router) {
-            $router->inertia('/login', 'auth/Login')->name('login');
-            $router->post('/login', [AuthController::class, 'login'])->name('login.submit');
-        });
+/** @var Router $router */
 
-        $router->middleware('auth')->group(function ($router) {
-            $router->post('/logout', [AuthController::class, 'logout'])->name('login.logout');
+$router->middleware('guest')->name('auth.')->group(function (Router $router) {
+    $router->inertia('/login', 'auth/Login')->name('show');
+    $router->post('/login', LoginController::class)->name('login');
+});
 
-            $router->inertia('/teacher', 'teacher/Dashboard')->name('teacher.dashboard');
-            $router->get('/teacher/students', [StudentController::class, 'index'])->name('teacher.students');
-            $router->inertia('/teacher/calendar', 'teacher/Calendar')->name('teacher.calendar');
-            $router->inertia('/teacher/messages', 'teacher/Messages')->name('teacher.messages');
-            $router->inertia('/teacher/earnings', 'teacher/Earnings')->name('teacher.earnings');
+$router->middleware('auth')->group(function (Router $router) {
+    $router->post('/logout', LogoutController::class)->name('auth.logout');
+
+    $router->prefix('teacher')->name('teacher.')->group(function (Router $router) {
+        $router->inertia('/', 'teacher/Dashboard')->name('dashboard');
+        $router->get('/students', ListStudentsController::class)->name('students.index');
+
+        $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
+            $router->get('/', ShowCalendarController::class)->name('show');
+            $router->post('/', CreateEventController::class)->name('store');
         });
     });
-};
+});

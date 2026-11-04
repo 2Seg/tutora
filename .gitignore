@@ -1,5 +1,6 @@
 *.log
 .DS_Store
+.run
 .env
 .env.backup
 .env.production
@@ -13,11 +14,13 @@
 /.vscode
 /.zed
 /auth.json
+/coverage
 /node_modules
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
 /public/storage
+/resources/js/actions
 /storage/*.key
 /storage/pail
 /vendor

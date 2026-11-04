@@ -1,3 +1,42 @@
-<script setup lang="ts"></script>
+<script lang="ts" setup>
+import { ref } from 'vue';
+import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
+import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
+import { statusVariants } from '@/lib/calendar-status';
+import { startOfWeek } from '@/lib/calendar-utils';
+import type { Availability, CalendarEvent, Draft } from '@/types/calendar';
+import { Button } from '@/components/ui/button';
+import { StudentSummary } from '@/types/Student';
 
-<template></template>
+const props = defineProps<{
+    events: CalendarEvent[];
+    availabilities: Availability[];
+    students?: StudentSummary[];
+}>();
+const weekStart = ref(startOfWeek(new Date()));
+const draft = ref<Draft | null>(null);
+</script>
+
+<template>
+    <div class="grid grid-cols-[minmax(10rem,1fr)_minmax(0,6fr)] content-start gap-6">
+        <div class="flex flex-col justify-between h-full bg-card rounded-2xl p-4">
+            <div class="flex flex-col gap-2 w-full">
+                <Button variant="secondary">Schedule lesson</Button>
+                <Button size="sm" variant="outline">Add time off</Button>
+            </div>
+
+            <div class="flex flex-wrap w-full gap-2">
+                <StatusBadge v-for="status in statusVariants" :key="status" :variant="status" />
+            </div>
+        </div>
+
+        <WeeklyCalendar
+            v-model:draft="draft"
+            v-model:week-start="weekStart"
+            :availabilities="props.availabilities"
+            :events="props.events"
+            :students="props.students"
+            class="min-w-0"
+        />
+    </div>
+</template>
