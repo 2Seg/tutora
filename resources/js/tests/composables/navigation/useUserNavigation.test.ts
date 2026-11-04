@@ -2,8 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import { CalendarDays, House, Users } from '@lucide/vue';
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation';
-import { dashboard, index as studentIndex } from '@/routes/teacher';
 import { index as eventIndex } from '@/routes/teacher/calendar';
+import { index as studentIndex } from '@/routes/teacher/students';
+import { dashboard } from '@/routes/teacher';
 
 const mocks = vi.hoisted(() => ({ page: { url: '/teacher' } }));
 

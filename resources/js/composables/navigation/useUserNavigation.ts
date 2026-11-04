@@ -2,9 +2,10 @@ import { usePage } from '@inertiajs/vue3';
 import { CalendarDays, House, Users } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
-import { dashboard, index as studentIndex } from '@/routes/teacher';
+import { index as studentIndex } from '@/routes/teacher/students';
 import type { NavDefinition, NavItem } from '@/types/navigation';
 import { index as eventIndex } from '@/routes/teacher/calendar';
+import { dashboard } from '@/routes/teacher';
 
 const definitions: NavDefinition[] = [
     { key: 'home', href: dashboard(), icon: House, exact: true },

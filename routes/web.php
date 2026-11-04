@@ -21,7 +21,7 @@ $router->middleware('auth')->group(function (Router $router) {
 
     $router->prefix('teacher')->name('teacher.')->group(function (Router $router) {
         $router->inertia('/', 'teacher/Dashboard')->name('dashboard');
-        $router->get('/students', ListStudentsController::class)->name('index');
+        $router->get('/students', ListStudentsController::class)->name('students.index');
 
         $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
             $router->get('/', ListEventsController::class)->name('index');
