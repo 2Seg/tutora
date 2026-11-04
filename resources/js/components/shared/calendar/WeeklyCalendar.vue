@@ -6,7 +6,7 @@ import DayColumn from '@/components/shared/calendar/DayColumn.vue';
 import EventPopover from '@/components/shared/calendar/EventPopover.vue';
 import { Button } from '@/components/ui/button';
 import { addDays, atMinutes, CALENDAR_TIME_ZONE, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
-import type { CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
+import type { Availability, CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
 import { StudentSummary } from '@/types/Student';
@@ -14,9 +14,10 @@ import { StudentSummary } from '@/types/Student';
 const props = withDefaults(
     defineProps<{
         events?: CalendarEvent[];
+        availabilities?: Availability[];
         students?: StudentSummary[];
     }>(),
-    { events: () => [] },
+    { events: () => [], availabilities: () => [] },
 );
 
 const emit = defineEmits<{ 'event-click': [event: CalendarEvent] }>();
@@ -164,6 +165,7 @@ onMounted(() => {
                     <DayColumn
                         v-for="day in days"
                         :key="day.getTime()"
+                        :availabilities="availabilities"
                         :day="day"
                         :draft="draft"
                         :events="events"

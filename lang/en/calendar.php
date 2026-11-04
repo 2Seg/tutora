@@ -3,6 +3,10 @@
 declare(strict_types=1);
 
 return [
+    'availability' => [
+        'available' => 'Available',
+        'unavailable' => 'Unavailable',
+    ],
     'event' => [
         'default_title' => [
             'lesson' => '(No title)',

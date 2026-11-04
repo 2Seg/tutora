@@ -1,22 +1,27 @@
 <script lang="ts" setup>
+import { trans } from 'laravel-vue-i18n';
 import { computed, ref, watch } from 'vue';
 import Event from '@/components/shared/calendar/Event.vue';
 import { useSlotSelection } from '@/composables/calendar/useSlotSelection';
 import { useEventResize } from '@/composables/calendar/useEventResize';
 import {
     atMinutes,
+    availabilitySideLinesForDay,
     isSameDay,
     layoutOverlaps,
+    MINUTES_PER_DAY,
     minutesOfDay,
     percentOfDay,
     segmentForDay,
     toDate,
+    unavailableSlotsForDay,
 } from '@/lib/calendar-utils';
-import type { CalendarEvent, Draft, SlotSelection } from '@/types/calendar';
+import type { Availability, CalendarEvent, Draft, SlotSelection } from '@/types/calendar';
 
 const props = defineProps<{
     day: Date;
     events: CalendarEvent[];
+    availabilities: Availability[];
     now: Date;
     timeFormat: Intl.DateTimeFormat;
     draft: Draft | null;
@@ -49,16 +54,13 @@ const { resizing, onResizeStart } = useEventResize(
     (event, endsAt) => emit('event-resize', event, endsAt),
 );
 
-// Only the draft is resizable, so this is its live end (null once released)
 watch(
     () => resizing.value?.endMin,
     (endMin) => emit('draft-resizing', endMin === undefined ? null : atMinutes(props.day, endMin)),
 );
 
-// Leaves an empty strip on the right so a new slot can still be dragged next to existing events
 const RIGHT_GUTTER = 12;
 
-// Edges that continue into the previous or next day touch midnight, so both halves read as one event
 const positionStyle = (
     startMin: number,
     endMin: number,
@@ -73,14 +75,45 @@ const positionStyle = (
     width: `calc((100% - ${RIGHT_GUTTER}px) / ${cols} - 8px)`,
 });
 
+const onGridLineStyle = (startMin: number, endMin: number) => {
+    const offset = startMin > 0 ? 1 : 0;
+
+    return {
+        top: `calc(${percentOfDay(startMin)} - ${offset}px)`,
+        height: `calc(${percentOfDay(endMin - startMin)} + ${offset}px)`,
+    };
+};
+
 const isToday = computed(() => isSameDay(props.day, props.now));
+const unavailableSlots = computed(() =>
+    unavailableSlotsForDay(props.availabilities, props.day).map(({ startMin, endMin }) => ({
+        startMin,
+        edges: { 'border-t': startMin > 0, 'border-b': endMin < MINUTES_PER_DAY },
+        style: onGridLineStyle(startMin, endMin),
+    })),
+);
+const availabilitySideLines = computed(() => {
+    const { left, right } = availabilitySideLinesForDay(props.availabilities, props.day);
+    // The left line sits on this column's border and the right one on the next column's. Sunday has no next column.
+    const rightSide = props.day.getUTCDay() === 0 ? 'right-0' : '-right-px';
+    const toLine =
+        (side: string) =>
+        ({ startMin, endMin }: { startMin: number; endMin: number }) => ({
+            key: `${side}-${startMin}`,
+            side,
+            style: onGridLineStyle(startMin, endMin),
+        });
+
+    return [...left.map(toLine('-left-px')), ...right.map(toLine(rightSide))];
+});
 const nowStyle = computed(() => ({ top: percentOfDay(minutesOfDay(props.now)) }));
 const items = computed(() => {
     const segments = [];
 
     for (const event of eventsIncludingDrafts.value) {
         const start = toDate(event.startsAt);
-        const end = resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endsAt);
+        const end =
+            resizing.value?.id === event.id ? atMinutes(props.day, resizing.value.endMin) : toDate(event.endsAt);
         const segment = segmentForDay(start, end, props.day);
         if (segment) segments.push({ event, start, end, ...segment });
     }
@@ -117,6 +150,7 @@ const dragEventPreview = computed(() => {
     <div
         ref="column"
         :class="{ 'bg-secondary/20': isToday, 'cursor-ns-resize': selection }"
+        :title="trans('calendar.availability.available')"
         class="relative touch-pan-y border-l border-border select-none"
         data-day
         @pointercancel="onPointerCancel"
@@ -125,6 +159,23 @@ const dragEventPreview = computed(() => {
         @pointerup="onPointerUp"
     >
         <div v-for="hour in 24" :key="hour" class="h-10 border-b border-border" />
+
+        <div
+            v-for="slot in unavailableSlots"
+            :key="slot.startMin"
+            :class="slot.edges"
+            :style="slot.style"
+            :title="trans('calendar.availability.unavailable')"
+            class="bg-foreground/2 absolute -left-px right-0 border-foreground/15"
+        />
+
+        <div
+            v-for="line in availabilitySideLines"
+            :key="line.key"
+            :class="line.side"
+            :style="line.style"
+            class="pointer-events-none absolute z-1 w-px bg-foreground/15"
+        />
 
         <Event
             v-for="item in items"

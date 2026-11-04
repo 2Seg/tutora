@@ -1,3 +1,5 @@
+import type { Availability } from '@/types/calendar';
+
 export const MINUTES_PER_DAY: number = 24 * 60;
 export const SNAP_MINUTES = 10;
 export const DEFAULT_SLOT_MINUTES = 50;
@@ -70,10 +72,62 @@ export function segmentForDay(start: Date, end: Date, day: Date): DaySegment | n
     };
 }
 
-/**
- * Google Calendar style overlap layout: events that overlap are split into
- * side-by-side columns, each cluster of overlapping events on its own.
- */
+function timeToMinutes(time: string): number {
+    const [hours, minutes] = time.split(':').map(Number);
+    return hours * 60 + minutes;
+}
+
+interface MinuteRange {
+    startMin: number;
+    endMin: number;
+}
+
+const isoWeekdayOf = (day: Date): number => day.getUTCDay() || 7;
+
+function availableRanges(availabilities: Availability[], isoWeekday: number): MinuteRange[] {
+    return availabilities
+        .filter((availability) => availability.dayOfWeek === isoWeekday)
+        .map(({ startTime, endTime }) => ({ startMin: timeToMinutes(startTime), endMin: timeToMinutes(endTime) }))
+        .sort((a, b) => a.startMin - b.startMin);
+}
+
+/** The parts of the day outside `ranges`, which must be sorted by start. */
+function gapsBetween(ranges: MinuteRange[]): MinuteRange[] {
+    const gaps: MinuteRange[] = [];
+    let cursor = 0;
+
+    for (const { startMin, endMin } of ranges) {
+        if (startMin > cursor) gaps.push({ startMin: cursor, endMin: startMin });
+        cursor = Math.max(cursor, endMin);
+    }
+    if (cursor < MINUTES_PER_DAY) gaps.push({ startMin: cursor, endMin: MINUTES_PER_DAY });
+
+    return gaps;
+}
+
+function intersectRanges(first: MinuteRange[], second: MinuteRange[]): MinuteRange[] {
+    return first.flatMap((a) =>
+        second.flatMap((b) => {
+            const startMin = Math.max(a.startMin, b.startMin);
+            const endMin = Math.min(a.endMin, b.endMin);
+            return startMin < endMin ? [{ startMin, endMin }] : [];
+        }),
+    );
+}
+
+export function unavailableSlotsForDay(availabilities: Availability[], day: Date): MinuteRange[] {
+    return gapsBetween(availableRanges(availabilities, isoWeekdayOf(day)));
+}
+
+export function availabilitySideLinesForDay(availabilities: Availability[], day: Date) {
+    const isoWeekday = isoWeekdayOf(day);
+    const available = gapsBetween(unavailableSlotsForDay(availabilities, day));
+    const uncoveredBy = (neighbourWeekday: number) =>
+        intersectRanges(available, gapsBetween(availableRanges(availabilities, neighbourWeekday)));
+
+    return { left: uncoveredBy(isoWeekday - 1), right: uncoveredBy(isoWeekday + 1) };
+}
+
 export function layoutOverlaps<T extends { startMin: number; endMin: number }>(
     items: T[],
 ): (T & { col: number; cols: number })[] {

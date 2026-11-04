@@ -4,12 +4,13 @@ import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { statusVariants } from '@/lib/calendar-status';
 import { startOfWeek } from '@/lib/calendar-utils';
-import type { CalendarEvent, Draft } from '@/types/calendar';
+import type { Availability, CalendarEvent, Draft } from '@/types/calendar';
 import { Button } from '@/components/ui/button';
 import { StudentSummary } from '@/types/Student';
 
 const props = defineProps<{
     events: CalendarEvent[];
+    availabilities: Availability[];
     students?: StudentSummary[];
 }>();
 const weekStart = ref(startOfWeek(new Date()));
@@ -32,6 +33,7 @@ const draft = ref<Draft | null>(null);
         <WeeklyCalendar
             v-model:draft="draft"
             v-model:week-start="weekStart"
+            :availabilities="props.availabilities"
             :events="props.events"
             :students="props.students"
             class="min-w-0"

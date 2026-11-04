@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
     addDays,
     atMinutes,
+    availabilitySideLinesForDay,
     describeTimezone,
     isSameDay,
     layoutOverlaps,
@@ -11,6 +12,7 @@ import {
     segmentForDay,
     startOfWeek,
     toDate,
+    unavailableSlotsForDay,
 } from '@/lib/calendar-utils';
 
 const d = (y: number, m: number, day: number, h = 0, min = 0, s = 0) => new Date(Date.UTC(y, m - 1, day, h, min, s));
@@ -278,6 +280,125 @@ describe('segmentForDay', () => {
         expect(segmentForDay(d(2024, 1, 15, 10, 0), d(2024, 1, 15, 11, 0), d(2024, 1, 15, 18, 30))).toEqual(
             segment(600, 660),
         );
+    });
+});
+
+describe('unavailableSlotsForDay', () => {
+    const availability = (id: number, dayOfWeek: number, startTime = '08:00:00', endTime = '12:00:00') => ({
+        id,
+        dayOfWeek,
+        startTime,
+        endTime,
+    });
+    const wholeDay = [{ startMin: 0, endMin: MINUTES_PER_DAY }];
+
+    it('returns the time before and after an availability', () => {
+        const slots = unavailableSlotsForDay([availability(1, 1, '08:30:00', '12:15:00')], d(2024, 1, 15));
+
+        expect(slots).toEqual([
+            { startMin: 0, endMin: 510 },
+            { startMin: 735, endMin: MINUTES_PER_DAY },
+        ]);
+    });
+
+    it('returns the gap between two availabilities, whatever their order', () => {
+        const availabilities = [availability(1, 1, '14:00:00', '18:00:00'), availability(2, 1, '08:00:00', '12:00:00')];
+
+        expect(unavailableSlotsForDay(availabilities, d(2024, 1, 15))).toEqual([
+            { startMin: 0, endMin: 480 },
+            { startMin: 720, endMin: 840 },
+            { startMin: 1080, endMin: MINUTES_PER_DAY },
+        ]);
+    });
+
+    it('merges overlapping availabilities', () => {
+        const availabilities = [availability(1, 1, '08:00:00', '12:00:00'), availability(2, 1, '10:00:00', '11:00:00')];
+
+        expect(unavailableSlotsForDay(availabilities, d(2024, 1, 15))).toEqual([
+            { startMin: 0, endMin: 480 },
+            { startMin: 720, endMin: MINUTES_PER_DAY },
+        ]);
+    });
+
+    it('returns nothing when the whole day is available', () => {
+        const slots = unavailableSlotsForDay([availability(1, 1, '00:00:00', '24:00:00')], d(2024, 1, 15));
+
+        expect(slots).toEqual([]);
+    });
+
+    it('returns the whole day when availabilities are on other days', () => {
+        expect(unavailableSlotsForDay([availability(1, 2)], d(2024, 1, 15))).toEqual(wholeDay);
+    });
+
+    it('returns the whole day when there are no availabilities', () => {
+        expect(unavailableSlotsForDay([], d(2024, 1, 15))).toEqual(wholeDay);
+    });
+
+    it('matches Sunday as day 7', () => {
+        const slots = unavailableSlotsForDay([availability(1, 7)], d(2024, 1, 21));
+
+        expect(slots).toHaveLength(2);
+    });
+
+    it('accepts times without seconds', () => {
+        const slots = unavailableSlotsForDay([availability(1, 1, '08:00', '12:00')], d(2024, 1, 15));
+
+        expect(slots).toEqual([
+            { startMin: 0, endMin: 480 },
+            { startMin: 720, endMin: MINUTES_PER_DAY },
+        ]);
+    });
+});
+
+describe('availabilitySideLinesForDay', () => {
+    const availability = (dayOfWeek: number, startTime = '08:00:00', endTime = '12:00:00') => ({
+        id: dayOfWeek,
+        dayOfWeek,
+        startTime,
+        endTime,
+    });
+    const tuesday = d(2024, 1, 16);
+    const morning = { startMin: 480, endMin: 720 };
+
+    it('draws both sides when the neighbouring days are not available', () => {
+        expect(availabilitySideLinesForDay([availability(2)], tuesday)).toEqual({
+            left: [morning],
+            right: [morning],
+        });
+    });
+
+    it('links days available during the same hours', () => {
+        const availabilities = [availability(1), availability(2), availability(3)];
+
+        expect(availabilitySideLinesForDay(availabilities, tuesday)).toEqual({ left: [], right: [] });
+    });
+
+    it('only draws the hours the neighbouring day does not cover', () => {
+        const availabilities = [availability(2), availability(3, '10:00:00', '14:00:00')];
+
+        expect(availabilitySideLinesForDay(availabilities, tuesday).right).toEqual([{ startMin: 480, endMin: 600 }]);
+    });
+
+    it('draws both sides when the neighbouring day is available at other hours', () => {
+        const availabilities = [availability(2), availability(3, '14:00:00', '18:00:00')];
+
+        expect(availabilitySideLinesForDay(availabilities, tuesday).right).toEqual([morning]);
+    });
+
+    it('closes Monday on the left even when Sunday is available', () => {
+        const availabilities = [availability(1), availability(7)];
+
+        expect(availabilitySideLinesForDay(availabilities, d(2024, 1, 15)).left).toEqual([morning]);
+    });
+
+    it('closes Sunday on the right even when Monday is available', () => {
+        const availabilities = [availability(1), availability(7)];
+
+        expect(availabilitySideLinesForDay(availabilities, d(2024, 1, 21)).right).toEqual([morning]);
+    });
+
+    it('returns nothing for a day without availabilities', () => {
+        expect(availabilitySideLinesForDay([availability(3)], tuesday)).toEqual({ left: [], right: [] });
     });
 });
 
