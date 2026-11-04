@@ -13,4 +13,9 @@ final readonly class EloquentStudentRepository implements StudentRepository
     {
         return $user->students()->get();
     }
+
+    public function belongsToUser(int $studentId, User $user): bool
+    {
+        return $user->students()->whereKey($studentId)->exists();
+    }
 }

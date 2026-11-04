@@ -20,7 +20,7 @@ final class EloquentStudentRepositoryTest extends FeatureTestCase
         $this->studentRepository = new EloquentStudentRepository();
     }
 
-    function testItRetrievesStudentsFromUser()
+    public function testItRetrievesStudentsFromUser(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -33,7 +33,7 @@ final class EloquentStudentRepositoryTest extends FeatureTestCase
         $this->assertTrue($actual->contains($student));
     }
 
-    function testItDoesNotRetrieveStudentsFromAnotherUser()
+    public function testItDoesNotRetrieveStudentsFromAnotherUser(): void
     {
         // Arrange
         $user = User::factory()->create();
@@ -45,5 +45,34 @@ final class EloquentStudentRepositoryTest extends FeatureTestCase
 
         // Assert
         $this->assertFalse($actual->contains($student));
+    }
+
+    public function testItReturnsFalseIfStudentDoesNotBelongToUser(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $anotherUser = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $anotherUser->id]);
+
+
+        // Act
+        $actual = $this->studentRepository->belongsToUser($student->id, $user);
+
+        // Assert
+        $this->assertFalse($actual);
+    }
+
+    public function testItReturnsTrueIfStudentBelongsToUser(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id]);
+
+
+        // Act
+        $actual = $this->studentRepository->belongsToUser($student->id, $user);
+
+        // Assert
+        $this->assertTrue($actual);
     }
 }
