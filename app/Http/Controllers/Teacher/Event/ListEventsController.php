@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Teacher;
+namespace App\Http\Controllers\Teacher\Event;
 
 use App\Http\Resources\StudentSummaryResource;
 use App\Repositories\Event\EventRepository;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 
-final readonly class EventController
+final readonly class ListEventsController
 {
     public function __construct(
         private ResponseFactory $inertia,
@@ -19,7 +19,7 @@ final readonly class EventController
         private StudentRepository $studentRepository,
     ) {}
 
-    public function index(Request $request): Response
+    public function __invoke(Request $request): Response
     {
         return $this->inertia->render('teacher/Calendar', [
             'events' => $this->eventRepository

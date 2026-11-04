@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Http\Controllers\Teacher;
+namespace Tests\Feature\Http\Controllers\Teacher\User;
 
 use App\Models\Student;
 use App\Models\User;
 use Tests\Feature\FeatureTestCase;
 
-final class StudentControllerTest extends FeatureTestCase
+final class ListStudentsControllerTest extends FeatureTestCase
 {
     public function testGuestIsRedirectedToLogin(): void
     {

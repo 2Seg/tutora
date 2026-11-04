@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../wayfinder'
+import calendar from './calendar'
 /**
 * @see \Inertia\Controller::__invoke
 * @see vendor/inertiajs/inertia-laravel/src/Controller.php:13
@@ -44,96 +45,52 @@ dashboard.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 })
 
 /**
-* @see \App\Http\Controllers\Teacher\StudentController::students
-* @see app/Http/Controllers/Teacher/StudentController.php:19
+* @see \App\Http\Controllers\Teacher\Student\ListStudentsController::__invoke
+* @see app/Http/Controllers/Teacher/Student/ListStudentsController.php:19
 * @route '/teacher/students'
 */
-export const students = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: students.url(options),
+export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
     method: 'get',
 })
 
-students.definition = {
+index.definition = {
     methods: ["get","head"],
     url: '/teacher/students',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\Teacher\StudentController::students
-* @see app/Http/Controllers/Teacher/StudentController.php:19
+* @see \App\Http\Controllers\Teacher\Student\ListStudentsController::__invoke
+* @see app/Http/Controllers/Teacher/Student/ListStudentsController.php:19
 * @route '/teacher/students'
 */
-students.url = (options?: RouteQueryOptions) => {
-    return students.definition.url + queryParams(options)
+index.url = (options?: RouteQueryOptions) => {
+    return index.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\Teacher\StudentController::students
-* @see app/Http/Controllers/Teacher/StudentController.php:19
+* @see \App\Http\Controllers\Teacher\Student\ListStudentsController::__invoke
+* @see app/Http/Controllers/Teacher/Student/ListStudentsController.php:19
 * @route '/teacher/students'
 */
-students.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: students.url(options),
+index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: index.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\Teacher\StudentController::students
-* @see app/Http/Controllers/Teacher/StudentController.php:19
+* @see \App\Http\Controllers\Teacher\Student\ListStudentsController::__invoke
+* @see app/Http/Controllers/Teacher/Student/ListStudentsController.php:19
 * @route '/teacher/students'
 */
-students.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: students.url(options),
-    method: 'head',
-})
-
-/**
-* @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:22
-* @route '/teacher/calendar'
-*/
-export const calendar = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: calendar.url(options),
-    method: 'get',
-})
-
-calendar.definition = {
-    methods: ["get","head"],
-    url: '/teacher/calendar',
-} satisfies RouteDefinition<["get","head"]>
-
-/**
-* @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:22
-* @route '/teacher/calendar'
-*/
-calendar.url = (options?: RouteQueryOptions) => {
-    return calendar.definition.url + queryParams(options)
-}
-
-/**
-* @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:22
-* @route '/teacher/calendar'
-*/
-calendar.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: calendar.url(options),
-    method: 'get',
-})
-
-/**
-* @see \App\Http\Controllers\Teacher\EventController::calendar
-* @see app/Http/Controllers/Teacher/EventController.php:22
-* @route '/teacher/calendar'
-*/
-calendar.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: calendar.url(options),
+index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: index.url(options),
     method: 'head',
 })
 
 const teacher = {
     dashboard: Object.assign(dashboard, dashboard),
-    students: Object.assign(students, students),
+    index: Object.assign(index, index),
     calendar: Object.assign(calendar, calendar),
 }
 

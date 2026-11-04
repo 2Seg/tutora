@@ -2,13 +2,14 @@ import { usePage } from '@inertiajs/vue3';
 import { CalendarDays, House, Users } from '@lucide/vue';
 import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
-import { calendar, dashboard, students } from '@/routes/teacher';
+import { dashboard, index as studentIndex } from '@/routes/teacher';
 import type { NavDefinition, NavItem } from '@/types/navigation';
+import { index as eventIndex } from '@/routes/teacher/calendar';
 
 const definitions: NavDefinition[] = [
     { key: 'home', href: dashboard(), icon: House, exact: true },
-    { key: 'students', href: students(), icon: Users },
-    { key: 'calendar', href: calendar(), icon: CalendarDays },
+    { key: 'students', href: studentIndex(), icon: Users },
+    { key: 'calendar', href: eventIndex(), icon: CalendarDays },
 ];
 
 const urlOf = ({ href }: NavDefinition): string => (typeof href === 'string' ? href : href.url);

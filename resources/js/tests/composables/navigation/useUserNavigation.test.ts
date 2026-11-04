@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import { CalendarDays, House, Users } from '@lucide/vue';
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation';
-import { calendar, dashboard, students } from '@/routes/teacher';
+import { dashboard, index as studentIndex } from '@/routes/teacher';
+import { index as eventIndex } from '@/routes/teacher/calendar';
 
 const mocks = vi.hoisted(() => ({ page: { url: '/teacher' } }));
 
@@ -31,8 +32,8 @@ describe('useUserNavigation', () => {
 
             expect(items.value).toMatchObject([
                 { href: dashboard(), icon: House, exact: true },
-                { href: students(), icon: Users },
-                { href: calendar(), icon: CalendarDays },
+                { href: studentIndex(), icon: Users },
+                { href: eventIndex(), icon: CalendarDays },
             ]);
             expect(items.value[1].exact).toBeUndefined();
         });

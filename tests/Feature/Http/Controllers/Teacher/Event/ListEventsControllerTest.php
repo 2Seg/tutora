@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\Http\Controllers\Teacher;
+namespace Tests\Feature\Http\Controllers\Teacher\Event;
 
 use App\Models\Event;
 use App\Models\Student;
@@ -10,7 +10,7 @@ use App\Models\User;
 use Inertia\Testing\AssertableInertia;
 use Tests\Feature\FeatureTestCase;
 
-final class EventControllerTest extends FeatureTestCase
+final class ListEventsControllerTest extends FeatureTestCase
 {
     public function testGuestIsRedirectedToLogin(): void
     {
