@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Teacher\Event\CreateEventController;
 use App\Http\Controllers\Teacher\Event\ListEventsController;
 use App\Http\Controllers\Teacher\Student\ListStudentsController;
 use Illuminate\Routing\Router;
@@ -20,7 +21,11 @@ $router->middleware('auth')->group(function (Router $router) {
 
     $router->prefix('teacher')->name('teacher.')->group(function (Router $router) {
         $router->inertia('/', 'teacher/Dashboard')->name('dashboard');
-        $router->get('/students', ListStudentsController::class)->name('students');
-        $router->get('/calendar', ListEventsController::class)->name('calendar');
+        $router->get('/students', ListStudentsController::class)->name('index');
+
+        $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
+            $router->get('/', ListEventsController::class)->name('index');
+            $router->post('/', CreateEventController::class)->name('store');
+        });
     });
 });
