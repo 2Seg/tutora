@@ -8,7 +8,7 @@ use App\Exceptions\InvalidCredentials;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
 
-final readonly class AuthenticateUser
+final readonly class AuthenticateUserAction
 {
     public function __construct(
         private StatefulGuard $guard,

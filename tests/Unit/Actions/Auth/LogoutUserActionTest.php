@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Actions;
+namespace Tests\Unit\Actions\Auth;
 
-use App\Actions\LogoutUser;
+use App\Actions\LogoutUserAction;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
 use Mockery;
 use Mockery\Mock;
 use Tests\Unit\UnitTestCase;
 
-final class LogoutUserTest extends UnitTestCase
+final class LogoutUserActionTest extends UnitTestCase
 {
     private readonly StatefulGuard|Mock $guard;
     private readonly Session|Mock $session;
-    private readonly LogoutUser $logoutUser;
+    private readonly LogoutUserAction $logoutUser;
 
     protected function setUp(): void
     {
         $this->guard = Mockery::spy(StatefulGuard::class);
         $this->session = Mockery::spy(Session::class);
-        $this->logoutUser = new LogoutUser($this->guard, $this->session);
+        $this->logoutUser = new LogoutUserAction($this->guard, $this->session);
     }
 
     public function testItLogsUserOut(): void

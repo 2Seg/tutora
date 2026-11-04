@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Models\User;
-use Illuminate\Auth\AuthManager;
 use Illuminate\Contracts\Auth\StatefulGuard;
 use Illuminate\Contracts\Session\Session;
 
-final readonly class LogoutUser
+final readonly class LogoutUserAction
 {
     public function __construct(
         private StatefulGuard $statefulGuard,
-        private Session $session
+        private Session $session,
     ) {}
 
     public function handle(): void
