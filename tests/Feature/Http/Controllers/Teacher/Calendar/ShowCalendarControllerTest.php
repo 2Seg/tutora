@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Controllers\Teacher\Calendar;
 
+use App\Models\Availability;
 use App\Models\Event;
 use App\Models\Student;
 use App\Models\User;
@@ -49,6 +50,22 @@ final class ShowCalendarControllerTest extends FeatureTestCase
         // Assert
         $this->assertCount(2, $actual->inertiaProps('events'));
         $this->assertSame($events->first()->id, $actual->inertiaProps('events.0.id'));
+    }
+
+    public function testItSendsAvailabilitiesToInertia(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $availabilities = Availability::factory()
+            ->count(2)
+            ->create(['user_id' => $user->id]);
+
+        // Act
+        $actual = $this->actingAs($user)->get('/teacher/calendar');
+
+        // Assert
+        $this->assertCount(2, $actual->inertiaProps('availabilities'));
+        $this->assertSame($availabilities->first()->id, $actual->inertiaProps('availabilities.0.id'));
     }
 
     public function testItDoesNotSendStudentsOnInitialLoad(): void

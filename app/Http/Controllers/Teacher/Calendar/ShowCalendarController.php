@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Teacher\Calendar;
 
 use App\Http\Resources\StudentSummaryResource;
+use App\Repositories\Availability\AvailabilityRepository;
 use App\Repositories\Event\EventRepository;
 use App\Repositories\Student\StudentRepository;
 use Illuminate\Http\Request;
@@ -17,12 +18,17 @@ final readonly class ShowCalendarController
         private ResponseFactory $inertia,
         private EventRepository $eventRepository,
         private StudentRepository $studentRepository,
+        private AvailabilityRepository $availabilityRepository,
     ) {}
 
     public function __invoke(Request $request): Response
     {
         return $this->inertia->render('teacher/Calendar', [
             'events' => $this->eventRepository
+                ->getAllFromUser($request->user())
+                ->toResourceCollection()
+                ->resolve(),
+            'availabilities' => $this->availabilityRepository
                 ->getAllFromUser($request->user())
                 ->toResourceCollection()
                 ->resolve(),
