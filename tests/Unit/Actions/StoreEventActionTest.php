@@ -14,7 +14,6 @@ use App\Repositories\Event\EventRepository;
 use App\Repositories\Student\StudentRepository;
 use Carbon\CarbonImmutable;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Collection;
 use Mockery;
 use Mockery\Mock;
 use Tests\Unit\UnitTestCase;
@@ -45,10 +44,10 @@ final class StoreEventActionTest extends UnitTestCase
             CarbonImmutable::parse('2010-01-01 00:00:00'),
             new LessonData(2, LessonStatus::Planned, 'Event Title')
         );
-        $this->studentRepository->shouldReceive('getAllFromUser')
+        $this->studentRepository->shouldReceive('belongsToUser')
             ->once()
-            ->with($user)
-            ->andReturn(new Collection([['id' => 3]]));
+            ->with(2, $user)
+            ->andReturn(false);
         $this->eventRepository->shouldNotReceive('storeForUser');
 
         // Act
@@ -65,10 +64,10 @@ final class StoreEventActionTest extends UnitTestCase
             CarbonImmutable::parse('2010-01-01 00:00:00'),
             new LessonData(2, LessonStatus::Planned, 'Event Title')
         );
-        $this->studentRepository->shouldReceive('getAllFromUser')
+        $this->studentRepository->shouldReceive('belongsToUser')
             ->once()
-            ->with($user)
-            ->andReturn(new Collection([['id' => 2]]));
+            ->with(2, $user)
+            ->andReturn(true);
 
         // Act
         $this->storeEventAction->handle($user, $eventData);
@@ -88,7 +87,7 @@ final class StoreEventActionTest extends UnitTestCase
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2010-01-01 00:00:00'),
         );
-        $this->studentRepository->shouldNotReceive('getAllFromUser');
+        $this->studentRepository->shouldNotReceive('belongsToUser');
 
         // Act
         $this->storeEventAction->handle($user, $eventData);

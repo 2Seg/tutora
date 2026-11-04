@@ -19,15 +19,10 @@ final readonly class StoreEventAction
 
     public function handle(User $user, EventData $eventData): void
     {
-        if ($eventData->lessonData !== null && !$this->isStudentOfUser($user, $eventData->lessonData->studentId)) {
+        if ($eventData->lessonData !== null && !$this->studentRepository->belongsToUser($eventData->lessonData->studentId, $user)) {
             throw new AuthorizationException();
         }
 
         $this->eventRepository->storeForUser($user, $eventData);
-    }
-
-    private function isStudentOfUser(User $user, int $studentId): bool
-    {
-        return $this->studentRepository->getAllFromUser($user)->contains('id', $studentId);
     }
 }
