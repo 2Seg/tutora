@@ -18,7 +18,7 @@ const draft = ref<Draft | null>(null);
 </script>
 
 <template>
-    <div class="grid grid-cols-[minmax(7.5rem,1fr)_minmax(0,5fr)] content-start gap-6">
+    <div class="grid grid-cols-[minmax(10rem,1fr)_minmax(0,6fr)] content-start gap-6">
         <div class="flex flex-col justify-between h-full bg-card rounded-2xl p-4">
             <div class="flex flex-col gap-2 w-full">
                 <Button variant="secondary">Schedule lesson</Button>
