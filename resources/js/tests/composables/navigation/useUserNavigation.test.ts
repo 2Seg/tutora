@@ -25,7 +25,7 @@ describe('useUserNavigation', () => {
         it('returns the three items in order', () => {
             const { items } = useUserNavigation();
 
-            expect(items.value.map((item) => item.key)).toEqual(['home', 'students', 'calendar']);
+            expect(items.value.map((item) => item.key)).toEqual(['home', 'calendar', 'students']);
         });
 
         it('keeps href, icon and exact from the definitions', () => {
@@ -33,8 +33,8 @@ describe('useUserNavigation', () => {
 
             expect(items.value).toMatchObject([
                 { href: dashboard(), icon: House, exact: true },
-                { href: studentIndex(), icon: Users },
                 { href: calendarShow(), icon: CalendarDays },
+                { href: studentIndex(), icon: Users },
             ]);
             expect(items.value[1].exact).toBeUndefined();
         });
@@ -43,9 +43,9 @@ describe('useUserNavigation', () => {
             const { items } = useUserNavigation();
 
             expect(items.value[1]).toMatchObject({
-                label: 'translated:navigation.students.label',
-                title: 'translated:navigation.students.title',
-                description: 'translated:navigation.students.subtitle',
+                label: 'translated:navigation.calendar.label',
+                title: 'translated:navigation.calendar.title',
+                description: 'translated:navigation.calendar.subtitle',
             });
         });
     });

@@ -9,8 +9,8 @@ import { dashboard } from '@/routes/teacher';
 
 const definitions: NavDefinition[] = [
     { key: 'home', href: dashboard(), icon: House, exact: true },
-    { key: 'students', href: studentIndex(), icon: Users },
     { key: 'calendar', href: calendarShow(), icon: CalendarDays },
+    { key: 'students', href: studentIndex(), icon: Users },
 ];
 
 const urlOf = ({ href }: NavDefinition): string => (typeof href === 'string' ? href : href.url);
