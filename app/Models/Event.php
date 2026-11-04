@@ -17,9 +17,14 @@ final class Event extends Model
 
     protected $with = ['lesson'];
 
+    protected $fillable = [
+        'type',
+        'starts_at',
+        'ends_at',
+    ];
+
     protected $casts = [
         'type' => EventType::class,
-        'status' => LessonStatus::class,
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'deleted_at' => 'datetime',
