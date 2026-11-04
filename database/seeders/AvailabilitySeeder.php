@@ -19,7 +19,7 @@ final class AvailabilitySeeder extends Seeder
         [6, '08:00', '12:00'],
     ];
 
-    private User $user;
+    private readonly User $user;
 
     public function run(): void
     {

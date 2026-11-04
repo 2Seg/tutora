@@ -41,7 +41,7 @@ final class EventSeeder extends Seeder
         [3, '13:00', '17:00'],
     ];
 
-    private User $user;
+    private readonly User $user;
 
     /** @var array<string, Student> */
     private array $students = [];
