@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Teacher\Event\CreateEventController;
-use App\Http\Controllers\Teacher\Event\ListEventsController;
+use App\Http\Controllers\Teacher\Calendar\CreateEventController;
+use App\Http\Controllers\Teacher\Calendar\ShowCalendarController;
 use App\Http\Controllers\Teacher\Student\ListStudentsController;
 use Illuminate\Routing\Router;
 
@@ -24,7 +24,7 @@ $router->middleware('auth')->group(function (Router $router) {
         $router->get('/students', ListStudentsController::class)->name('students.index');
 
         $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
-            $router->get('/', ListEventsController::class)->name('index');
+            $router->get('/', ShowCalendarController::class)->name('show');
             $router->post('/', CreateEventController::class)->name('store');
         });
     });

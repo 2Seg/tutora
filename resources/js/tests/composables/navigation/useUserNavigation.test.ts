@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { reactive } from 'vue';
 import { CalendarDays, House, Users } from '@lucide/vue';
 import { useUserNavigation } from '@/composables/navigation/useUserNavigation';
-import { index as eventIndex } from '@/routes/teacher/calendar';
+import { show as calendarShow } from '@/routes/teacher/calendar';
 import { index as studentIndex } from '@/routes/teacher/students';
 import { dashboard } from '@/routes/teacher';
 
@@ -34,7 +34,7 @@ describe('useUserNavigation', () => {
             expect(items.value).toMatchObject([
                 { href: dashboard(), icon: House, exact: true },
                 { href: studentIndex(), icon: Users },
-                { href: eventIndex(), icon: CalendarDays },
+                { href: calendarShow(), icon: CalendarDays },
             ]);
             expect(items.value[1].exact).toBeUndefined();
         });

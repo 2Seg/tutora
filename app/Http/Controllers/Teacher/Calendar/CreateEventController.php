@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Teacher\Event;
+namespace App\Http\Controllers\Teacher\Calendar;
 
 use App\Actions\Event\StoreEventAction;
 use App\Http\Requests\CreateEventRequest;
@@ -20,6 +20,6 @@ final readonly class CreateEventController
     {
         $this->storeEventAction->handle($createEventRequest->user(), $createEventRequest->toEventData());
 
-        return $this->redirector->route('teacher.calendar.index');
+        return $this->redirector->route('teacher.calendar.show');
     }
 }

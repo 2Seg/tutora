@@ -1,51 +1,51 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
 /**
-* @see \App\Http\Controllers\Teacher\Event\ListEventsController::__invoke
-* @see app/Http/Controllers/Teacher/Event/ListEventsController.php:22
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:22
 * @route '/teacher/calendar'
 */
-export const index = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
+export const show = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: show.url(options),
     method: 'get',
 })
 
-index.definition = {
+show.definition = {
     methods: ["get","head"],
     url: '/teacher/calendar',
 } satisfies RouteDefinition<["get","head"]>
 
 /**
-* @see \App\Http\Controllers\Teacher\Event\ListEventsController::__invoke
-* @see app/Http/Controllers/Teacher/Event/ListEventsController.php:22
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:22
 * @route '/teacher/calendar'
 */
-index.url = (options?: RouteQueryOptions) => {
-    return index.definition.url + queryParams(options)
+show.url = (options?: RouteQueryOptions) => {
+    return show.definition.url + queryParams(options)
 }
 
 /**
-* @see \App\Http\Controllers\Teacher\Event\ListEventsController::__invoke
-* @see app/Http/Controllers/Teacher/Event/ListEventsController.php:22
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:22
 * @route '/teacher/calendar'
 */
-index.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
-    url: index.url(options),
+show.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: show.url(options),
     method: 'get',
 })
 
 /**
-* @see \App\Http\Controllers\Teacher\Event\ListEventsController::__invoke
-* @see app/Http/Controllers/Teacher/Event/ListEventsController.php:22
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:22
 * @route '/teacher/calendar'
 */
-index.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
-    url: index.url(options),
+show.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: show.url(options),
     method: 'head',
 })
 
 /**
-* @see \App\Http\Controllers\Teacher\Event\CreateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Event/CreateEventController.php:19
+* @see \App\Http\Controllers\Teacher\Calendar\CreateEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/CreateEventController.php:19
 * @route '/teacher/calendar'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -59,8 +59,8 @@ store.definition = {
 } satisfies RouteDefinition<["post"]>
 
 /**
-* @see \App\Http\Controllers\Teacher\Event\CreateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Event/CreateEventController.php:19
+* @see \App\Http\Controllers\Teacher\Calendar\CreateEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/CreateEventController.php:19
 * @route '/teacher/calendar'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -68,8 +68,8 @@ store.url = (options?: RouteQueryOptions) => {
 }
 
 /**
-* @see \App\Http\Controllers\Teacher\Event\CreateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Event/CreateEventController.php:19
+* @see \App\Http\Controllers\Teacher\Calendar\CreateEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/CreateEventController.php:19
 * @route '/teacher/calendar'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -78,7 +78,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 })
 
 const calendar = {
-    index: Object.assign(index, index),
+    show: Object.assign(show, show),
     store: Object.assign(store, store),
 }
 

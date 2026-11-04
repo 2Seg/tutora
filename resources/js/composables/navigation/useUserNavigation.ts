@@ -4,13 +4,13 @@ import { trans } from 'laravel-vue-i18n';
 import { computed } from 'vue';
 import { index as studentIndex } from '@/routes/teacher/students';
 import type { NavDefinition, NavItem } from '@/types/navigation';
-import { index as eventIndex } from '@/routes/teacher/calendar';
+import { show as calendarShow } from '@/routes/teacher/calendar';
 import { dashboard } from '@/routes/teacher';
 
 const definitions: NavDefinition[] = [
     { key: 'home', href: dashboard(), icon: House, exact: true },
     { key: 'students', href: studentIndex(), icon: Users },
-    { key: 'calendar', href: eventIndex(), icon: CalendarDays },
+    { key: 'calendar', href: calendarShow(), icon: CalendarDays },
 ];
 
 const urlOf = ({ href }: NavDefinition): string => (typeof href === 'string' ? href : href.url);
