@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Requests;
 
+use App\Enums\EventType;
+use App\Enums\LessonStatus;
 use App\Http\Requests\CreateEventRequest;
-use PHPUnit\Framework\TestCase;
 use Tests\Concerns\HasRequestValidator;
+use Tests\Unit\UnitTestCase;
 
-final class CreateEventRequestTest extends TestCase
+final class CreateEventRequestTest extends UnitTestCase
 {
     use HasRequestValidator;
 
@@ -282,5 +284,76 @@ final class CreateEventRequestTest extends TestCase
 
         // Assert
         $this->assertTrue($validator->passes());
+    }
+
+    public function testItBuildsAnEventDataLesson(): void
+    {
+        // Arrange
+        $this->createEventRequest->setValidator(
+            $this->makeRequestValidator($this->createEventRequest, [
+                'type' => 'lesson',
+                'starts_at' => '2000-01-01 00:00:00',
+                'ends_at' => '2010-01-01 00:00:00',
+                'status' => 'planned',
+                'student_id' => 1,
+                'title' => 'Event Title',
+            ]),
+        );
+
+        // Act
+        $actual = $this->createEventRequest->toEventData();
+
+        // Assert
+        $this->assertSame(EventType::Lesson, $actual->type);
+        $this->assertSame('2000-01-01 00:00:00', $actual->startsAt->toDateTimeString());
+        $this->assertSame('2010-01-01 00:00:00', $actual->endsAt->toDateTimeString());
+        $this->assertSame(LessonStatus::Planned, $actual->lessonData->status);
+        $this->assertSame(1, $actual->lessonData->studentId);
+        $this->assertSame('Event Title', $actual->lessonData->title);
+    }
+
+    public function testItBuildsEventDataWithoutALessonForTimeOff(): void
+    {
+        // Arrange
+        $this->createEventRequest->setValidator(
+            $this->makeRequestValidator($this->createEventRequest, [
+                'type' => 'time_off',
+                'starts_at' => '2000-01-01 00:00:00',
+                'ends_at' => '2010-01-01 00:00:00',
+            ]),
+        );
+
+        // Act
+        $actual = $this->createEventRequest->toEventData();
+
+        // Assert
+        $this->assertSame(EventType::TimeOff, $actual->type);
+        $this->assertSame('2000-01-01 00:00:00', $actual->startsAt->toDateTimeString());
+        $this->assertSame('2010-01-01 00:00:00', $actual->endsAt->toDateTimeString());
+        $this->assertNull($actual->lessonData);
+    }
+
+    public function testItIgnoresLessonFieldsWhenBuildingEventDataForTimeOff(): void
+    {
+        // Arrange
+        $this->createEventRequest->setValidator(
+            $this->makeRequestValidator($this->createEventRequest, [
+                'type' => 'time_off',
+                'starts_at' => '2000-01-01 00:00:00',
+                'ends_at' => '2010-01-01 00:00:00',
+                'status' => 'planned',
+                'student_id' => 1,
+                'title' => 'Event Title',
+            ]),
+        );
+
+        // Act
+        $actual = $this->createEventRequest->toEventData();
+
+        // Assert
+        $this->assertSame(EventType::TimeOff, $actual->type);
+        $this->assertSame('2000-01-01 00:00:00', $actual->startsAt->toDateTimeString());
+        $this->assertSame('2010-01-01 00:00:00', $actual->endsAt->toDateTimeString());
+        $this->assertNull($actual->lessonData);
     }
 }
