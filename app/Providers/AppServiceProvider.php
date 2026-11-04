@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Repositories\Availability\AvailabilityRepository;
+use App\Repositories\Availability\EloquentAvailabilityRepository;
 use App\Repositories\Event\EloquentEventRepository;
 use App\Repositories\Event\EventRepository;
 use App\Repositories\Student\EloquentStudentRepository;
@@ -18,6 +20,7 @@ final class AppServiceProvider extends ServiceProvider
     public array $bindings = [
         StudentRepository::class => EloquentStudentRepository::class,
         EventRepository::class => EloquentEventRepository::class,
+        AvailabilityRepository::class => EloquentAvailabilityRepository::class,
     ];
 
     public function register()

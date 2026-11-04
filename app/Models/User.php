@@ -39,6 +39,11 @@ final class User extends Authenticatable
         return $this->hasMany(Event::class);
     }
 
+    public function availabilities(): HasMany
+    {
+        return $this->hasMany(Availability::class);
+    }
+
     protected function casts(): array
     {
         return [
