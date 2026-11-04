@@ -16,11 +16,11 @@ use Illuminate\Database\Seeder;
 final class EventSeeder extends Seeder
 {
     private const array THIS_WEEK_LESSONS = [
-        [0, '10:00', '11:00', 'Maya Chen', LessonStatus::Planned],
-        [1, '14:00', '15:00', 'Oliver James', LessonStatus::Planned],
-        [2, '10:00', '11:00', 'Sophie Martin', LessonStatus::Planned],
-        [3, '11:00', '12:00', 'Lucas Rossi', LessonStatus::Cancelled],
-        [4, '10:00', '11:00', 'Amira Patel', LessonStatus::Planned],
+        [0, '10:00', '10:50', 'Maya Chen', LessonStatus::Planned],
+        [1, '14:00', '14:50', 'Oliver James', LessonStatus::Planned],
+        [2, '10:00', '10:50', 'Sophie Martin', LessonStatus::Planned],
+        [3, '11:30', '12:20', 'Lucas Rossi', LessonStatus::Cancelled],
+        [4, '10:00', '10:50', 'Amira Patel', LessonStatus::Planned],
     ];
 
     private const array THIS_WEEK_TIME_OFF = [
@@ -29,12 +29,12 @@ final class EventSeeder extends Seeder
     ];
 
     private const array NEXT_WEEK_LESSONS = [
-        [0, '09:00', '10:00', 'Lucas Rossi', LessonStatus::Planned],
-        [0, '15:00', '16:00', 'Sophie Martin', LessonStatus::Requested],
-        [1, '10:00', '11:00', 'Amira Patel', LessonStatus::Requested],
-        [2, '14:00', '15:00', 'Oliver James', LessonStatus::Planned],
-        [3, '10:00', '11:00', 'Maya Chen', LessonStatus::Cancelled],
-        [4, '16:00', '17:00', 'Sophie Martin', LessonStatus::Requested],
+        [0, '09:00', '09:50', 'Lucas Rossi', LessonStatus::Planned],
+        [0, '15:00', '15:50', 'Sophie Martin', LessonStatus::Requested],
+        [1, '10:00', '10:50', 'Amira Patel', LessonStatus::Requested],
+        [2, '14:30', '15:20', 'Oliver James', LessonStatus::Planned],
+        [3, '10:15', '11:05', 'Maya Chen', LessonStatus::Cancelled],
+        [4, '16:00', '16:50', 'Sophie Martin', LessonStatus::Requested],
     ];
 
     private const array NEXT_WEEK_TIME_OFF = [

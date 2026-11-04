@@ -20,6 +20,7 @@ final class DatabaseSeeder extends Seeder
         $this->call([
             StudentSeeder::class,
             EventSeeder::class,
+            AvailabilitySeeder::class,
         ]);
     }
 }
