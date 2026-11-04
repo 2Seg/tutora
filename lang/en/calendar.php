@@ -7,6 +7,10 @@ return [
         'available' => 'Available',
         'unavailable' => 'Unavailable',
     ],
+    'aside' => [
+        'schedule_lesson' => 'Schedule lesson',
+        'set_up_availabilities' => 'Set up availabilities',
+    ],
     'event' => [
         'default_title' => [
             'lesson' => '(No title)',
