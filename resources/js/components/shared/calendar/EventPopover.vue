@@ -6,22 +6,22 @@ import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover'
 import TimeOffDetails from '@/components/shared/calendar/popover/TimeOffDetails.vue';
 import DraftForm from '@/components/shared/calendar/popover/DraftForm.vue';
 import LessonDetails from '@/components/shared/calendar/popover/LessonDetails.vue';
-import type { CalendarEvent, Lesson, SlotSelection, TimeOff } from '@/types/calendar';
+import type { CalendarEvent, Draft, DraftUpdate, Lesson, TimeOff } from '@/types/calendar';
+import { StudentSummary } from '@/types/Student';
 
-type Shown =
-    | { kind: 'draft'; range: SlotSelection }
-    | { kind: 'lesson'; event: Lesson }
-    | { kind: 'time_off'; event: TimeOff };
+type Shown = { kind: 'draft'; draft: Draft } | { kind: 'lesson'; event: Lesson } | { kind: 'time_off'; event: TimeOff };
 
 const props = defineProps<{
     container: HTMLElement | null;
-    draft: SlotSelection | null;
+    draft: Draft | null;
     event: CalendarEvent | null;
+    students?: StudentSummary[];
     isMoving: boolean;
 }>();
 
 const emit = defineEmits<{
     close: [];
+    'update-draft': [update: DraftUpdate];
 }>();
 
 const anchor = shallowRef<HTMLElement>();
@@ -31,7 +31,7 @@ watch(
     () => [props.draft, props.event, props.isMoving],
     () => {
         if (props.draft) {
-            shown.value = { kind: 'draft', range: props.draft };
+            shown.value = { kind: 'draft', draft: props.draft };
         } else if (props.event) {
             shown.value =
                 props.event.type === 'lesson'
@@ -84,7 +84,13 @@ const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draf
                 <X />
             </Button>
 
-            <DraftForm v-if="shown?.kind === 'draft'" :range="shown.range" @cancel="emit('close')" />
+            <DraftForm
+                v-if="shown?.kind === 'draft'"
+                :draft="shown.draft"
+                :students="props.students"
+                @cancel="emit('close')"
+                @update="emit('update-draft', $event)"
+            />
             <LessonDetails v-else-if="shown?.kind === 'lesson'" :event="shown.event" />
             <TimeOffDetails v-else-if="shown?.kind === 'time_off'" :event="shown.event" />
         </PopoverContent>

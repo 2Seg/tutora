@@ -9,8 +9,15 @@ import { addDays, atMinutes, CALENDAR_TIME_ZONE, describeTimezone, isSameDay, st
 import type { CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
+import { StudentSummary } from '@/types/Student';
 
-const props = withDefaults(defineProps<{ events?: CalendarEvent[] }>(), { events: () => [] });
+const props = withDefaults(
+    defineProps<{
+        events?: CalendarEvent[];
+        students?: StudentSummary[];
+    }>(),
+    { events: () => [] },
+);
 
 const emit = defineEmits<{ 'event-click': [event: CalendarEvent] }>();
 
@@ -177,6 +184,7 @@ onMounted(() => {
             :draft="shownDraft"
             :event="selectedEvent"
             :is-moving="isMovingDraft"
+            :students="props.students"
             @close="closePopover"
             @update-draft="updateDraft"
         />

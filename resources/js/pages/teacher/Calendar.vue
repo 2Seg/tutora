@@ -6,8 +6,12 @@ import { statusVariants } from '@/lib/calendar-status';
 import { startOfWeek } from '@/lib/calendar-utils';
 import type { CalendarEvent, Draft } from '@/types/calendar';
 import { Button } from '@/components/ui/button';
+import { StudentSummary } from '@/types/Student';
 
-const props = defineProps<{ events: CalendarEvent[] }>();
+const props = defineProps<{
+    events: CalendarEvent[];
+    students?: StudentSummary[];
+}>();
 const weekStart = ref(startOfWeek(new Date()));
 const draft = ref<Draft | null>(null);
 </script>
@@ -29,6 +33,7 @@ const draft = ref<Draft | null>(null);
             v-model:draft="draft"
             v-model:week-start="weekStart"
             :events="props.events"
+            :students="props.students"
             class="min-w-0"
         />
     </div>

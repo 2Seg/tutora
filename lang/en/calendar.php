@@ -21,10 +21,7 @@ return [
             'placeholder' => 'Add title',
             'label' => 'Title',
         ],
-        'status' => [
-            'placeholder' => 'Select a status',
-            'label' => 'Status',
-        ],
+        'status' => ['label' => 'Status'],
         'student' => [
             'placeholder' => 'Select a student',
             'label' => 'Student',
