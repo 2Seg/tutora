@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Http\Resources;
 
 use App\Enums\EventType;
+use App\Enums\LessonStatus;
 use App\Http\Resources\EventResource;
 use App\Http\Resources\StudentResource;
 use App\Models\Event;
@@ -126,7 +127,7 @@ final class EventResourceTest extends UnitTestCase
         $actual = (new EventResource($this->event))->resolve($this->request);
 
         // Assert
-        $this->assertSame('planned', $actual['status']);
+        $this->assertSame(LessonStatus::Planned, $actual['status']);
     }
 
     public function testItSerializesLessonTitle(): void
