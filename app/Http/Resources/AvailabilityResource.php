@@ -14,8 +14,8 @@ final class AvailabilityResource extends JsonResource
         return [
             'id' => $this->id,
             'dayOfWeek' => $this->day_of_week,
-            'startTime' => $this->start_time,
-            'endTime' => $this->end_time,
+            'startTime' => substr((string) $this->start_time, 0, 5),
+            'endTime' => substr((string) $this->end_time, 0, 5),
         ];
     }
 }

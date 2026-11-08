@@ -53,7 +53,7 @@ final class AvailabilityResourceTest extends UnitTestCase
         $actual = (new AvailabilityResource($this->availability))->resolve($this->request);
 
         // Assert
-        $this->assertSame('08:00:00', $actual['startTime']);
+        $this->assertSame('08:00', $actual['startTime']);
     }
 
     public function testItSerializesAvailabilityEndTime(): void
@@ -65,7 +65,7 @@ final class AvailabilityResourceTest extends UnitTestCase
         $actual = (new AvailabilityResource($this->availability))->resolve($this->request);
 
         // Assert
-        $this->assertSame('12:00:00', $actual['endTime']);
+        $this->assertSame('12:00', $actual['endTime']);
     }
 
     public function testItSerializesOnlySpecificFields(): void
