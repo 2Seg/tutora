@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Teacher\Calendar\CreateEventController;
 use App\Http\Controllers\Teacher\Calendar\ShowCalendarController;
+use App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController;
 use App\Http\Controllers\Teacher\Student\ListStudentsController;
 use Illuminate\Routing\Router;
 
@@ -26,6 +27,8 @@ $router->middleware('auth')->group(function (Router $router) {
         $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
             $router->get('/', ShowCalendarController::class)->name('show');
             $router->post('/', CreateEventController::class)->name('store');
+
+            $router->put('/availabilities', UpdateAvailabilitiesController::class)->name('availabilities.update');
         });
     });
 });

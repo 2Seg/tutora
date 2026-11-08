@@ -1,4 +1,5 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
+import availabilities from './availabilities'
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
 * @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
@@ -80,6 +81,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 const calendar = {
     show: Object.assign(show, show),
     store: Object.assign(store, store),
+    availabilities: Object.assign(availabilities, availabilities),
 }
 
 export default calendar
