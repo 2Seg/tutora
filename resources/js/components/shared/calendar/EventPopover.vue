@@ -3,9 +3,9 @@ import { X } from '@lucide/vue';
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
-import TimeOffDetails from '@/components/shared/calendar/popover/TimeOffDetails.vue';
-import DraftForm from '@/components/shared/calendar/popover/DraftForm.vue';
-import LessonDetails from '@/components/shared/calendar/popover/LessonDetails.vue';
+import TimeOffDetails from '@/components/shared/calendar/event-popover/TimeOffDetails.vue';
+import DraftForm from '@/components/shared/calendar/event-popover/DraftForm.vue';
+import LessonDetails from '@/components/shared/calendar/event-popover/LessonDetails.vue';
 import type { CalendarEvent, Draft, DraftUpdate, Lesson, TimeOff } from '@/types/calendar';
 import { StudentSummary } from '@/types/Student';
 
