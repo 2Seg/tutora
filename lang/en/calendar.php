@@ -23,6 +23,22 @@ return [
             'draft' => 'Draft',
             'time_off' => 'Time off',
         ],
+        'popover' => [
+            'title' => [
+                'placeholder' => 'Add title',
+                'label' => 'Title',
+            ],
+            'status' => ['label' => 'Status'],
+            'student' => [
+                'placeholder' => 'Select a student',
+                'label' => 'Student',
+            ],
+            'lesson' => 'Lesson',
+            'time_off' => 'Time off',
+            'cancel' => 'Cancel',
+            'create' => 'Create',
+            'join_meeting' => 'Join meeting',
+        ],
     ],
     'popover' => [
         'title' => [

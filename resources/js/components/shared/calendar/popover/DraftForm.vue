@@ -42,8 +42,8 @@ watch(studentId, (id) => {
     <Form #default="{ errors, processing }" :action="store()" class="flex flex-col gap-3" @success="emit('cancel')">
         <Tabs :model-value="draft.type" @update:model-value="emit('update', { type: $event as EventType })">
             <TabsList>
-                <TabsTrigger value="lesson">{{ trans('calendar.popover.lesson') }}</TabsTrigger>
-                <TabsTrigger value="time_off">{{ trans('calendar.popover.time_off') }}</TabsTrigger>
+                <TabsTrigger value="lesson">{{ trans('calendar.event.popover.lesson') }}</TabsTrigger>
+                <TabsTrigger value="time_off">{{ trans('calendar.event.popover.time_off') }}</TabsTrigger>
                 <input :value="draft.type" name="type" type="hidden" />
             </TabsList>
 
@@ -61,7 +61,7 @@ watch(studentId, (id) => {
             <TabsContent class="flex flex-col gap-2" value="lesson">
                 <div class="grid grid-cols-2 gap-2">
                     <div class="flex min-w-0 flex-col gap-2">
-                        <Label for="status">{{ trans('calendar.popover.status.label') }}</Label>
+                        <Label for="status">{{ trans('calendar.event.popover.status.label') }}</Label>
                         <Select v-slot="{ modelValue }" v-model="status" name="status">
                             <SelectTrigger :aria-invalid="!!errors.status" class="w-full truncate cursor-pointer">
                                 <SelectValue>
@@ -82,10 +82,10 @@ watch(studentId, (id) => {
                     </div>
 
                     <div class="flex min-w-0 flex-col gap-2">
-                        <Label for="student">{{ trans('calendar.popover.student.label') }}</Label>
+                        <Label for="student">{{ trans('calendar.event.popover.student.label') }}</Label>
                         <Select v-model="studentId" name="student_id">
                             <SelectTrigger :aria-invalid="!!errors.student_id" class="w-full cursor-pointer">
-                                <SelectValue :placeholder="$t('calendar.popover.student.placeholder')">
+                                <SelectValue :placeholder="$t('calendar.event.popover.student.placeholder')">
                                     <template v-if="selectedStudent">
                                         <UserAvatar :user="selectedStudent" class="size-6.5 shrink-0" />
                                         <span class="truncate">{{ selectedStudent.fullName }}</span>
@@ -107,12 +107,12 @@ watch(studentId, (id) => {
                     </div>
                 </div>
 
-                <Label for="title">{{ trans('calendar.popover.title.label') }}</Label>
+                <Label for="title">{{ trans('calendar.event.popover.title.label') }}</Label>
                 <Input
                     :aria-invalid="!!errors.title"
-                    :aria-label="$t('calendar.popover.title')"
+                    :aria-label="$t('calendar.event.popover.title')"
                     :model-value="draft.title ?? ''"
-                    :placeholder="$t('calendar.popover.title.placeholder')"
+                    :placeholder="$t('calendar.event.popover.title.placeholder')"
                     name="title"
                     @update:model-value="emit('update', { title: String($event) })"
                 />
@@ -123,10 +123,10 @@ watch(studentId, (id) => {
 
             <div class="flex justify-end gap-2">
                 <Button size="sm" type="button" variant="ghost" @click="emit('cancel')">
-                    {{ $t('calendar.popover.cancel') }}
+                    {{ $t('calendar.event.popover.cancel') }}
                 </Button>
                 <Button :disabled="processing" size="sm">
-                    {{ $t('calendar.popover.create') }}
+                    {{ $t('calendar.event.popover.create') }}
                 </Button>
             </div>
         </Tabs>

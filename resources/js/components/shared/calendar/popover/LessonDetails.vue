@@ -33,7 +33,7 @@ const schedule = computed(() => formatEventSchedule(props.event));
     <Button v-if="event.meetingUrl" as-child size="sm" variant="outline">
         <a :href="event.meetingUrl" rel="noopener" target="_blank">
             <Video />
-            {{ $t('calendar.popover.join_meeting') }}
+            {{ $t('calendar.event.popover.join_meeting') }}
         </a>
     </Button>
 </template>

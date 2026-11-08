@@ -14,7 +14,7 @@ const schedule = computed(() => formatEventSchedule(props.event));
 
 <template>
     <h2 class="m-0 truncate font-semibold pr-8 flex items-center gap-2">
-        {{ trans('calendar.popover.time_off') }}
+        {{ trans('calendar.event.popover.time_off') }}
     </h2>
 
     <div class="flex items-start justify-between gap-3">

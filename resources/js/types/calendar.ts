@@ -30,7 +30,6 @@ export type CalendarEvent = Lesson | TimeOff;
 
 export interface Availability {
     id: number;
-    /** ISO weekday: 1 is Monday, 7 is Sunday. */
     dayOfWeek: number;
     startTime: string;
     endTime: string;

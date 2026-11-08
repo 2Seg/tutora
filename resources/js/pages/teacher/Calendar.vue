@@ -22,8 +22,7 @@ const draft = ref<Draft | null>(null);
     <div class="grid grid-cols-[minmax(10rem,1fr)_minmax(0,6fr)] content-start gap-6">
         <div class="flex flex-col justify-between h-full bg-card rounded-2xl p-4">
             <div class="flex flex-col gap-2 w-full">
-                <Button variant="secondary">{{ trans('calendar.aside.schedule_lesson') }}</Button>
-                <Button size="sm" variant="outline">{{ trans('calendar.aside.set_up_availabilities') }}</Button>
+                <Button size="sm" variant="outline">{{ trans('calendar.aside.update_availabilities') }}</Button>
             </div>
 
             <div class="flex flex-wrap w-full gap-2">

@@ -75,7 +75,7 @@ const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draf
             @interact-outside.prevent
         >
             <Button
-                :aria-label="$t('calendar.popover.close')"
+                :aria-label="$t('calendar.event.popover.close')"
                 class="absolute top-2 right-2"
                 size="icon-sm"
                 variant="ghost"
