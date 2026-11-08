@@ -284,7 +284,7 @@ describe('segmentForDay', () => {
 });
 
 describe('unavailableSlotsForDay', () => {
-    const availability = (id: number, dayOfWeek: number, startTime = '08:00:00', endTime = '12:00:00') => ({
+    const availability = (id: number, dayOfWeek: number, startTime = '08:00', endTime = '12:00') => ({
         id,
         dayOfWeek,
         startTime,
@@ -293,7 +293,7 @@ describe('unavailableSlotsForDay', () => {
     const wholeDay = [{ startMin: 0, endMin: MINUTES_PER_DAY }];
 
     it('returns the time before and after an availability', () => {
-        const slots = unavailableSlotsForDay([availability(1, 1, '08:30:00', '12:15:00')], d(2024, 1, 15));
+        const slots = unavailableSlotsForDay([availability(1, 1, '08:30', '12:15')], d(2024, 1, 15));
 
         expect(slots).toEqual([
             { startMin: 0, endMin: 510 },
@@ -302,7 +302,7 @@ describe('unavailableSlotsForDay', () => {
     });
 
     it('returns the gap between two availabilities, whatever their order', () => {
-        const availabilities = [availability(1, 1, '14:00:00', '18:00:00'), availability(2, 1, '08:00:00', '12:00:00')];
+        const availabilities = [availability(1, 1, '14:00', '18:00'), availability(2, 1, '08:00', '12:00')];
 
         expect(unavailableSlotsForDay(availabilities, d(2024, 1, 15))).toEqual([
             { startMin: 0, endMin: 480 },
@@ -312,7 +312,7 @@ describe('unavailableSlotsForDay', () => {
     });
 
     it('merges overlapping availabilities', () => {
-        const availabilities = [availability(1, 1, '08:00:00', '12:00:00'), availability(2, 1, '10:00:00', '11:00:00')];
+        const availabilities = [availability(1, 1, '08:00', '12:00'), availability(2, 1, '10:00', '11:00')];
 
         expect(unavailableSlotsForDay(availabilities, d(2024, 1, 15))).toEqual([
             { startMin: 0, endMin: 480 },
@@ -321,7 +321,7 @@ describe('unavailableSlotsForDay', () => {
     });
 
     it('returns nothing when the whole day is available', () => {
-        const slots = unavailableSlotsForDay([availability(1, 1, '00:00:00', '24:00:00')], d(2024, 1, 15));
+        const slots = unavailableSlotsForDay([availability(1, 1, '00:00', '24:00')], d(2024, 1, 15));
 
         expect(slots).toEqual([]);
     });
@@ -351,7 +351,7 @@ describe('unavailableSlotsForDay', () => {
 });
 
 describe('availabilitySideLinesForDay', () => {
-    const availability = (dayOfWeek: number, startTime = '08:00:00', endTime = '12:00:00') => ({
+    const availability = (dayOfWeek: number, startTime = '08:00', endTime = '12:00') => ({
         id: dayOfWeek,
         dayOfWeek,
         startTime,
@@ -374,13 +374,13 @@ describe('availabilitySideLinesForDay', () => {
     });
 
     it('only draws the hours the neighbouring day does not cover', () => {
-        const availabilities = [availability(2), availability(3, '10:00:00', '14:00:00')];
+        const availabilities = [availability(2), availability(3, '10:00', '14:00')];
 
         expect(availabilitySideLinesForDay(availabilities, tuesday).right).toEqual([{ startMin: 480, endMin: 600 }]);
     });
 
     it('draws both sides when the neighbouring day is available at other hours', () => {
-        const availabilities = [availability(2), availability(3, '14:00:00', '18:00:00')];
+        const availabilities = [availability(2), availability(3, '14:00', '18:00')];
 
         expect(availabilitySideLinesForDay(availabilities, tuesday).right).toEqual([morning]);
     });

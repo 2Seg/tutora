@@ -23,7 +23,7 @@ final class UpdateAvailabilitiesRequest extends FormRequest
     public function toAvailabilitiesData(): AvailabilitiesData
     {
         return new AvailabilitiesData(...array_map(
-            fn(array $data) => new AvailabilityData($data['day_of_week'], $data['start_time'], $data['end_time']),
+            fn(array $data) => new AvailabilityData((int) $data['day_of_week'], $data['start_time'], $data['end_time']),
             $this->validated('availabilities'),
         ));
     }

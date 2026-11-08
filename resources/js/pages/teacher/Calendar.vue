@@ -5,9 +5,8 @@ import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { statusVariants } from '@/lib/calendar-status';
 import { startOfWeek } from '@/lib/calendar-utils';
 import type { Availability, CalendarEvent, Draft } from '@/types/calendar';
-import { Button } from '@/components/ui/button';
+import AvailabilitiesPopover from '@/components/shared/calendar/AvailabilitiesPopover.vue';
 import { StudentSummary } from '@/types/Student';
-import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps<{
     events: CalendarEvent[];
@@ -22,7 +21,7 @@ const draft = ref<Draft | null>(null);
     <div class="grid grid-cols-[minmax(10rem,1fr)_minmax(0,6fr)] content-start gap-6">
         <div class="flex flex-col justify-between h-full bg-card rounded-2xl p-4">
             <div class="flex flex-col gap-2 w-full">
-                <Button size="sm" variant="outline">{{ trans('calendar.aside.update_availabilities') }}</Button>
+                <AvailabilitiesPopover :availabilities="props.availabilities" />
             </div>
 
             <div class="flex flex-wrap w-full gap-2">

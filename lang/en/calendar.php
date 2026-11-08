@@ -3,13 +3,19 @@
 declare(strict_types=1);
 
 return [
+    'aside' => [
+        'update_availabilities' => 'Update availabilities',
+    ],
     'availability' => [
         'available' => 'Available',
         'unavailable' => 'Unavailable',
-    ],
-    'aside' => [
-        'schedule_lesson' => 'Schedule lesson',
-        'set_up_availabilities' => 'Set up availabilities',
+        'popover' => [
+            'title' => 'Weekly availabilities',
+            'add' => 'Add slot',
+            'remove' => 'Remove slot',
+            'cancel' => 'Cancel',
+            'save' => 'Save',
+        ],
     ],
     'event' => [
         'default_title' => [
@@ -39,21 +45,5 @@ return [
             'create' => 'Create',
             'join_meeting' => 'Join meeting',
         ],
-    ],
-    'popover' => [
-        'title' => [
-            'placeholder' => 'Add title',
-            'label' => 'Title',
-        ],
-        'status' => ['label' => 'Status'],
-        'student' => [
-            'placeholder' => 'Select a student',
-            'label' => 'Student',
-        ],
-        'lesson' => 'Lesson',
-        'time_off' => 'Time off',
-        'cancel' => 'Cancel',
-        'create' => 'Create',
-        'join_meeting' => 'Join meeting',
     ],
 ];
