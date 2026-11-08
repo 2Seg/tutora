@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Requests;
 
+use App\Data\AvailabilitiesData;
+use App\Data\AvailabilityData;
 use App\Http\Requests\UpdateAvailabilitiesRequest;
 use Tests\Concerns\HasRequestValidator;
 use Tests\Unit\UnitTestCase;
@@ -179,5 +181,52 @@ final class UpdateAvailabilitiesRequestTest extends UnitTestCase
 
         // Assert
         $this->assertTrue($validator->passes());
+    }
+
+    public function testItBuildsAnEmptyAvailabilitiesData(): void
+    {
+        // Arrange
+        $data = ['availabilities' => []];
+        $this->updateAvailabilitiesRequest->setValidator(
+            $this->makeRequestValidator($this->updateAvailabilitiesRequest, $data),
+        );
+
+        // Act
+        $actual = $this->updateAvailabilitiesRequest->toAvailabilitiesData();
+
+        // Assert
+        $this->assertInstanceOf(AvailabilitiesData::class, $actual);
+        $this->assertEquals(new AvailabilitiesData(), $actual);
+    }
+
+    public function testItBuildsAnAvailabilitiesDataOfAvailabilityData(): void
+    {
+        // Arrange
+        $data = ['availabilities' => [
+            [
+                'day_of_week' => 1,
+                'start_time' => '09:00',
+                'end_time' => '09:50',
+            ],
+            [
+                'day_of_week' => 2,
+                'start_time' => '09:00',
+                'end_time' => '09:50',
+            ],
+        ]];
+        $this->updateAvailabilitiesRequest->setValidator(
+            $this->makeRequestValidator($this->updateAvailabilitiesRequest, $data),
+        );
+
+        // Act
+        $actual = $this->updateAvailabilitiesRequest->toAvailabilitiesData();
+
+        // Assert
+        $expected = new AvailabilitiesData(
+            new AvailabilityData(1, '09:00', '09:50'),
+            new AvailabilityData(2, '09:00', '09:50'),
+        );
+        $this->assertInstanceOf(AvailabilitiesData::class, $actual);
+        $this->assertEquals($expected, $actual);
     }
 }

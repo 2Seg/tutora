@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
+use App\Data\AvailabilitiesData;
+use App\Data\AvailabilityData;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class UpdateAvailabilitiesRequest extends FormRequest
@@ -16,5 +18,13 @@ final class UpdateAvailabilitiesRequest extends FormRequest
             'availabilities.*.start_time' => ['required', 'date_format:H:i'],
             'availabilities.*.end_time' => ['required', 'date_format:H:i', 'after:availabilities.*.start_time'],
         ];
+    }
+
+    public function toAvailabilitiesData(): AvailabilitiesData
+    {
+        return new AvailabilitiesData(...array_map(
+            fn(array $data) => new AvailabilityData($data['day_of_week'], $data['start_time'], $data['end_time']),
+            $this->validated('availabilities'),
+        ));
     }
 }
