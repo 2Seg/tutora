@@ -52,7 +52,12 @@ watch(studentId, (id) => {
             </p>
 
             <div class="text-sm">
-                <p class="m-0">{{ schedule.day }}</p>
+                <p class="m-0">
+                    {{ schedule.day }}
+                    <span v-if="draft.type === 'lesson'" class="text-secondary-foreground font-bold"
+                        >· {{ schedule.duration }}</span
+                    >
+                </p>
                 <p class="m-0 text-muted-foreground tabular-nums">{{ schedule.timeRange }}</p>
                 <input :value="props.draft.startsAt.toISOString()" name="starts_at" type="hidden" />
                 <input :value="props.draft.endsAt.toISOString()" name="ends_at" type="hidden" />

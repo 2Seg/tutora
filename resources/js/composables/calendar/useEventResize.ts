@@ -1,10 +1,19 @@
 import { ref, type Ref } from 'vue';
 
-import { atMinutes, isSameDay, MINUTES_PER_DAY, minutesOfDay, SNAP_MINUTES, toDate } from '@/lib/calendar-utils';
+import {
+    atMinutes,
+    isSameDay,
+    MINUTES_PER_DAY,
+    minutesOfDay,
+    nearestLessonDuration,
+    SNAP_MINUTES,
+    toDate,
+} from '@/lib/calendar-utils';
 import type { CalendarEvent } from '@/types/calendar';
 
 /**
- * Drag the bottom handle of an event to change its end time (snapped, within the same day).
+ * Drag the bottom handle of an event to change its end time, within the same day. A lesson's length snaps to
+ * a lesson duration, anything else's end snaps to 10 minutes.
  * While dragging, `resizing` holds the new end so the column can preview it.
  * `onCommit` is only called on release.
  */
@@ -31,6 +40,10 @@ export function useEventResize(
             if (!resizing.value || !column.value) return;
             const rect = column.value.getBoundingClientRect();
             const minute = ((move.clientY - rect.top) / rect.height) * MINUTES_PER_DAY;
+            if (event.type === 'lesson') {
+                resizing.value.endMin = startMin + nearestLessonDuration(minute - startMin, MINUTES_PER_DAY - startMin);
+                return;
+            }
             const snapped = Math.round(minute / SNAP_MINUTES) * SNAP_MINUTES;
             resizing.value.endMin = Math.min(Math.max(snapped, startMin + SNAP_MINUTES), MINUTES_PER_DAY);
         };

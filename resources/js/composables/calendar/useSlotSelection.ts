@@ -1,7 +1,13 @@
 import { computed, ref } from 'vue';
 
-import { atMinutes, DEFAULT_SLOT_MINUTES, MINUTES_PER_DAY, SNAP_MINUTES } from '@/lib/calendar-utils';
+import { atMinutes, DEFAULT_SLOT_MINUTES, lessonRange, MINUTES_PER_DAY, SNAP_MINUTES } from '@/lib/calendar-utils';
 import type { SlotSelection } from '@/types/calendar';
+
+/** New slots are lessons: the dragged range, from its earlier cell, with its length snapped to a lesson duration. */
+function draggedLesson(anchor: number, current: number) {
+    const start = Math.min(anchor, current);
+    return lessonRange(start, Math.max(anchor, current) + SNAP_MINUTES - start);
+}
 
 export function useSlotSelection(day: () => Date, onSelect: (selection: SlotSelection) => void) {
     const drag = ref<{ anchor: number; current: number } | null>(null);
@@ -31,27 +37,25 @@ export function useSlotSelection(day: () => Date, onSelect: (selection: SlotSele
         if (!selection) return;
         drag.value = null;
 
-        const start = Math.min(selection.anchor, selection.current);
         const isClick = selection.anchor === selection.current;
-        const end = Math.min(
-            isClick ? start + DEFAULT_SLOT_MINUTES : Math.max(selection.anchor, selection.current) + SNAP_MINUTES,
-            MINUTES_PER_DAY,
-        );
+        const { startMin, endMin } = isClick
+            ? lessonRange(selection.anchor, DEFAULT_SLOT_MINUTES)
+            : draggedLesson(selection.anchor, selection.current);
 
-        onSelect({ startsAt: atMinutes(day(), start), endsAt: atMinutes(day(), end) });
+        onSelect({ startsAt: atMinutes(day(), startMin), endsAt: atMinutes(day(), endMin) });
     }
 
     function onPointerCancel() {
         drag.value = null;
     }
 
-    /** The range being dragged, in minutes since midnight. Null until the pointer leaves the cell it was pressed in. */
+    /**
+     * The lesson being dragged, in minutes since midnight: its length snaps to a lesson duration.
+     * Null until the pointer leaves the cell it was pressed in.
+     */
     const selection = computed(() => {
         if (!drag.value || drag.value.anchor === drag.value.current) return null;
-        return {
-            startMin: Math.min(drag.value.anchor, drag.value.current),
-            endMin: Math.max(drag.value.anchor, drag.value.current) + SNAP_MINUTES,
-        };
+        return draggedLesson(drag.value.anchor, drag.value.current);
     });
 
     return { selection, onPointerDown, onPointerMove, onPointerUp, onPointerCancel };

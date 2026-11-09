@@ -5,7 +5,15 @@ import { computed, onMounted, ref, watch } from 'vue';
 import DayColumn from '@/components/shared/calendar/DayColumn.vue';
 import EventPopover from '@/components/shared/calendar/EventPopover.vue';
 import { Button } from '@/components/ui/button';
-import { addDays, atMinutes, CALENDAR_TIME_ZONE, describeTimezone, isSameDay, startOfWeek } from '@/lib/calendar-utils';
+import {
+    addDays,
+    atMinutes,
+    CALENDAR_TIME_ZONE,
+    describeTimezone,
+    fitLesson,
+    isSameDay,
+    startOfWeek,
+} from '@/lib/calendar-utils';
 import type { Availability, CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { useDraftMove } from '@/composables/calendar/useDraftMove';
@@ -51,7 +59,9 @@ function resizeDraft(_event: CalendarEvent, endsAt: Date) {
 }
 
 function updateDraft(update: DraftUpdate) {
-    if (draft.value) draft.value = { ...draft.value, ...update };
+    if (!draft.value) return;
+    const updated = { ...draft.value, ...update };
+    draft.value = update.type === 'lesson' && draft.value.type !== 'lesson' ? fitLesson(updated) : updated;
 }
 
 // The draft as shown in the popover, following the resize before it is committed

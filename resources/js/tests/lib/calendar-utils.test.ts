@@ -4,10 +4,13 @@ import {
     atMinutes,
     availabilitySideLinesForDay,
     describeTimezone,
+    fitLesson,
     isSameDay,
     layoutOverlaps,
+    lessonRange,
     MINUTES_PER_DAY,
     minutesOfDay,
+    nearestLessonDuration,
     percentOfDay,
     segmentForDay,
     startOfWeek,
@@ -204,6 +207,68 @@ describe('atMinutes', () => {
 
     it('round-trips with minutesOfDay', () => {
         expect(minutesOfDay(atMinutes(day, 745))).toBe(745);
+    });
+});
+
+describe('nearestLessonDuration', () => {
+    it.each([
+        [25, 25],
+        [50, 50],
+        [80, 80],
+        [110, 110],
+        [10, 25],
+        [40, 50],
+        [70, 80],
+        [100, 110],
+        [300, 110],
+    ])('maps %s minutes to %s', (minutes, expected) => {
+        expect(nearestLessonDuration(minutes)).toBe(expected);
+    });
+
+    it('picks the shorter duration on a tie', () => {
+        expect(nearestLessonDuration(65)).toBe(50);
+    });
+
+    it('only considers durations no longer than max', () => {
+        expect(nearestLessonDuration(110, 90)).toBe(80);
+    });
+
+    it('falls back to 25 minutes when none fits under max', () => {
+        expect(nearestLessonDuration(50, 10)).toBe(25);
+    });
+});
+
+describe('lessonRange', () => {
+    it('starts at the given minute with the nearest lesson duration', () => {
+        expect(lessonRange(600, 90)).toEqual({ startMin: 600, endMin: 680 });
+    });
+
+    it('moves the start earlier so the lesson ends by midnight', () => {
+        expect(lessonRange(1400, 50)).toEqual({ startMin: 1390, endMin: 1440 });
+    });
+});
+
+describe('fitLesson', () => {
+    it('snaps the length and keeps the other fields', () => {
+        const slot = { type: 'time_off', startsAt: d(2024, 5, 10, 10), endsAt: d(2024, 5, 10, 10, 30) };
+
+        expect(fitLesson(slot)).toEqual({
+            type: 'time_off',
+            startsAt: d(2024, 5, 10, 10),
+            endsAt: d(2024, 5, 10, 10, 25),
+        });
+    });
+
+    it('caps long slots at 1h50', () => {
+        const slot = { startsAt: d(2024, 5, 10, 9), endsAt: d(2024, 5, 10, 12) };
+
+        expect(fitLesson(slot)).toEqual({ startsAt: d(2024, 5, 10, 9), endsAt: d(2024, 5, 10, 10, 50) });
+    });
+
+    it('moves the start earlier when the lesson would run past midnight', () => {
+        const slot = { startsAt: d(2024, 5, 10, 23, 50), endsAt: d(2024, 5, 11) };
+
+        expect(fitLesson(slot)).toEqual({ startsAt: d(2024, 5, 10, 23, 35), endsAt: d(2024, 5, 11) });
     });
 });
 

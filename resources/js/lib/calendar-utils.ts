@@ -1,8 +1,9 @@
-import type { Availability } from '@/types/calendar';
+import type { Availability, SlotSelection } from '@/types/calendar';
 
 export const MINUTES_PER_DAY: number = 24 * 60;
 export const SNAP_MINUTES = 10;
 export const DEFAULT_SLOT_MINUTES = 50;
+export const LESSON_DURATIONS = [25, 50, 80, 110] as const;
 
 /**
  * The calendar shows every date in UTC for now. The date helpers below rely on it
@@ -43,6 +44,32 @@ export function minutesOfDay(date: Date): number {
 /** UTC date at `minutes` after midnight of `day` (1440 gives the next midnight). */
 export function atMinutes(day: Date, minutes: number): Date {
     return new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), 0, minutes));
+}
+
+/** The lesson duration closest to `minutes` (the shorter one on a tie), among those no longer than `max`. */
+export function nearestLessonDuration(minutes: number, max = Infinity): number {
+    const fitting = LESSON_DURATIONS.filter((duration) => duration <= max);
+    const candidates: number[] = fitting.length ? fitting : [LESSON_DURATIONS[0]];
+
+    return candidates.reduce((best, duration) =>
+        Math.abs(duration - minutes) < Math.abs(best - minutes) ? duration : best,
+    );
+}
+
+/** A lesson of about `minutes` starting at `startMin`, moved earlier if it would run past midnight. */
+export function lessonRange(startMin: number, minutes: number): MinuteRange {
+    const duration = nearestLessonDuration(minutes);
+    const start = Math.min(startMin, MINUTES_PER_DAY - duration);
+
+    return { startMin: start, endMin: start + duration };
+}
+
+/** The same slot with a lesson length (see `lessonRange`), on the day it starts. */
+export function fitLesson<T extends SlotSelection>(slot: T): T {
+    const length = (slot.endsAt.getTime() - slot.startsAt.getTime()) / 60_000;
+    const { startMin, endMin } = lessonRange(minutesOfDay(slot.startsAt), length);
+
+    return { ...slot, startsAt: atMinutes(slot.startsAt, startMin), endsAt: atMinutes(slot.startsAt, endMin) };
 }
 
 export interface DaySegment {

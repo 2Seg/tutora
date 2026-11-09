@@ -101,7 +101,7 @@ describe('useSlotSelection', () => {
             [9.9, 0],
             [614, 610],
             [629, 620],
-            [1439, 1430],
+            [1389, 1380],
         ])('snaps %s minutes down to %s', (offset, expectedStart) => {
             expect(clickStart(column, TOP + offset)).toEqual(at(expectedStart));
         });
@@ -110,8 +110,8 @@ describe('useSlotSelection', () => {
             expect(clickStart(column, TOP - 200)).toEqual(at(0));
         });
 
-        it('clamps pointers below the column to the last slot of the day', () => {
-            expect(clickStart(column, TOP + 2000)).toEqual(at(1440 - 10));
+        it('clamps pointers below the column to the last 50 minutes of the day', () => {
+            expect(clickStart(column, TOP + 2000)).toEqual(at(1440 - 50));
         });
 
         it('scales with the column height', () => {
@@ -142,13 +142,13 @@ describe('useSlotSelection', () => {
             expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
         });
 
-        it('caps the default slot at the end of the day', () => {
+        it('moves the start earlier so the default slot ends at midnight', () => {
             const { onPointerDown, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, yFor(1430)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1430), endsAt: at(1440) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1390), endsAt: at(1440) });
         });
 
         it('selects midnight to 00:50 when clicking the top of the column', () => {
@@ -162,24 +162,24 @@ describe('useSlotSelection', () => {
     });
 
     describe('drag', () => {
-        it('selects from the anchor to the end of the slot under the pointer (downwards)', () => {
+        it('snaps the dragged range (100 min) to the nearest lesson duration (1h50)', () => {
             const { onPointerDown, onPointerMove, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
             onPointerMove(pointerEvent(column, yFor(690)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(700) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(710) });
         });
 
-        it('produces the same range when dragging upwards', () => {
+        it('starts at the earlier slot when dragging upwards', () => {
             const { onPointerDown, onPointerMove, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, yFor(690)));
             onPointerMove(pointerEvent(column, yFor(600)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(700) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(710) });
         });
 
         it('uses the latest pointer position', () => {
@@ -190,27 +190,37 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, yFor(660)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(670) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(680) });
         });
 
-        it('selects a single extra slot when dragging by one slot', () => {
+        it('selects 25 minutes when dragging by one slot', () => {
             const { onPointerDown, onPointerMove, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
             onPointerMove(pointerEvent(column, yFor(610)));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(620) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(625) });
         });
 
-        it('ends exactly at midnight when dragged past the bottom of the column', () => {
+        it('caps a long drag at 1h50', () => {
             const { onPointerDown, onPointerMove, onPointerUp } = setup();
 
             onPointerDown(pointerEvent(column, yFor(1290)));
             onPointerMove(pointerEvent(column, TOP + 5000));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1290), endsAt: at(1440) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1290), endsAt: at(1400) });
+        });
+
+        it('moves the start earlier so the lesson ends at midnight', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(1420)));
+            onPointerMove(pointerEvent(column, yFor(1430)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1415), endsAt: at(1440) });
         });
 
         it('starts at midnight when dragged past the top of the column', () => {
@@ -220,7 +230,7 @@ describe('useSlotSelection', () => {
             onPointerMove(pointerEvent(column, TOP - 500));
             onPointerUp();
 
-            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(130) });
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(110) });
         });
     });
 
@@ -248,16 +258,16 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, yFor(600)));
             onPointerMove(pointerEvent(column, yFor(610)));
 
-            expect(selection.value).toEqual({ startMin: 600, endMin: 620 });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 625 });
         });
 
-        it('updates as the pointer moves', () => {
+        it('updates as the pointer moves, snapped to a lesson duration', () => {
             const { onPointerDown, onPointerMove, selection } = setup();
 
             onPointerDown(pointerEvent(column, yFor(600)));
             onPointerMove(pointerEvent(column, yFor(690)));
 
-            expect(selection.value).toEqual({ startMin: 600, endMin: 700 });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 710 });
         });
 
         it('anchors the start at the earlier slot when dragging upwards', () => {
@@ -266,7 +276,7 @@ describe('useSlotSelection', () => {
             onPointerDown(pointerEvent(column, yFor(690)));
             onPointerMove(pointerEvent(column, yFor(600)));
 
-            expect(selection.value).toEqual({ startMin: 600, endMin: 700 });
+            expect(selection.value).toEqual({ startMin: 600, endMin: 710 });
         });
 
         it('disappears again when the pointer comes back to the pressed slot', () => {

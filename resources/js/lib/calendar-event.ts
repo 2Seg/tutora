@@ -34,9 +34,18 @@ export const getEventDescription = (event: CalendarEvent, range: string) => {
     return [title, statusLabel, range].filter(Boolean).join(', ');
 };
 
+/** "25 min", "1h20", "2h". */
+export const formatDuration = (minutes: number) => {
+    const hours = Math.floor(minutes / 60);
+    const rest = minutes % 60;
+    if (!hours) return `${rest} min`;
+    return rest ? `${hours}h${String(rest).padStart(2, '0')}` : `${hours}h`;
+};
+
 export const formatEventSchedule = (range: Pick<CalendarEvent, 'startsAt' | 'endsAt'>) => {
     const locale = getActiveLanguage().replace('_', '-');
     const start = toDate(range.startsAt);
+    const end = toDate(range.endsAt);
     return {
         day: new Intl.DateTimeFormat(locale, {
             weekday: 'long',
@@ -49,6 +58,7 @@ export const formatEventSchedule = (range: Pick<CalendarEvent, 'startsAt' | 'end
             minute: '2-digit',
             hourCycle: 'h23',
             timeZone: CALENDAR_TIME_ZONE,
-        }).formatRange(start, toDate(range.endsAt)),
+        }).formatRange(start, end),
+        duration: formatDuration(Math.round((end.getTime() - start.getTime()) / 60_000)),
     };
 };

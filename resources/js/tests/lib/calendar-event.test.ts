@@ -3,6 +3,7 @@ import { trans } from 'laravel-vue-i18n';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import {
+    formatDuration,
     formatEventSchedule,
     getDefaultTitle,
     getEventAppearance,
@@ -113,18 +114,31 @@ describe('calendar-event', () => {
     });
 
     it('formats the day and the 24h time range of an event in the calendar time zone', () => {
-        const { day, timeRange } = formatEventSchedule(lesson('planned'));
+        const { day, timeRange, duration } = formatEventSchedule(lesson('planned'));
 
         expect(day).toBe('Wednesday 28 October');
         expect(timeRange).toMatch(/^09:00\s*–\s*10:00$/);
+        expect(duration).toBe('1h');
     });
 
     it('formats a slot selection given as dates', () => {
-        const { timeRange } = formatEventSchedule({
+        const { timeRange, duration } = formatEventSchedule({
             startsAt: new Date('2026-10-28T14:30:00Z'),
             endsAt: new Date('2026-10-28T15:15:00Z'),
         });
 
         expect(timeRange).toMatch(/^14:30\s*–\s*15:15$/);
+        expect(duration).toBe('45 min');
+    });
+
+    it.each([
+        [25, '25 min'],
+        [50, '50 min'],
+        [80, '1h20'],
+        [110, '1h50'],
+        [60, '1h'],
+        [125, '2h05'],
+    ])('formats a duration of %s minutes as %s', (minutes, expected) => {
+        expect(formatDuration(minutes)).toBe(expected);
     });
 });

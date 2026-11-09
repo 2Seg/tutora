@@ -52,7 +52,14 @@ const lesson = (start: Date, end: Date): CalendarEvent => ({
     endsAt: end,
 });
 
-function setup(event: CalendarEvent = lesson(at(10), at(11)), { hasColumn = true } = {}) {
+const timeOff = (start: Date, end: Date): CalendarEvent => ({
+    id: 'draft-1',
+    type: 'time_off',
+    startsAt: start,
+    endsAt: end,
+});
+
+function setup(event: CalendarEvent = timeOff(at(10), at(11)), { hasColumn = true } = {}) {
     // The column is 24 rows of 40px, starting at the top of the viewport.
     const column = document.createElement('div');
     column.getBoundingClientRect = () => ({
@@ -110,7 +117,7 @@ describe('useEventResize', () => {
         });
 
         it('treats an end at the next midnight as the end of the day', () => {
-            const { resizing, press } = setup(lesson(at(22), new Date(Date.UTC(2026, 9, 15))));
+            const { resizing, press } = setup(timeOff(at(22), new Date(Date.UTC(2026, 9, 15))));
 
             press();
 
@@ -169,6 +176,34 @@ describe('useEventResize', () => {
             moveTo(minutes(30)); // below the bottom of the column
 
             expect(resizing.value?.endMin).toBe(minutes(24));
+        });
+
+        describe('lessons', () => {
+            it.each([
+                ['keeps 25 minutes when pulled above the start', minutes(9), minutes(10, 25)],
+                ['snaps to 25 minutes', minutes(10, 30), minutes(10, 25)],
+                ['snaps to 50 minutes', minutes(10, 55), minutes(10, 50)],
+                ['takes the shorter duration on a tie', minutes(11, 5), minutes(10, 50)],
+                ['snaps to 1h20', minutes(11, 15), minutes(11, 20)],
+                ['snaps to 1h50', minutes(11, 45), minutes(11, 50)],
+                ['stays at 1h50 when pulled further', minutes(16), minutes(11, 50)],
+            ])('%s', (_name, pointerMinute, expectedEnd) => {
+                const { resizing, press, moveTo } = setup(lesson(at(10), at(10, 50)));
+
+                press();
+                moveTo(pointerMinute);
+
+                expect(resizing.value?.endMin).toBe(expectedEnd);
+            });
+
+            it('only offers durations that end by midnight', () => {
+                const { resizing, press, moveTo } = setup(lesson(at(22, 50), at(23, 15)));
+
+                press();
+                moveTo(minutes(30)); // below the bottom of the column
+
+                expect(resizing.value?.endMin).toBe(minutes(22, 50) + 50);
+            });
         });
 
         it('does not commit while moving', () => {
