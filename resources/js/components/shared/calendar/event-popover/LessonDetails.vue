@@ -15,7 +15,7 @@ const schedule = computed(() => formatEventSchedule(props.event));
 </script>
 
 <template>
-    <h2 class="m-0 truncate font-semibold pr-8">{{ getEventTitle(event) }}</h2>
+    <h2 class="m-0 truncate pr-8">{{ getEventTitle(event) }}</h2>
 
     <div class="flex items-start justify-between gap-3">
         <div class="text-sm">

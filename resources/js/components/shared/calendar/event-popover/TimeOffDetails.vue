@@ -13,7 +13,7 @@ const schedule = computed(() => formatEventSchedule(props.event));
 </script>
 
 <template>
-    <h2 class="m-0 truncate font-semibold pr-8 flex items-center gap-2">
+    <h2 class="m-0 truncate pr-8 flex items-center gap-2">
         {{ trans('calendar.event.popover.time_off') }}
     </h2>
 
