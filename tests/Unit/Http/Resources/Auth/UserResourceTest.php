@@ -58,10 +58,22 @@ final class UserResourceTest extends UnitTestCase
         $this->assertSame('AJ', $actual['initials']);
     }
 
+    public function testItSerializesUserTimezone(): void
+    {
+        // Arrange
+        $this->user->timezone = 'Europe/Paris';
+
+        // Act
+        $actual = (new UserResource($this->user))->resolve($this->request);
+
+        // Assert
+        $this->assertSame('Europe/Paris', $actual['timezone']);
+    }
+
     public function testItSerializesOnlySpecificFields(): void
     {
         // Arrange
-        $expected = ['id', 'fullName', 'initials'];
+        $expected = ['id', 'fullName', 'initials', 'timezone'];
 
         // Act
         $actual = (new UserResource($this->user))->resolve($this->request);

@@ -29,6 +29,7 @@ final class HandleInertiaRequestsTest extends FeatureTestCase
             'id' => 1,
             'first_name' => 'Average',
             'last_name' => 'Joe',
+            'timezone' => 'Europe/Paris',
         ]);
         $this->request->setUserResolver(fn() => $user);
 
@@ -40,6 +41,7 @@ final class HandleInertiaRequestsTest extends FeatureTestCase
             'id' => 1,
             'fullName' => 'Average Joe',
             'initials' => 'AJ',
+            'timezone' => 'Europe/Paris',
         ];
         $this->assertSame($excepted, $actual['auth']['user']());
     }
