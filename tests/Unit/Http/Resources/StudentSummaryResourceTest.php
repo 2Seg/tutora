@@ -70,6 +70,18 @@ final class StudentSummaryResourceTest extends UnitTestCase
         $this->assertSame('https://image.com', $actual['avatarImg']);
     }
 
+    public function testItSerializesStudentTimezone(): void
+    {
+        // Arrange
+        $this->student->timezone = 'Europe/Paris';
+
+        // Act
+        $actual = (new StudentSummaryResource($this->student))->resolve($this->request);
+
+        // Assert
+        $this->assertSame('Europe/Paris', $actual['timezone']);
+    }
+
     public function testItSerializesOnlySpecificFields(): void
     {
         // Arrange
@@ -78,6 +90,7 @@ final class StudentSummaryResourceTest extends UnitTestCase
             'fullName',
             'initials',
             'avatarImg',
+            'timezone',
         ];
 
         // Act

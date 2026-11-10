@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { ClockAlert } from '@lucide/vue';
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +65,18 @@ const statuses = ['planned', 'requested', 'cancelled'] as const satisfies readon
 const status = defineModel<StatusBadgeVariant>('status', { default: 'planned' });
 const studentId = shallowRef<StudentSummary['id']>();
 const selectedStudent = computed(() => props.students?.find((student) => student.id === studentId.value));
+const studentSchedule = computed(() => {
+    const studentTimezone = selectedStudent.value?.timezone;
+    if (!studentTimezone || studentTimezone === props.timezone) return null;
+
+    return formatEventSchedule(
+        {
+            startsAt: fromWallClock(props.draft.startsAt, props.timezone),
+            endsAt: fromWallClock(props.draft.endsAt, props.timezone),
+        },
+        studentTimezone,
+    );
+});
 
 watch(studentId, (id) => {
     const student = props.students?.find((student) => student.id === id);
@@ -85,8 +98,18 @@ watch(studentId, (id) => {
             </p>
 
             <div class="text-sm">
-                <p class="m-0 flex items-center justify-between gap-2">
-                    {{ schedule.day }}
+                <div class="flex items-center justify-between gap-2">
+                    <p class="m-0 flex flex-col">
+                        <span>{{ schedule.day }}</span>
+                        <span
+                            v-if="draft.type === 'lesson' && studentSchedule && schedule.day !== studentSchedule.day"
+                            :title="$t('calendar.event.popover.time.student')"
+                            class="flex items-center gap-2 text-secondary-foreground"
+                        >
+                            {{ studentSchedule.day }}
+                            <ClockAlert :size="15" />
+                        </span>
+                    </p>
                     <template v-if="draft.type === 'lesson'">
                         <Select
                             :model-value="times.duration"
@@ -111,7 +134,7 @@ watch(studentId, (id) => {
                             </SelectContent>
                         </Select>
                     </template>
-                </p>
+                </div>
                 <p class="m-0 flex items-center gap-2 text-muted-foreground tabular-nums">
                     <TimeInput
                         :aria-invalid="!!errors.starts_at"
@@ -128,6 +151,14 @@ watch(studentId, (id) => {
                         @update:model-value="moveEndTo"
                     />
                     <span v-else>{{ times.end }}</span>
+                </p>
+                <p
+                    v-if="draft.type === 'lesson' && studentSchedule"
+                    :title="$t('calendar.event.popover.time.student')"
+                    class="m-0 flex items-center gap-2 text-secondary-foreground tabular-nums"
+                >
+                    {{ studentSchedule.timeRange }}
+                    <ClockAlert :size="15" />
                 </p>
                 <input
                     :value="fromWallClock(props.draft.startsAt, props.timezone).toISOString()"

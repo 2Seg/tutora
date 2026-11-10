@@ -16,6 +16,7 @@ final class StudentSummaryResource extends JsonResource
             'fullName' => $this->full_name,
             'initials' => $this->initials,
             'avatarImg' => $this->avatar_img,
+            'timezone' => $this->timezone,
         ];
     }
 }

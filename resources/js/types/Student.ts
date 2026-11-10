@@ -13,4 +13,4 @@ export interface Student {
     updatedAt: string;
 }
 
-export type StudentSummary = Pick<Student, 'id' | 'fullName' | 'initials' | 'avatarImg'>;
+export type StudentSummary = Pick<Student, 'id' | 'fullName' | 'initials' | 'avatarImg' | 'timezone'>;
