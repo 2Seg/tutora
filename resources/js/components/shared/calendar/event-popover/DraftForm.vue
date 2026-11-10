@@ -2,6 +2,7 @@
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import TimeInput from '@/components/shared/TimeInput.vue';
 import { formatDuration, formatEventSchedule } from '@/lib/calendar-event';
 import {
     LESSON_DURATIONS,
@@ -41,15 +42,20 @@ const times = computed(() => {
     return { start: minutesToTime(startMin), end: minutesToTime(endMin), duration: endMin - startMin };
 });
 
-const onTimeChange = (e: Event, apply: (minutes: number) => DraftUpdate) => {
-    const value = (e.target as HTMLInputElement).value;
-    if (value) emit('update', apply(timeToMinutes(value)));
-};
+function moveStartTo(time: string | undefined) {
+    if (!time) return;
+    const startMin = timeToMinutes(time);
+    const isLesson = props.draft.type === 'lesson';
+    emit('update', isLesson ? withLessonStart(props.draft, startMin) : withStart(props.draft, startMin));
+}
+
+function moveEndTo(time: string | undefined) {
+    if (time) emit('update', withEnd(props.draft, timeToMinutes(time)));
+}
 
 const inlineField =
     'h-auto w-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent ' +
     'hover:bg-accent focus-visible:bg-accent focus-visible:ring-0 aria-invalid:text-destructive';
-const inlineTime = [inlineField, 'tabular-nums text-muted-foreground [&::-webkit-calendar-picker-indicator]:hidden'];
 
 const statuses = ['planned', 'requested', 'cancelled'] as const satisfies readonly SelectLessonStatus[];
 
@@ -106,29 +112,19 @@ watch(studentId, (id) => {
                     </template>
                 </p>
                 <p class="m-0 flex items-center gap-2 text-muted-foreground tabular-nums">
-                    <Input
+                    <TimeInput
                         :aria-invalid="!!errors.starts_at"
                         :aria-label="trans('calendar.event.popover.time.start')"
-                        :class="inlineTime"
                         :model-value="times.start"
-                        step="600"
-                        type="time"
-                        @change="
-                            onTimeChange($event, (minutes) =>
-                                draft.type === 'lesson' ? withLessonStart(draft, minutes) : withStart(draft, minutes),
-                            )
-                        "
+                        @update:model-value="moveStartTo"
                     />
                     <span>–</span>
-                    <Input
+                    <TimeInput
                         v-if="draft.type === 'time_off'"
                         :aria-invalid="!!errors.ends_at"
                         :aria-label="trans('calendar.event.popover.time.end')"
-                        :class="inlineTime"
                         :model-value="times.end"
-                        step="600"
-                        type="time"
-                        @change="onTimeChange($event, (minutes) => withEnd(draft, minutes))"
+                        @update:model-value="moveEndTo"
                     />
                     <span v-else>{{ times.end }}</span>
                 </p>
