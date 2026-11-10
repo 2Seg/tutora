@@ -11,10 +11,10 @@ export function toDate(value: string | Date): Date {
     return value instanceof Date ? value : new Date(value);
 }
 
-function timeZoneOffsetMs(instant: Date, timeZone: string): number {
+function timezoneOffsetMs(instant: Date, timezone: string): number {
     const parts = Object.fromEntries(
         new Intl.DateTimeFormat('en-US', {
-            timeZone,
+            timeZone: timezone,
             hourCycle: 'h23',
             year: 'numeric',
             month: 'numeric',
@@ -31,13 +31,13 @@ function timeZoneOffsetMs(instant: Date, timeZone: string): number {
     return wallClockAsUtc - Math.floor(instant.getTime() / 1000) * 1000;
 }
 
-export function toWallClock(instant: Date, timeZone: string): Date {
-    return new Date(instant.getTime() + timeZoneOffsetMs(instant, timeZone));
+export function toWallClock(instant: Date, timezone: string): Date {
+    return new Date(instant.getTime() + timezoneOffsetMs(instant, timezone));
 }
 
-export function fromWallClock(wallClock: Date, timeZone: string): Date {
-    const approximate = new Date(wallClock.getTime() - timeZoneOffsetMs(wallClock, timeZone));
-    return new Date(wallClock.getTime() - timeZoneOffsetMs(approximate, timeZone));
+export function fromWallClock(wallClock: Date, timezone: string): Date {
+    const approximate = new Date(wallClock.getTime() - timezoneOffsetMs(wallClock, timezone));
+    return new Date(wallClock.getTime() - timezoneOffsetMs(approximate, timezone));
 }
 
 export function startOfWeek(date: Date, weekStartsOn: 0 | 1 = 1): Date {

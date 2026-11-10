@@ -43,6 +43,7 @@ return [
                 'start' => 'Start time',
                 'end' => 'End time',
                 'duration' => 'Duration',
+                'student' => 'Student time',
             ],
             'lesson' => 'Lesson',
             'time_off' => 'Time off',

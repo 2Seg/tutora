@@ -38,7 +38,7 @@ const startOfCurrentWeek = () => startOfWeek(toWallClock(new Date(), props.timez
 
 const draft = defineModel<Draft | null>('draft', { default: null });
 const weekStart = defineModel<Date>('weekStart', {
-    default: (rawProps: Record<string, unknown>) => startOfWeek(toWallClock(new Date(), rawProps.timeZone as string)),
+    default: (rawProps: Record<string, unknown>) => startOfWeek(toWallClock(new Date(), rawProps.timezone as string)),
 });
 
 const zonedEvents = computed<CalendarEvent[]>(() =>
@@ -103,11 +103,11 @@ useEventListener(window, 'keydown', (e) => {
 // Formatting
 const formats = computed(() => {
     const locale = getActiveLanguage().replace('_', '-');
-    const timeZone = CALENDAR_TIME_ZONE;
+    const timezone = CALENDAR_TIME_ZONE;
     return {
-        time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone }),
-        weekday: new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone }),
-        range: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone }),
+        time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: timezone }),
+        weekday: new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: timezone }),
+        range: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: timezone }),
     };
 });
 
@@ -213,7 +213,7 @@ onMounted(() => {
             :event="selectedEvent"
             :is-moving="isMovingDraft"
             :students="props.students"
-            :time-zone="props.timezone"
+            :timezone="props.timezone"
             @close="closePopover"
             @update-draft="updateDraft"
         />

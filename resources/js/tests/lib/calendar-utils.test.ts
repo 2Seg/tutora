@@ -712,7 +712,7 @@ describe('describeTimezone', () => {
     }
 
     it('describes the calendar timezone (UTC) by default, with the real Intl', () => {
-        expect(describeTimezone(new Date('2024-07-01T12:00:00Z'))).toBe('UTC');
+        expect(describeTimezone(new Date('2024-07-01T12:00:00Z'))).toBe('UTC+0');
     });
 
     it('describes a named timezone with the real Intl', () => {

@@ -42,7 +42,10 @@ export const formatDuration = (minutes: number) => {
     return rest ? `${hours}h${String(rest).padStart(2, '0')}` : `${hours}h`;
 };
 
-export const formatEventSchedule = (range: Pick<CalendarEvent, 'startsAt' | 'endsAt'>) => {
+export const formatEventSchedule = (
+    range: Pick<CalendarEvent, 'startsAt' | 'endsAt'>,
+    timezone: string = CALENDAR_TIME_ZONE,
+) => {
     const locale = getActiveLanguage().replace('_', '-');
     const start = toDate(range.startsAt);
     const end = toDate(range.endsAt);
@@ -51,13 +54,13 @@ export const formatEventSchedule = (range: Pick<CalendarEvent, 'startsAt' | 'end
             weekday: 'long',
             day: 'numeric',
             month: 'long',
-            timeZone: CALENDAR_TIME_ZONE,
+            timeZone: timezone,
         }).format(start),
         timeRange: new Intl.DateTimeFormat(locale, {
             hour: '2-digit',
             minute: '2-digit',
             hourCycle: 'h23',
-            timeZone: CALENDAR_TIME_ZONE,
+            timeZone: timezone,
         }).formatRange(start, end),
         duration: formatDuration(Math.round((end.getTime() - start.getTime()) / 60_000)),
     };

@@ -17,7 +17,7 @@ const props = defineProps<{
     event: CalendarEvent | null;
     students?: StudentSummary[];
     isMoving: boolean;
-    timeZone: string;
+    timezone: string;
 }>();
 
 const emit = defineEmits<{
@@ -89,11 +89,11 @@ const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draf
                 v-if="shown?.kind === 'draft'"
                 :draft="shown.draft"
                 :students="props.students"
-                :time-zone="props.timeZone"
+                :timezone="props.timezone"
                 @cancel="emit('close')"
                 @update="emit('update-draft', $event)"
             />
-            <LessonDetails v-else-if="shown?.kind === 'lesson'" :event="shown.event" />
+            <LessonDetails v-else-if="shown?.kind === 'lesson'" :event="shown.event" :timezone="props.timezone" />
             <TimeOffDetails v-else-if="shown?.kind === 'time_off'" :event="shown.event" />
         </PopoverContent>
     </Popover>

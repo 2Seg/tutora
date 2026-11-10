@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from '@/types/User';
+import { StudentSummary } from '@/types/Student';
 
-const props = defineProps<{ user: Pick<User, 'fullName' | 'initials' | 'avatarImg'> }>();
+const props = defineProps<{ user: StudentSummary }>();
 </script>
 
 <template>

@@ -30,7 +30,7 @@ import { store } from '@/routes/teacher/calendar';
 const props = defineProps<{
     draft: Draft;
     students?: StudentSummary[];
-    timeZone: string;
+    timezone: string;
 }>();
 
 const emit = defineEmits<{
@@ -85,10 +85,9 @@ watch(studentId, (id) => {
             </p>
 
             <div class="text-sm">
-                <p class="m-0 flex items-center gap-2">
+                <p class="m-0 flex items-center justify-between gap-2">
                     {{ schedule.day }}
                     <template v-if="draft.type === 'lesson'">
-                        <span class="text-secondary-foreground font-bold">·</span>
                         <Select
                             :model-value="times.duration"
                             @update:model-value="emit('update', withLessonDuration(draft, Number($event)))"
@@ -131,12 +130,12 @@ watch(studentId, (id) => {
                     <span v-else>{{ times.end }}</span>
                 </p>
                 <input
-                    :value="fromWallClock(props.draft.startsAt, props.timeZone).toISOString()"
+                    :value="fromWallClock(props.draft.startsAt, props.timezone).toISOString()"
                     name="starts_at"
                     type="hidden"
                 />
                 <input
-                    :value="fromWallClock(props.draft.endsAt, props.timeZone).toISOString()"
+                    :value="fromWallClock(props.draft.endsAt, props.timezone).toISOString()"
                     name="ends_at"
                     type="hidden"
                 />

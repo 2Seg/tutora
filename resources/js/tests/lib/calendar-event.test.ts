@@ -131,6 +131,27 @@ describe('calendar-event', () => {
         expect(duration).toBe('45 min');
     });
 
+    it('formats the schedule in the given timezone', () => {
+        const { day, timeRange, duration } = formatEventSchedule(
+            { startsAt: '2026-10-28T09:00:00Z', endsAt: '2026-10-28T10:00:00Z' },
+            'America/New_York',
+        );
+
+        expect(day).toBe('Wednesday 28 October');
+        expect(timeRange).toMatch(/^05:00\s*–\s*06:00$/);
+        expect(duration).toBe('1h');
+    });
+
+    it('moves the day along with the given timezone', () => {
+        const { day, timeRange } = formatEventSchedule(
+            { startsAt: '2026-10-28T23:30:00Z', endsAt: '2026-10-29T00:20:00Z' },
+            'Asia/Tokyo',
+        );
+
+        expect(day).toBe('Thursday 29 October');
+        expect(timeRange).toMatch(/^08:30\s*–\s*09:20$/);
+    });
+
     it.each([
         [25, '25 min'],
         [50, '50 min'],
