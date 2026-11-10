@@ -39,6 +39,11 @@ return [
                 'placeholder' => 'Select a student',
                 'label' => 'Student',
             ],
+            'time' => [
+                'start' => 'Start time',
+                'end' => 'End time',
+                'duration' => 'Duration',
+            ],
             'lesson' => 'Lesson',
             'time_off' => 'Time off',
             'cancel' => 'Cancel',

@@ -19,12 +19,12 @@ const schedule = computed(() => formatEventSchedule(props.event));
 
     <h2 class="m-0 truncate pr-8">{{ getEventTitle(event) }}</h2>
 
-    <div class="text-sm">
-        <p class="m-0">
-            {{ schedule.day }}
+    <div class="text-sm m-0">
+        <p class="flex items-center gap-2">
+            <span>{{ schedule.day }}</span>
             <span class="text-secondary-foreground font-bold">· {{ schedule.duration }}</span>
         </p>
-        <p class="m-0 text-muted-foreground tabular-nums">{{ schedule.timeRange }}</p>
+        <p class="text-muted-foreground tabular-nums">{{ schedule.timeRange }}</p>
     </div>
 
     <div v-if="event.student" class="flex gap-3 items-center">

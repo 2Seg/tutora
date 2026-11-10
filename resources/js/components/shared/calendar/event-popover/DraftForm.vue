@@ -2,7 +2,17 @@
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { formatEventSchedule } from '@/lib/calendar-event';
+import { formatDuration, formatEventSchedule } from '@/lib/calendar-event';
+import {
+    LESSON_DURATIONS,
+    minutesToTime,
+    slotMinutes,
+    timeToMinutes,
+    withEnd,
+    withLessonDuration,
+    withLessonStart,
+    withStart,
+} from '@/lib/calendar-utils';
 import type { Draft, DraftUpdate, EventType, SelectLessonStatus } from '@/types/calendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { trans } from 'laravel-vue-i18n';
@@ -26,6 +36,21 @@ const emit = defineEmits<{
 }>();
 
 const schedule = computed(() => formatEventSchedule(props.draft));
+const times = computed(() => {
+    const { startMin, endMin } = slotMinutes(props.draft);
+    return { start: minutesToTime(startMin), end: minutesToTime(endMin), duration: endMin - startMin };
+});
+
+const onTimeChange = (e: Event, apply: (minutes: number) => DraftUpdate) => {
+    const value = (e.target as HTMLInputElement).value;
+    if (value) emit('update', apply(timeToMinutes(value)));
+};
+
+const inlineField =
+    'h-auto w-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent ' +
+    'hover:bg-accent focus-visible:bg-accent focus-visible:ring-0 aria-invalid:text-destructive';
+const inlineTime = [inlineField, 'tabular-nums text-muted-foreground [&::-webkit-calendar-picker-indicator]:hidden'];
+
 const statuses = ['planned', 'requested', 'cancelled'] as const satisfies readonly SelectLessonStatus[];
 
 const status = defineModel<StatusBadgeVariant>('status', { default: 'planned' });
@@ -52,16 +77,66 @@ watch(studentId, (id) => {
             </p>
 
             <div class="text-sm">
-                <p class="m-0">
+                <p class="m-0 flex items-center gap-2">
                     {{ schedule.day }}
-                    <span v-if="draft.type === 'lesson'" class="text-secondary-foreground font-bold"
-                        >· {{ schedule.duration }}</span
-                    >
+                    <template v-if="draft.type === 'lesson'">
+                        <span class="text-secondary-foreground font-bold">·</span>
+                        <Select
+                            :model-value="times.duration"
+                            @update:model-value="emit('update', withLessonDuration(draft, Number($event)))"
+                        >
+                            <SelectTrigger
+                                :aria-invalid="!!errors.ends_at"
+                                :aria-label="trans('calendar.event.popover.time.duration')"
+                                :class="[
+                                    inlineField,
+                                    'mx-0 gap-0.5 font-bold max-h-5 text-secondary-foreground [&_svg]:size-3.5',
+                                ]"
+                            >
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem v-for="duration in LESSON_DURATIONS" :key="duration" :value="duration">
+                                        {{ formatDuration(duration) }}
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </template>
                 </p>
-                <p class="m-0 text-muted-foreground tabular-nums">{{ schedule.timeRange }}</p>
+                <p class="m-0 flex items-center gap-2 text-muted-foreground tabular-nums">
+                    <Input
+                        :aria-invalid="!!errors.starts_at"
+                        :aria-label="trans('calendar.event.popover.time.start')"
+                        :class="inlineTime"
+                        :model-value="times.start"
+                        step="600"
+                        type="time"
+                        @change="
+                            onTimeChange($event, (minutes) =>
+                                draft.type === 'lesson' ? withLessonStart(draft, minutes) : withStart(draft, minutes),
+                            )
+                        "
+                    />
+                    <span>–</span>
+                    <Input
+                        v-if="draft.type === 'time_off'"
+                        :aria-invalid="!!errors.ends_at"
+                        :aria-label="trans('calendar.event.popover.time.end')"
+                        :class="inlineTime"
+                        :model-value="times.end"
+                        step="600"
+                        type="time"
+                        @change="onTimeChange($event, (minutes) => withEnd(draft, minutes))"
+                    />
+                    <span v-else>{{ times.end }}</span>
+                </p>
                 <input :value="props.draft.startsAt.toISOString()" name="starts_at" type="hidden" />
                 <input :value="props.draft.endsAt.toISOString()" name="ends_at" type="hidden" />
             </div>
+            <p v-if="errors.starts_at" class="text-sm text-destructive">{{ errors.starts_at }}</p>
+            <p v-if="errors.ends_at" class="text-sm text-destructive">{{ errors.ends_at }}</p>
 
             <TabsContent class="flex flex-col gap-2" value="lesson">
                 <div class="grid grid-cols-2 gap-2">

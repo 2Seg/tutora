@@ -45,4 +45,4 @@ export interface Draft extends SlotSelection {
     title?: string;
 }
 
-export type DraftUpdate = Partial<Pick<Draft, 'type' | 'title'>>;
+export type DraftUpdate = Partial<Pick<Draft, 'type' | 'title' | 'startsAt' | 'endsAt'>>;

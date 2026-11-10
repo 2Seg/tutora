@@ -10,12 +10,19 @@ import {
     lessonRange,
     MINUTES_PER_DAY,
     minutesOfDay,
+    minutesToTime,
     nearestLessonDuration,
     percentOfDay,
     segmentForDay,
+    slotMinutes,
     startOfWeek,
+    timeToMinutes,
     toDate,
     unavailableSlotsForDay,
+    withEnd,
+    withLessonDuration,
+    withLessonStart,
+    withStart,
 } from '@/lib/calendar-utils';
 
 const d = (y: number, m: number, day: number, h = 0, min = 0, s = 0) => new Date(Date.UTC(y, m - 1, day, h, min, s));
@@ -245,6 +252,90 @@ describe('lessonRange', () => {
 
     it('moves the start earlier so the lesson ends by midnight', () => {
         expect(lessonRange(1400, 50)).toEqual({ startMin: 1390, endMin: 1440 });
+    });
+});
+
+describe('timeToMinutes / minutesToTime', () => {
+    it('converts both ways', () => {
+        expect(timeToMinutes('09:05')).toBe(545);
+        expect(minutesToTime(545)).toBe('09:05');
+    });
+
+    it('shows the next midnight as 00:00', () => {
+        expect(minutesToTime(MINUTES_PER_DAY)).toBe('00:00');
+    });
+});
+
+describe('slotMinutes', () => {
+    it('gives the start and end in minutes of the day', () => {
+        expect(slotMinutes({ startsAt: d(2024, 5, 10, 9), endsAt: d(2024, 5, 10, 9, 50) })).toEqual({
+            startMin: 540,
+            endMin: 590,
+        });
+    });
+
+    it('gives 1440 for an end at the next midnight', () => {
+        expect(slotMinutes({ startsAt: d(2024, 5, 10, 23), endsAt: d(2024, 5, 11) }).endMin).toBe(MINUTES_PER_DAY);
+    });
+});
+
+describe('time edits', () => {
+    const slot = (h1: number, m1: number, h2: number, m2: number) => ({
+        startsAt: d(2024, 5, 10, h1, m1),
+        endsAt: d(2024, 5, 10, h2, m2),
+    });
+
+    describe('withLessonStart', () => {
+        it('moves the lesson and keeps its duration', () => {
+            expect(withLessonStart(slot(9, 0, 9, 50), 14 * 60 + 30)).toEqual(slot(14, 30, 15, 20));
+        });
+
+        it('moves the start earlier so the lesson ends by midnight', () => {
+            expect(withLessonStart(slot(9, 0, 9, 50), 23 * 60 + 30)).toEqual({
+                startsAt: d(2024, 5, 10, 23, 10),
+                endsAt: d(2024, 5, 11),
+            });
+        });
+    });
+
+    describe('withLessonDuration', () => {
+        it('keeps the start and changes the duration', () => {
+            expect(withLessonDuration(slot(9, 0, 9, 50), 80)).toEqual(slot(9, 0, 10, 20));
+        });
+
+        it('moves the start earlier when the new duration would run past midnight', () => {
+            expect(withLessonDuration(slot(23, 0, 23, 25), 110)).toEqual({
+                startsAt: d(2024, 5, 10, 22, 10),
+                endsAt: d(2024, 5, 11),
+            });
+        });
+    });
+
+    describe('withStart', () => {
+        it('moves the slot and keeps its length', () => {
+            expect(withStart(slot(9, 0, 12, 15), 13 * 60)).toEqual(slot(13, 0, 16, 15));
+        });
+
+        it('keeps the slot within the day', () => {
+            expect(withStart(slot(9, 0, 12, 0), 22 * 60)).toEqual({
+                startsAt: d(2024, 5, 10, 21),
+                endsAt: d(2024, 5, 11),
+            });
+        });
+    });
+
+    describe('withEnd', () => {
+        it('sets the end and keeps the start', () => {
+            expect(withEnd(slot(9, 0, 10, 0), 12 * 60 + 5)).toEqual(slot(9, 0, 12, 5));
+        });
+
+        it('treats 00:00 as midnight', () => {
+            expect(withEnd(slot(22, 0, 23, 0), 0)).toEqual({ startsAt: d(2024, 5, 10, 22), endsAt: d(2024, 5, 11) });
+        });
+
+        it('ends 10 minutes after the start when given an end before it', () => {
+            expect(withEnd(slot(9, 0, 10, 0), 8 * 60)).toEqual(slot(9, 0, 9, 10));
+        });
     });
 });
 
