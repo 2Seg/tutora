@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import { Form } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import TimeInput from '@/components/shared/TimeInput.vue';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { update } from '@/routes/teacher/calendar/availabilities';
 import type { Availability } from '@/types/calendar';
@@ -46,7 +46,9 @@ const sendEmptyListWhenNoSlot = (data: Record<string, unknown>) => ({ availabili
 <template>
     <Popover :open="open" @update:open="onOpenChange">
         <PopoverTrigger as-child>
-            <Button size="sm" variant="outline">{{ trans('calendar.aside.update_availabilities') }}</Button>
+            <Button class="h-auto min-h-8 whitespace-normal py-1.5 text-center" size="sm" variant="outline">
+                {{ trans('calendar.aside.update_availabilities') }}
+            </Button>
         </PopoverTrigger>
 
         <PopoverContent
@@ -65,7 +67,7 @@ const sendEmptyListWhenNoSlot = (data: Record<string, unknown>) => ({ availabili
                 <h2>{{ trans('calendar.availability.popover.title') }}</h2>
 
                 <div class="-mr-2 flex min-h-0 flex-col gap-3 overflow-y-auto pr-2">
-                    <div v-for="day in isoWeekDays" :key="day" class="flex flex-col gap-1">
+                    <div v-for="day in isoWeekDays" :key="day" class="flex flex-col gap-0.5">
                         <div class="flex items-center justify-between">
                             <span class="text-sm capitalize">{{ weekdayName(day) }}</span>
                             <Button
@@ -86,24 +88,20 @@ const sendEmptyListWhenNoSlot = (data: Record<string, unknown>) => ({ availabili
                         <div v-for="{ slot, index } in slotsFor(day)" :key="index" class="flex flex-col gap-1">
                             <div class="flex items-center gap-2">
                                 <input :name="fieldName(index, 'day_of_week')" :value="slot.dayOfWeek" type="hidden" />
-                                <Input
+                                <TimeInput
                                     v-model="slot.startTime"
                                     :aria-invalid="!!errors[`availabilities.${index}.start_time`]"
                                     :name="fieldName(index, 'start_time')"
-                                    step="600"
-                                    type="time"
                                 />
                                 <span class="text-muted-foreground">–</span>
-                                <Input
+                                <TimeInput
                                     v-model="slot.endTime"
                                     :aria-invalid="!!errors[`availabilities.${index}.end_time`]"
                                     :name="fieldName(index, 'end_time')"
-                                    step="600"
-                                    type="time"
                                 />
                                 <Button
                                     :aria-label="trans('calendar.availability.popover.remove')"
-                                    size="icon-sm"
+                                    size="icon-xs"
                                     type="button"
                                     variant="ghost"
                                     @click="removeSlot(index)"

@@ -6,7 +6,7 @@ const props = defineProps<{ class?: HTMLAttributes['class'] }>();
 const time = defineModel<string>();
 
 const blendWithSurroundingText =
-    'h-auto w-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent';
+    'h-auto w-auto rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent';
 const highlightWhenHoveredOrFocused = 'hover:bg-accent focus-visible:bg-accent focus-visible:ring-0';
 const looksLikeMutedTime = 'tabular-nums text-muted-foreground aria-invalid:text-destructive';
 const hideBrowserClockIcon = '[&::-webkit-calendar-picker-indicator]:hidden';
