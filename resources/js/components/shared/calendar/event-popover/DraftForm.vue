@@ -57,10 +57,10 @@ function moveEndTo(time: string | undefined) {
 }
 
 const inlineField =
-    'h-auto w-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent ' +
+    'h-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent ' +
     'hover:bg-accent focus-visible:bg-accent focus-visible:ring-0 aria-invalid:text-destructive';
 
-const statuses = ['planned', 'requested', 'cancelled'] as const satisfies readonly SelectLessonStatus[];
+const statuses = ['planned', 'cancelled', 'requested'] as const satisfies readonly SelectLessonStatus[];
 
 const selectedStudent = computed(() => props.students?.find((student) => student.id === props.draft.studentId));
 const studentSchedule = computed(() => {
@@ -175,7 +175,7 @@ function selectStudent(studentId: StudentSummary['id']) {
 
             <TabsContent class="flex flex-col gap-2" value="lesson">
                 <div class="grid grid-cols-2 gap-2">
-                    <div class="flex min-w-0 flex-col gap-2">
+                    <div class="flex min-w-0 flex-col gap-1">
                         <Label for="status">{{ trans('calendar.event.popover.status.label') }}</Label>
                         <Select
                             v-slot="{ modelValue }"
@@ -183,7 +183,10 @@ function selectStudent(studentId: StudentSummary['id']) {
                             name="status"
                             @update:model-value="emit('update', { status: $event as SelectLessonStatus })"
                         >
-                            <SelectTrigger :aria-invalid="!!errors.status" class="w-full truncate cursor-pointer">
+                            <SelectTrigger
+                                :aria-invalid="!!errors.status"
+                                :class="[inlineField, 'mx-0 gap-0.5 max-h-7 [&_svg]:size-3.5 cursor-pointer']"
+                            >
                                 <SelectValue>
                                     <StatusBadge :variant="(modelValue as StatusBadgeVariant) ?? 'planned'" />
                                 </SelectValue>
@@ -201,14 +204,20 @@ function selectStudent(studentId: StudentSummary['id']) {
                         </p>
                     </div>
 
-                    <div class="flex min-w-0 flex-col gap-2">
+                    <div class="flex min-w-0 flex-col gap-1">
                         <Label for="student">{{ trans('calendar.event.popover.student.label') }}</Label>
                         <Select
                             :model-value="draft.studentId"
                             name="student_id"
                             @update:model-value="selectStudent(Number($event))"
                         >
-                            <SelectTrigger :aria-invalid="!!errors.student_id" class="w-full cursor-pointer">
+                            <SelectTrigger
+                                :aria-invalid="!!errors.student_id"
+                                :class="[
+                                    inlineField,
+                                    'mx-0 gap-0.5 max-h-7 text-secondary-foreground [&_svg]:size-3.5 cursor-pointer',
+                                ]"
+                            >
                                 <SelectValue :placeholder="$t('calendar.event.popover.student.placeholder')">
                                     <template v-if="selectedStudent">
                                         <UserAvatar :user="selectedStudent" class="size-6.5 shrink-0" />

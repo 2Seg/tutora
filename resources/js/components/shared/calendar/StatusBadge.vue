@@ -12,7 +12,7 @@ const badge = computed(() => getStatusBadge(props.variant));
 
 <template>
     <Badge :variant="badge.variant">
-        <component :is="badge.icon" v-if="badge.icon" />
+        <component :is="badge.icon" v-if="badge.icon" class="size-3 text-current" />
         {{ badge.label }}
     </Badge>
 </template>
