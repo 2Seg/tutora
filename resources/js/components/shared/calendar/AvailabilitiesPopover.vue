@@ -69,7 +69,9 @@ const sendEmptyListWhenNoSlot = (data: Record<string, unknown>) => ({ availabili
                 <div class="-mr-2 flex min-h-0 flex-col gap-3 overflow-y-auto pr-2">
                     <div v-for="day in isoWeekDays" :key="day" class="flex flex-col gap-0.5">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm capitalize">{{ weekdayName(day) }}</span>
+                            <span class="text-sm capitalize text-accent-foreground font-bold">{{
+                                weekdayName(day)
+                            }}</span>
                             <Button
                                 :aria-label="trans('calendar.availability.popover.add')"
                                 size="icon-sm"
@@ -81,7 +83,7 @@ const sendEmptyListWhenNoSlot = (data: Record<string, unknown>) => ({ availabili
                             </Button>
                         </div>
 
-                        <p v-if="slotsFor(day).length === 0" class="text-xs text-muted-foreground">
+                        <p v-if="slotsFor(day).length === 0" class="text-xs text-muted-foreground italic">
                             {{ trans('calendar.availability.unavailable') }}
                         </p>
 
