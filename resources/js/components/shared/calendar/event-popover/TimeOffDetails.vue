@@ -13,6 +13,8 @@ const schedule = computed(() => formatEventSchedule(props.event));
 </script>
 
 <template>
+    <StatusBadge variant="time_off" />
+
     <h2 class="m-0 truncate pr-8 flex items-center gap-2">
         {{ trans('calendar.event.popover.time_off') }}
     </h2>
@@ -22,6 +24,5 @@ const schedule = computed(() => formatEventSchedule(props.event));
             <p class="m-0">{{ schedule.day }}</p>
             <p class="m-0 text-muted-foreground tabular-nums">{{ schedule.timeRange }}</p>
         </div>
-        <StatusBadge variant="time_off" />
     </div>
 </template>
