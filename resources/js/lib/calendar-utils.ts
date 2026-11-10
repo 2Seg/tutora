@@ -11,6 +11,35 @@ export function toDate(value: string | Date): Date {
     return value instanceof Date ? value : new Date(value);
 }
 
+function timeZoneOffsetMs(instant: Date, timeZone: string): number {
+    const parts = Object.fromEntries(
+        new Intl.DateTimeFormat('en-US', {
+            timeZone,
+            hourCycle: 'h23',
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+        })
+            .formatToParts(instant)
+            .map(({ type, value }) => [type, Number(value)]),
+    );
+    const wallClockAsUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second);
+
+    return wallClockAsUtc - Math.floor(instant.getTime() / 1000) * 1000;
+}
+
+export function toWallClock(instant: Date, timeZone: string): Date {
+    return new Date(instant.getTime() + timeZoneOffsetMs(instant, timeZone));
+}
+
+export function fromWallClock(wallClock: Date, timeZone: string): Date {
+    const approximate = new Date(wallClock.getTime() - timeZoneOffsetMs(wallClock, timeZone));
+    return new Date(wallClock.getTime() - timeZoneOffsetMs(approximate, timeZone));
+}
+
 export function startOfWeek(date: Date, weekStartsOn: 0 | 1 = 1): Date {
     const diff = (date.getUTCDay() - weekStartsOn + 7) % 7;
     return new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate() - diff));
@@ -207,17 +236,15 @@ export function layoutOverlaps<T extends { startMin: number; endMin: number }>(
 }
 
 export function describeTimezone(at: Date = new Date(), tz: string = CALENDAR_TIME_ZONE): string {
-    const city = tz.split('/').pop()!.replace(/_/g, ' ');
-
-    const part = (timeZoneName: 'short' | 'longOffset') =>
+    const part = (timeZoneName: 'longGeneric' | 'longOffset') =>
         new Intl.DateTimeFormat('en-GB', { timeZone: tz, timeZoneName })
             .formatToParts(at)
             .find((p) => p.type === 'timeZoneName')?.value ?? '';
 
-    const abbreviation = part('short');
+    const name = part('longGeneric');
     const match = /GMT([+-])(\d{2}):(\d{2})/.exec(part('longOffset'));
     const offset = match ? `UTC${match[1]}${Number(match[2])}${match[3] !== '00' ? `:${match[3]}` : ''}` : 'UTC';
-    const hasAbbreviation = abbreviation !== '' && !/^(GMT|UTC)/.test(abbreviation);
+    const hasName = name !== '' && !/^(GMT|UTC)/.test(name);
 
-    return `${city} time · ${hasAbbreviation ? `${abbreviation} (${offset})` : offset}`;
+    return hasName ? `${name} (${offset})` : offset;
 }

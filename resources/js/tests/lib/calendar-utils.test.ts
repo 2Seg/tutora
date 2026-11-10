@@ -5,6 +5,7 @@ import {
     availabilitySideLinesForDay,
     describeTimezone,
     fitLesson,
+    fromWallClock,
     isSameDay,
     layoutOverlaps,
     lessonRange,
@@ -18,6 +19,7 @@ import {
     startOfWeek,
     timeToMinutes,
     toDate,
+    toWallClock,
     unavailableSlotsForDay,
     withEnd,
     withLessonDuration,
@@ -47,6 +49,41 @@ describe('toDate', () => {
 
     it('returns an Invalid Date for an unparseable string', () => {
         expect(Number.isNaN(toDate('not a date').getTime())).toBe(true);
+    });
+});
+
+describe('toWallClock / fromWallClock', () => {
+    it('keeps the instant unchanged in UTC', () => {
+        const instant = d(2024, 7, 1, 10, 0);
+        expect(toWallClock(instant, 'UTC')).toEqual(instant);
+        expect(fromWallClock(instant, 'UTC')).toEqual(instant);
+    });
+
+    it.each([
+        ['Europe/Paris', d(2024, 7, 1, 10, 0), d(2024, 7, 1, 12, 0)],
+        ['Europe/Paris', d(2024, 1, 15, 10, 0), d(2024, 1, 15, 11, 0)],
+        ['America/New_York', d(2024, 7, 1, 10, 0), d(2024, 7, 1, 6, 0)],
+        ['Asia/Kolkata', d(2024, 7, 1, 10, 0), d(2024, 7, 1, 15, 30)],
+        ['Europe/Paris', d(2024, 7, 1, 23, 30), d(2024, 7, 2, 1, 30)],
+        ['America/New_York', d(2024, 7, 1, 2, 0), d(2024, 6, 30, 22, 0)],
+    ])('converts between an instant and its wall-clock in %s', (timeZone, instant, wallClock) => {
+        expect(toWallClock(instant, timeZone)).toEqual(wallClock);
+        expect(fromWallClock(wallClock, timeZone)).toEqual(instant);
+    });
+
+    it('round-trips instants around a daylight saving change', () => {
+        const beforeChange = d(2024, 3, 31, 0, 30);
+        const afterChange = d(2024, 3, 31, 1, 30);
+
+        expect(toWallClock(beforeChange, 'Europe/Paris')).toEqual(d(2024, 3, 31, 1, 30));
+        expect(toWallClock(afterChange, 'Europe/Paris')).toEqual(d(2024, 3, 31, 3, 30));
+        expect(fromWallClock(toWallClock(beforeChange, 'Europe/Paris'), 'Europe/Paris')).toEqual(beforeChange);
+        expect(fromWallClock(toWallClock(afterChange, 'Europe/Paris'), 'Europe/Paris')).toEqual(afterChange);
+    });
+
+    it('keeps the milliseconds of the instant', () => {
+        const instant = new Date(Date.UTC(2024, 6, 1, 10, 0, 0, 250));
+        expect(toWallClock(instant, 'Europe/Paris')).toEqual(new Date(Date.UTC(2024, 6, 1, 12, 0, 0, 250)));
     });
 });
 
@@ -657,7 +694,7 @@ describe('describeTimezone', () => {
     });
 
     /** Stubs Intl.DateTimeFormat so results don't depend on ICU data. */
-    function mockIntl(opts: { short?: string; longOffset?: string }) {
+    function mockIntl(opts: { longGeneric?: string; longOffset?: string }) {
         const formatToParts = vi.fn((_at?: Date) => [] as { type: string; value: string }[]);
         vi.spyOn(Intl, 'DateTimeFormat').mockImplementation(function (
             _locale?: unknown,
@@ -666,7 +703,7 @@ describe('describeTimezone', () => {
             return {
                 formatToParts: (at?: Date) => {
                     formatToParts(at);
-                    const value = options?.timeZoneName === 'short' ? opts.short : opts.longOffset;
+                    const value = options?.timeZoneName === 'longGeneric' ? opts.longGeneric : opts.longOffset;
                     return value === undefined ? [] : [{ type: 'timeZoneName', value }];
                 },
             };
@@ -675,46 +712,52 @@ describe('describeTimezone', () => {
     }
 
     it('describes the calendar timezone (UTC) by default, with the real Intl', () => {
-        expect(describeTimezone(new Date('2024-07-01T12:00:00Z'))).toBe('UTC time · UTC+0');
+        expect(describeTimezone(new Date('2024-07-01T12:00:00Z'))).toBe('UTC');
     });
 
-    it('shows the abbreviation and offset when an abbreviation exists', () => {
-        mockIntl({ short: 'CEST', longOffset: 'GMT+02:00' });
-        expect(describeTimezone(undefined, 'Europe/Paris')).toBe('Paris time · CEST (UTC+2)');
+    it('describes a named timezone with the real Intl', () => {
+        expect(describeTimezone(new Date('2024-01-15T12:00:00Z'), 'Europe/Paris')).toBe(
+            'Central European Time (UTC+1)',
+        );
+    });
+
+    it('shows the timezone name and its offset', () => {
+        mockIntl({ longGeneric: 'Central European Time', longOffset: 'GMT+02:00' });
+        expect(describeTimezone(undefined, 'Europe/Paris')).toBe('Central European Time (UTC+2)');
     });
 
     it('formats negative offsets', () => {
-        mockIntl({ short: 'EDT', longOffset: 'GMT-04:00' });
-        expect(describeTimezone(undefined, 'America/New_York')).toBe('New York time · EDT (UTC-4)');
+        mockIntl({ longGeneric: 'Eastern Time', longOffset: 'GMT-04:00' });
+        expect(describeTimezone(undefined, 'America/New_York')).toBe('Eastern Time (UTC-4)');
     });
 
-    it('replaces underscores and uses the last path segment as the city', () => {
-        mockIntl({ short: 'GMT-3', longOffset: 'GMT-03:00' });
-        expect(describeTimezone(undefined, 'America/Argentina/Buenos_Aires')).toBe('Buenos Aires time · UTC-3');
+    it('keeps the minutes of half-hour offsets', () => {
+        mockIntl({ longGeneric: 'India Standard Time', longOffset: 'GMT+05:30' });
+        expect(describeTimezone(undefined, 'Asia/Kolkata')).toBe('India Standard Time (UTC+5:30)');
     });
 
-    it('omits the abbreviation when it is just a GMT±N offset, and keeps minutes', () => {
-        mockIntl({ short: 'GMT+5:30', longOffset: 'GMT+05:30' });
-        expect(describeTimezone(undefined, 'Asia/Kolkata')).toBe('Kolkata time · UTC+5:30');
+    it('shows only the offset when the name is just a GMT±N offset', () => {
+        mockIntl({ longGeneric: 'GMT-03:00', longOffset: 'GMT-03:00' });
+        expect(describeTimezone(undefined, 'America/Argentina/Buenos_Aires')).toBe('UTC-3');
     });
 
     it('falls back to plain "UTC" when there is no offset (e.g. London in winter)', () => {
-        mockIntl({ short: 'GMT', longOffset: 'GMT' });
-        expect(describeTimezone(undefined, 'Europe/London')).toBe('London time · UTC');
+        mockIntl({ longGeneric: 'United Kingdom Time', longOffset: 'GMT' });
+        expect(describeTimezone(undefined, 'Europe/London')).toBe('United Kingdom Time (UTC)');
     });
 
     it('handles the UTC zone itself', () => {
-        mockIntl({ short: 'UTC', longOffset: 'GMT' });
-        expect(describeTimezone(undefined, 'UTC')).toBe('UTC time · UTC');
+        mockIntl({ longGeneric: 'GMT+00:00', longOffset: 'GMT' });
+        expect(describeTimezone(undefined, 'UTC')).toBe('UTC');
     });
 
     it('degrades gracefully when Intl returns no timeZoneName parts', () => {
         mockIntl({});
-        expect(describeTimezone(undefined, 'Europe/Paris')).toBe('Paris time · UTC');
+        expect(describeTimezone(undefined, 'Europe/Paris')).toBe('UTC');
     });
 
     it('formats the given date (so DST is evaluated at that moment)', () => {
-        const formatToParts = mockIntl({ short: 'CET', longOffset: 'GMT+01:00' });
+        const formatToParts = mockIntl({ longGeneric: 'Central European Time', longOffset: 'GMT+01:00' });
         const at = new Date('2024-01-15T12:00:00Z');
         describeTimezone(at, 'Europe/Paris');
         expect(formatToParts).toHaveBeenCalledWith(at);

@@ -1,9 +1,10 @@
 <script lang="ts" setup>
+import { usePage } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { statusVariants } from '@/lib/calendar-status';
-import { startOfWeek } from '@/lib/calendar-utils';
+import { startOfWeek, toWallClock } from '@/lib/calendar-utils';
 import type { Availability, CalendarEvent, Draft } from '@/types/calendar';
 import AvailabilitiesPopover from '@/components/shared/calendar/AvailabilitiesPopover.vue';
 import { StudentSummary } from '@/types/Student';
@@ -13,7 +14,8 @@ const props = defineProps<{
     availabilities: Availability[];
     students?: StudentSummary[];
 }>();
-const weekStart = ref(startOfWeek(new Date()));
+const timezone = usePage().props.auth.user.timezone;
+const weekStart = ref(startOfWeek(toWallClock(new Date(), timezone)));
 const draft = ref<Draft | null>(null);
 </script>
 
@@ -35,6 +37,7 @@ const draft = ref<Draft | null>(null);
             :availabilities="props.availabilities"
             :events="props.events"
             :students="props.students"
+            :timezone="timezone"
             class="min-w-0"
         />
     </div>

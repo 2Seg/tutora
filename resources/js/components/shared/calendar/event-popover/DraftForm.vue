@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import TimeInput from '@/components/shared/TimeInput.vue';
 import { formatDuration, formatEventSchedule } from '@/lib/calendar-event';
 import {
+    fromWallClock,
     LESSON_DURATIONS,
     minutesToTime,
     slotMinutes,
@@ -29,6 +30,7 @@ import { store } from '@/routes/teacher/calendar';
 const props = defineProps<{
     draft: Draft;
     students?: StudentSummary[];
+    timeZone: string;
 }>();
 
 const emit = defineEmits<{
@@ -128,8 +130,16 @@ watch(studentId, (id) => {
                     />
                     <span v-else>{{ times.end }}</span>
                 </p>
-                <input :value="props.draft.startsAt.toISOString()" name="starts_at" type="hidden" />
-                <input :value="props.draft.endsAt.toISOString()" name="ends_at" type="hidden" />
+                <input
+                    :value="fromWallClock(props.draft.startsAt, props.timeZone).toISOString()"
+                    name="starts_at"
+                    type="hidden"
+                />
+                <input
+                    :value="fromWallClock(props.draft.endsAt, props.timeZone).toISOString()"
+                    name="ends_at"
+                    type="hidden"
+                />
             </div>
             <p v-if="errors.starts_at" class="text-sm text-destructive">{{ errors.starts_at }}</p>
             <p v-if="errors.ends_at" class="text-sm text-destructive">{{ errors.ends_at }}</p>

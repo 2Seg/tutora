@@ -11,8 +11,11 @@ import {
     CALENDAR_TIME_ZONE,
     describeTimezone,
     fitLesson,
+    fromWallClock,
     isSameDay,
     startOfWeek,
+    toDate,
+    toWallClock,
 } from '@/lib/calendar-utils';
 import type { Availability, CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
@@ -24,14 +27,27 @@ const props = withDefaults(
         events?: CalendarEvent[];
         availabilities?: Availability[];
         students?: StudentSummary[];
+        timezone: string;
     }>(),
     { events: () => [], availabilities: () => [] },
 );
 
 const emit = defineEmits<{ 'event-click': [event: CalendarEvent] }>();
 
+const startOfCurrentWeek = () => startOfWeek(toWallClock(new Date(), props.timezone));
+
 const draft = defineModel<Draft | null>('draft', { default: null });
-const weekStart = defineModel<Date>('weekStart', { default: () => startOfWeek(new Date()) });
+const weekStart = defineModel<Date>('weekStart', {
+    default: (rawProps: Record<string, unknown>) => startOfWeek(toWallClock(new Date(), rawProps.timeZone as string)),
+});
+
+const zonedEvents = computed<CalendarEvent[]>(() =>
+    props.events.map((event) => ({
+        ...event,
+        startsAt: toWallClock(toDate(event.startsAt), props.timezone),
+        endsAt: toWallClock(toDate(event.endsAt), props.timezone),
+    })),
+);
 
 // Week navigation
 const days = computed(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart.value, i)));
@@ -40,14 +56,14 @@ function shiftWeek(direction: number) {
     weekStart.value = addDays(weekStart.value, direction * 7);
 }
 function goToThisWeek() {
-    weekStart.value = startOfWeek(new Date());
+    weekStart.value = startOfCurrentWeek();
 }
 
 watch(weekStart, closePopover);
 
 // Draft and selection
 const selectedEventId = ref<CalendarEvent['id'] | null>(null);
-const selectedEvent = computed(() => props.events.find((event) => event.id === selectedEventId.value) ?? null);
+const selectedEvent = computed(() => zonedEvents.value.find((event) => event.id === selectedEventId.value) ?? null);
 
 function selectEvent(event: CalendarEvent) {
     selectedEventId.value = event.id;
@@ -64,7 +80,6 @@ function updateDraft(update: DraftUpdate) {
     draft.value = update.type === 'lesson' && draft.value.type !== 'lesson' ? fitLesson(updated) : updated;
 }
 
-// The draft as shown in the popover, following the resize before it is committed
 const draftResizeEnd = ref<Date | null>(null);
 const shownDraft = computed(() =>
     draft.value && draftResizeEnd.value ? { ...draft.value, endsAt: draftResizeEnd.value } : draft.value,
@@ -100,13 +115,14 @@ const hourLabels = computed(() =>
     Array.from({ length: 24 }, (_, hour) => formats.value.time.format(atMinutes(weekStart.value, hour * 60))),
 );
 const rangeTitle = computed(() => formats.value.range.formatRange(days.value[0], days.value[6]));
-const timezoneLabel = computed(() => describeTimezone(weekStart.value));
+const timezoneLabel = computed(() => describeTimezone(fromWallClock(weekStart.value, props.timezone), props.timezone));
 
 // Grid
 const gridColumns = 'grid min-w-[760px] grid-cols-[64px_repeat(7,minmax(96px,1fr))]';
 const scroller = ref<HTMLElement | null>(null);
 const body = ref<HTMLElement | null>(null);
 const now = useNow({ scheduler: (tick) => useIntervalFn(tick, 60_000) });
+const zonedNow = computed(() => toWallClock(now.value, props.timezone));
 
 const { isMoving: isMovingDraft, onPointerDown: onDraftPointerDown } = useDraftMove({
     body,
@@ -152,7 +168,7 @@ onMounted(() => {
                         class="flex items-center justify-center text-sm font-semibold"
                     >
                         <span
-                            :class="{ 'bg-secondary text-secondary-foreground': isSameDay(day, now) }"
+                            :class="{ 'bg-secondary text-secondary-foreground': isSameDay(day, zonedNow) }"
                             class="inline-flex h-8 items-center rounded-md px-3"
                         >
                             {{ formats.weekday.format(day) }} {{ day.getUTCDate() }}
@@ -178,8 +194,8 @@ onMounted(() => {
                         :availabilities="availabilities"
                         :day="day"
                         :draft="draft"
-                        :events="events"
-                        :now="now"
+                        :events="zonedEvents"
+                        :now="zonedNow"
                         :selected-event-id="selectedEventId"
                         :time-format="formats.time"
                         @event-click="selectEvent"
@@ -197,6 +213,7 @@ onMounted(() => {
             :event="selectedEvent"
             :is-moving="isMovingDraft"
             :students="props.students"
+            :time-zone="props.timezone"
             @close="closePopover"
             @update-draft="updateDraft"
         />
