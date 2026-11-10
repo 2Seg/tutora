@@ -43,6 +43,8 @@ export interface SlotSelection {
 export interface Draft extends SlotSelection {
     type: EventType;
     title?: string;
+    status?: SelectLessonStatus;
+    studentId?: Student['id'];
 }
 
-export type DraftUpdate = Partial<Pick<Draft, 'type' | 'title' | 'startsAt' | 'endsAt'>>;
+export type DraftUpdate = Partial<Pick<Draft, 'type' | 'title' | 'status' | 'studentId' | 'startsAt' | 'endsAt'>>;

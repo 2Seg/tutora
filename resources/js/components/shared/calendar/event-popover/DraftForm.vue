@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ClockAlert } from '@lucide/vue';
-import { computed, shallowRef, watch } from 'vue';
+import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import TimeInput from '@/components/shared/TimeInput.vue';
@@ -62,9 +62,7 @@ const inlineField =
 
 const statuses = ['planned', 'requested', 'cancelled'] as const satisfies readonly SelectLessonStatus[];
 
-const status = defineModel<StatusBadgeVariant>('status', { default: 'planned' });
-const studentId = shallowRef<StudentSummary['id']>();
-const selectedStudent = computed(() => props.students?.find((student) => student.id === studentId.value));
+const selectedStudent = computed(() => props.students?.find((student) => student.id === props.draft.studentId));
 const studentSchedule = computed(() => {
     const studentTimezone = selectedStudent.value?.timezone;
     if (!studentTimezone || studentTimezone === props.timezone) return null;
@@ -78,10 +76,11 @@ const studentSchedule = computed(() => {
     );
 });
 
-watch(studentId, (id) => {
-    const student = props.students?.find((student) => student.id === id);
-    if (student && !props.draft.title) emit('update', { title: student.fullName });
-});
+function selectStudent(studentId: StudentSummary['id']) {
+    const student = props.students?.find((student) => student.id === studentId);
+    const shouldUseStudentAsTitle = student && !props.draft.title;
+    emit('update', shouldUseStudentAsTitle ? { studentId, title: student.fullName } : { studentId });
+}
 </script>
 
 <template>
@@ -178,7 +177,12 @@ watch(studentId, (id) => {
                 <div class="grid grid-cols-2 gap-2">
                     <div class="flex min-w-0 flex-col gap-2">
                         <Label for="status">{{ trans('calendar.event.popover.status.label') }}</Label>
-                        <Select v-slot="{ modelValue }" v-model="status" name="status">
+                        <Select
+                            v-slot="{ modelValue }"
+                            :model-value="draft.status ?? 'planned'"
+                            name="status"
+                            @update:model-value="emit('update', { status: $event as SelectLessonStatus })"
+                        >
                             <SelectTrigger :aria-invalid="!!errors.status" class="w-full truncate cursor-pointer">
                                 <SelectValue>
                                     <StatusBadge :variant="(modelValue as StatusBadgeVariant) ?? 'planned'" />
@@ -199,7 +203,11 @@ watch(studentId, (id) => {
 
                     <div class="flex min-w-0 flex-col gap-2">
                         <Label for="student">{{ trans('calendar.event.popover.student.label') }}</Label>
-                        <Select v-model="studentId" name="student_id">
+                        <Select
+                            :model-value="draft.studentId"
+                            name="student_id"
+                            @update:model-value="selectStudent(Number($event))"
+                        >
                             <SelectTrigger :aria-invalid="!!errors.student_id" class="w-full cursor-pointer">
                                 <SelectValue :placeholder="$t('calendar.event.popover.student.placeholder')">
                                     <template v-if="selectedStudent">
