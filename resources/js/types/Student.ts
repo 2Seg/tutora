@@ -7,7 +7,7 @@ export interface Student {
     fullName: string;
     initials: string;
     phone: string;
-    avatarImg: string;
+    avatarImg?: string;
     timezone: string;
     createdAt: string;
     updatedAt: string;
