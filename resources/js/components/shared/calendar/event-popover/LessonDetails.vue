@@ -67,7 +67,7 @@ const studentSchedule = computed(() => {
         <span>{{ event.student.fullName }}</span>
     </div>
 
-    <Button v-if="event.meetingUrl" as-child size="sm" variant="outline">
+    <Button v-if="event.status === 'planned' && event.meetingUrl" as-child size="sm" variant="outline">
         <a :href="event.meetingUrl" rel="noopener" target="_blank">
             <Video />
             {{ $t('calendar.event.popover.join_meeting') }}
