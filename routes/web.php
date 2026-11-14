@@ -26,7 +26,7 @@ $router->middleware('auth')->group(function (Router $router) {
 
         $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
             $router->get('/', ShowCalendarController::class)->name('show');
-            $router->post('/', CreateEventController::class)->name('store');
+            $router->post('/events', CreateEventController::class)->name('events.store');
 
             $router->put('/availabilities', UpdateAvailabilitiesController::class)->name('availabilities.update');
         });

@@ -13,7 +13,7 @@ final class CreateEventControllerTest extends FeatureTestCase
     public function testGuestIsRedirectedToLogin(): void
     {
         // Act
-        $actual = $this->post('/teacher/calendar');
+        $actual = $this->post('/teacher/calendar/events');
 
         // Assert
         $actual->assertRedirect('/login');
@@ -30,7 +30,7 @@ final class CreateEventControllerTest extends FeatureTestCase
         ];
 
         // Act
-        $actual = $this->actingAs($user)->post('/teacher/calendar', $data);
+        $actual = $this->actingAs($user)->post('/teacher/calendar/events', $data);
 
         // Assert
         $user->refresh();
@@ -54,7 +54,7 @@ final class CreateEventControllerTest extends FeatureTestCase
         ];
 
         // Act
-        $actual = $this->actingAs($user)->post('/teacher/calendar', $data);
+        $actual = $this->actingAs($user)->post('/teacher/calendar/events', $data);
 
         // Assert
         $user->refresh();
@@ -79,7 +79,7 @@ final class CreateEventControllerTest extends FeatureTestCase
         ];
 
         // Act
-        $actual = $this->actingAs($user)->post('/teacher/calendar', $data);
+        $actual = $this->actingAs($user)->post('/teacher/calendar/events', $data);
 
         // Assert
         $actual->assertForbidden();

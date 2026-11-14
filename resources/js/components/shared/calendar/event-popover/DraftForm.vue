@@ -26,7 +26,7 @@ import { StudentSummary } from '@/types/Student';
 import UserAvatar from '@/components/user/UserAvatar.vue';
 import { Label } from '@/components/ui/label';
 import { Form } from '@inertiajs/vue3';
-import { store } from '@/routes/teacher/calendar';
+import { store } from '@/routes/teacher/calendar/events';
 
 const props = defineProps<{
     draft: Draft;
