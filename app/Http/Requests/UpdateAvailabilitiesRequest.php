@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Data\AvailabilitiesData;
-use App\Data\AvailabilityData;
+use App\Data\Availability\AvailabilitiesData;
+use App\Data\Availability\AvailabilityData;
 use Illuminate\Foundation\Http\FormRequest;
 
 final class UpdateAvailabilitiesRequest extends FormRequest

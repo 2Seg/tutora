@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests;
 
-use App\Data\EventData;
-use App\Data\LessonData;
+use App\Data\Event\CreateEventData;
+use App\Data\Event\CreateLessonData;
 use App\Enums\EventType;
 use App\Enums\LessonStatus;
 use Carbon\CarbonImmutable;
@@ -29,16 +29,16 @@ final class CreateEventRequest extends FormRequest
         ];
     }
 
-    public function toEventData(): EventData
+    public function toEventData(): CreateEventData
     {
         $attributes = $this->validated();
 
-        return new EventData(
+        return new CreateEventData(
             EventType::from($attributes['type']),
             CarbonImmutable::parse($attributes['starts_at']),
             CarbonImmutable::parse($attributes['ends_at']),
             $attributes['type'] === EventType::Lesson->value
-                ? new LessonData((int) $attributes['student_id'], LessonStatus::from($attributes['status']), $attributes['title'])
+                ? new CreateLessonData((int) $attributes['student_id'], LessonStatus::from($attributes['status']), $attributes['title'])
                 : null,
         );
     }

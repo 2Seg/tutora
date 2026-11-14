@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Data;
+namespace App\Data\Event;
 
 use App\Enums\EventType;
 use Carbon\CarbonImmutable;
 
-final readonly class EventData
+final readonly class CreateEventData
 {
     public function __construct(
         public EventType $type,
         public CarbonImmutable $startsAt,
         public CarbonImmutable $endsAt,
-        public ?LessonData $lessonData = null,
+        public ?CreateLessonData $createLessonData = null,
     ) {}
 }

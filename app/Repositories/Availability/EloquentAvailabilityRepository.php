@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Availability;
 
-use App\Data\AvailabilitiesData;
+use App\Data\Availability\AvailabilitiesData;
 use App\Models\User;
 use Illuminate\Support\Collection;
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Requests;
 
-use App\Data\AvailabilitiesData;
-use App\Data\AvailabilityData;
+use App\Data\Availability\AvailabilitiesData;
+use App\Data\Availability\AvailabilityData;
 use App\Http\Requests\UpdateAvailabilitiesRequest;
 use Tests\Concerns\HasRequestValidator;
 use Tests\Unit\UnitTestCase;

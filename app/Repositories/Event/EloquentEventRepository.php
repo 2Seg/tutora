@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Repositories\Event;
 
-use App\Data\EventData;
+use App\Data\Event\CreateEventData;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
@@ -15,20 +15,20 @@ final class EloquentEventRepository implements EventRepository
         return $user->events()->get();
     }
 
-    public function storeForUser(User $user, EventData $eventData): void
+    public function storeForUser(User $user, CreateEventData $createEventData): void
     {
-        $user->getConnection()->transaction(function () use ($user, $eventData) {
+        $user->getConnection()->transaction(function () use ($user, $createEventData) {
             $event = $user->events()->create([
-                'type' => $eventData->type,
-                'starts_at' => $eventData->startsAt,
-                'ends_at' => $eventData->endsAt,
+                'type' => $createEventData->type,
+                'starts_at' => $createEventData->startsAt,
+                'ends_at' => $createEventData->endsAt,
             ]);
 
-            if ($eventData->lessonData !== null) {
+            if ($createEventData->createLessonData !== null) {
                 $event->lesson()->create([
-                    'student_id' => $eventData->lessonData->studentId,
-                    'status' => $eventData->lessonData->status,
-                    'title' => $eventData->lessonData->title,
+                    'student_id' => $createEventData->createLessonData->studentId,
+                    'status' => $createEventData->createLessonData->status,
+                    'title' => $createEventData->createLessonData->title,
                 ]);
             }
         });

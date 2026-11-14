@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Repositories\Availability;
 
-use App\Data\AvailabilitiesData;
-use App\Data\AvailabilityData;
+use App\Data\Availability\AvailabilitiesData;
+use App\Data\Availability\AvailabilityData;
 use App\Models\Availability;
 use App\Models\User;
 use App\Repositories\Availability\EloquentAvailabilityRepository;

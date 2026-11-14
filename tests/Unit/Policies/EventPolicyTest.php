@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Policies;
 
-use App\Data\EventData;
-use App\Data\LessonData;
+use App\Data\Event\CreateEventData;
+use App\Data\Event\CreateLessonData;
 use App\Enums\EventType;
 use App\Enums\LessonStatus;
 use App\Models\Event;
@@ -32,14 +32,14 @@ final class EventPolicyTest extends UnitTestCase
     {
         // Arrange
         $user = new User();
-        $eventData = new EventData(
+        $createEventData = new CreateEventData(
             EventType::TimeOff,
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2010-01-01 00:00:00'),
         );
 
         // Act & Assert
-        $this->assertTrue($this->eventPolicy->create($user, $eventData));
+        $this->assertTrue($this->eventPolicy->create($user, $createEventData));
         $this->studentRepository->shouldNotHaveReceived('belongsToUser');
     }
 
@@ -47,11 +47,11 @@ final class EventPolicyTest extends UnitTestCase
     {
         // Arrange
         $user = new User();
-        $eventData = new EventData(
+        $createEventData = new CreateEventData(
             EventType::Lesson,
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2010-01-01 00:00:00'),
-            new LessonData(2, LessonStatus::Planned, 'Event Title')
+            new CreateLessonData(2, LessonStatus::Planned, 'Event Title')
         );
         $this->studentRepository->shouldReceive('belongsToUser')
             ->once()
@@ -59,18 +59,18 @@ final class EventPolicyTest extends UnitTestCase
             ->andReturn(false);
 
         // Act & Assert
-        $this->assertFalse($this->eventPolicy->create($user, $eventData));
+        $this->assertFalse($this->eventPolicy->create($user, $createEventData));
     }
 
     public function testItAllowsCreateIfStudentBelongsToUser(): void
     {
         // Arrange
         $user = new User();
-        $eventData = new EventData(
+        $createEventData = new CreateEventData(
             EventType::Lesson,
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2010-01-01 00:00:00'),
-            new LessonData(2, LessonStatus::Planned, 'Event Title')
+            new CreateLessonData(2, LessonStatus::Planned, 'Event Title')
         );
         $this->studentRepository->shouldReceive('belongsToUser')
             ->once()
@@ -78,7 +78,7 @@ final class EventPolicyTest extends UnitTestCase
             ->andReturn(true);
 
         // Act & Assert
-        $this->assertTrue($this->eventPolicy->create($user, $eventData));
+        $this->assertTrue($this->eventPolicy->create($user, $createEventData));
     }
 
     public function testItDeniesUpdateIfEventDoesNotBelongToUser(): void

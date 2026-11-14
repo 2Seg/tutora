@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Tests\Unit\Data;
+namespace Tests\Unit\Data\Availability;
 
-use App\Data\AvailabilitiesData;
-use App\Data\AvailabilityData;
+use App\Data\Availability\AvailabilitiesData;
+use App\Data\Availability\AvailabilityData;
 use Tests\Unit\UnitTestCase;
 
 final class AvailabilitiesDataTest extends UnitTestCase

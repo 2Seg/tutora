@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Data;
+namespace App\Data\Availability;
 
 final readonly class AvailabilityData
 {

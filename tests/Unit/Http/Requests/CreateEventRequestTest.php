@@ -307,9 +307,9 @@ final class CreateEventRequestTest extends UnitTestCase
         $this->assertSame(EventType::Lesson, $actual->type);
         $this->assertSame('2000-01-01 00:00:00', $actual->startsAt->toDateTimeString());
         $this->assertSame('2010-01-01 00:00:00', $actual->endsAt->toDateTimeString());
-        $this->assertSame(LessonStatus::Planned, $actual->lessonData->status);
-        $this->assertSame(1, $actual->lessonData->studentId);
-        $this->assertSame('Event Title', $actual->lessonData->title);
+        $this->assertSame(LessonStatus::Planned, $actual->createLessonData->status);
+        $this->assertSame(1, $actual->createLessonData->studentId);
+        $this->assertSame('Event Title', $actual->createLessonData->title);
     }
 
     public function testItBuildsEventDataWithoutALessonForTimeOff(): void
@@ -330,7 +330,7 @@ final class CreateEventRequestTest extends UnitTestCase
         $this->assertSame(EventType::TimeOff, $actual->type);
         $this->assertSame('2000-01-01 00:00:00', $actual->startsAt->toDateTimeString());
         $this->assertSame('2010-01-01 00:00:00', $actual->endsAt->toDateTimeString());
-        $this->assertNull($actual->lessonData);
+        $this->assertNull($actual->createLessonData);
     }
 
     public function testItIgnoresLessonFieldsWhenBuildingEventDataForTimeOff(): void
@@ -354,6 +354,6 @@ final class CreateEventRequestTest extends UnitTestCase
         $this->assertSame(EventType::TimeOff, $actual->type);
         $this->assertSame('2000-01-01 00:00:00', $actual->startsAt->toDateTimeString());
         $this->assertSame('2010-01-01 00:00:00', $actual->endsAt->toDateTimeString());
-        $this->assertNull($actual->lessonData);
+        $this->assertNull($actual->createLessonData);
     }
 }

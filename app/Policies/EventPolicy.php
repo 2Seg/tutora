@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Data\EventData;
+use App\Data\Event\CreateEventData;
 use App\Enums\EventType;
 use App\Models\Event;
 use App\Models\User;
@@ -14,13 +14,13 @@ final readonly class EventPolicy
 {
     public function __construct(private StudentRepository $studentRepository) {}
 
-    public function create(User $user, EventData $eventData): bool
+    public function create(User $user, CreateEventData $createEventData): bool
     {
-        if ($eventData->lessonData === null) {
+        if ($createEventData->createLessonData === null) {
             return true;
         }
 
-        return $this->studentRepository->belongsToUser($eventData->lessonData->studentId, $user);
+        return $this->studentRepository->belongsToUser($createEventData->createLessonData->studentId, $user);
     }
 
     public function update(User $user, Event $event): bool

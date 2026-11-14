@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Repositories\Event;
 
-use App\Data\EventData;
-use App\Data\LessonData;
+use App\Data\Event\CreateEventData;
+use App\Data\Event\CreateLessonData;
 use App\Enums\EventType;
 use App\Enums\LessonStatus;
 use App\Models\Event;
@@ -60,14 +60,14 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
     {
         // Arrange
         $user = User::factory()->create();
-        $eventData = new EventData(
+        $createEventData = new CreateEventData(
             EventType::TimeOff,
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2000-01-02 00:00:00')
         );
 
         // Act
-        $this->eventRepository->storeForUser($user, $eventData);
+        $this->eventRepository->storeForUser($user, $createEventData);
 
         // Assert
         $storedEvent = $user->events()->sole();
@@ -83,16 +83,16 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
         // Arrange
         $user = User::factory()->create();
         $nonExistingStudentId = 999999999;
-        $eventData = new EventData(
+        $createEventData = new CreateEventData(
             EventType::Lesson,
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2000-01-02 00:00:00'),
-            new LessonData($nonExistingStudentId, LessonStatus::Planned, 'Orphan lesson'),
+            new CreateLessonData($nonExistingStudentId, LessonStatus::Planned, 'Orphan lesson'),
         );
 
         // Act & Assert
         $this->assertThrows(
-            fn() => $this->eventRepository->storeForUser($user, $eventData),
+            fn() => $this->eventRepository->storeForUser($user, $createEventData),
             QueryException::class
         );
 
@@ -106,15 +106,15 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
         // Arrange
         $user = User::factory()->create();
         $student = Student::factory()->create();
-        $eventData = new EventData(
+        $createEventData = new CreateEventData(
             EventType::Lesson,
             CarbonImmutable::parse('2000-01-01 00:00:00'),
             CarbonImmutable::parse('2000-01-02 00:00:00'),
-            new LessonData($student->id, LessonStatus::Planned, $student->full_name),
+            new CreateLessonData($student->id, LessonStatus::Planned, $student->full_name),
         );
 
         // Act
-        $this->eventRepository->storeForUser($user, $eventData);
+        $this->eventRepository->storeForUser($user, $createEventData);
 
         // Assert
         $storedEvent = $user->events()->sole();
