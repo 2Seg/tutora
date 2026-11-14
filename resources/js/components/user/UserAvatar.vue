@@ -1,13 +1,13 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { User } from '@/types/User';
+import { StudentSummary } from '@/types/Student';
 
-const props = defineProps<{ user: User }>();
+const props = defineProps<{ user: StudentSummary }>();
 </script>
 
 <template>
     <Avatar class="size-8">
-        <AvatarImage :src="user.avatarImg ?? ''" :alt="props.user.fullName" />
+        <AvatarImage :alt="props.user.fullName" :src="user.avatarImg ?? ''" />
         <AvatarFallback class="bg-primary/10 font-semibold text-primary">
             {{ props.user.initials }}
         </AvatarFallback>

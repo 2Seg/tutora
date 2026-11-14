@@ -29,13 +29,13 @@ const props = defineProps<{ student: Student }>();
                 <ItemContent class="gap-4">
                     <div>
                         <p class="text-xs uppercase text-muted-foreground">
-                            Email
+                            {{ $t('students.card.email') }}
                         </p>
                         <p class="text-sm">{{ student.email }}</p>
                     </div>
                     <div>
                         <p class="text-xs uppercase text-muted-foreground">
-                            Phone
+                            {{ $t('students.card.phone') }}
                         </p>
                         <p class="text-sm">{{ student.phone }}</p>
                     </div>
@@ -44,7 +44,9 @@ const props = defineProps<{ student: Student }>();
 
             <Item class="rounded-2xl border-0 bg-primary-foreground">
                 <ItemHeader>
-                    <h4 class="font-serif text-lg">Next lesson</h4>
+                    <h4 class="font-serif text-lg">
+                        {{ $t('students.card.next_lesson') }}
+                    </h4>
                 </ItemHeader>
 
                 <ItemMedia
@@ -65,7 +67,7 @@ const props = defineProps<{ student: Student }>();
                         size="sm"
                         variant="ghost"
                     >
-                        View calendar
+                        {{ $t('students.card.view_calendar') }}
                     </Button>
                 </ItemActions>
             </Item>

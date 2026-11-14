@@ -199,6 +199,9 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'availabilities.*.start_time' => 'start time',
+        'availabilities.*.end_time' => 'end time',
+    ],
 
 ];

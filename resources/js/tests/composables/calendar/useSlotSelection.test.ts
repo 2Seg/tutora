@@ -1,0 +1,392 @@
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { useSlotSelection } from '@/composables/calendar/useSlotSelection';
+import { SlotSelection } from '@/types/calendar';
+
+const DAY = new Date(Date.UTC(2024, 0, 15));
+const TOP = 100; // column's top offset in the viewport
+const HEIGHT = 1440; // 1px === 1 minute, which keeps the maths readable
+
+const at = (minutes: number, day = DAY) =>
+    new Date(Date.UTC(day.getUTCFullYear(), day.getUTCMonth(), day.getUTCDate(), 0, minutes));
+
+/**
+ * clientY that lands 5 minutes into the bucket starting at `minute`.
+ * (Staying mid-bucket avoids float noise from `y / height * 1440` on exact snap boundaries.)
+ */
+const yFor = (minute: number) => TOP + minute + 5;
+
+function makeColumn(top = TOP, height = HEIGHT) {
+    return {
+        getBoundingClientRect: () => ({ top, height }),
+        setPointerCapture: vi.fn(),
+    } as unknown as HTMLElement & { setPointerCapture: ReturnType<typeof vi.fn> };
+}
+
+function pointerEvent(
+    column: HTMLElement,
+    clientY: number,
+    overrides: { button?: number; pointerId?: number; target?: unknown } = {},
+) {
+    return {
+        button: 0,
+        pointerId: 1,
+        clientY,
+        currentTarget: column,
+        target: { closest: vi.fn(() => null) },
+        ...overrides,
+    } as unknown as PointerEvent;
+}
+
+describe('useSlotSelection', () => {
+    let onSelect: Mock<(selection: SlotSelection) => void>;
+    let column: ReturnType<typeof makeColumn>;
+
+    beforeEach(() => {
+        onSelect = vi.fn<(selection: SlotSelection) => void>();
+        column = makeColumn();
+    });
+
+    const setup = (day: () => Date = () => DAY) => useSlotSelection(day, onSelect);
+
+    describe('initial state', () => {
+        it('has no selection preview', () => {
+            expect(setup().selection.value).toBeNull();
+        });
+    });
+
+    describe('pointer down', () => {
+        it('captures the pointer but shows no selection yet', () => {
+            const { onPointerDown, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600), { pointerId: 7 }));
+
+            expect(column.setPointerCapture).toHaveBeenCalledWith(7);
+            expect(selection.value).toBeNull();
+        });
+
+        it('ignores non-primary buttons', () => {
+            const { onPointerDown, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600), { button: 2 }));
+
+            expect(column.setPointerCapture).not.toHaveBeenCalled();
+            expect(selection.value).toBeNull();
+        });
+
+        it('ignores presses that start on an existing event', () => {
+            const { onPointerDown, selection } = setup();
+            const closest = vi.fn((selector: string) => (selector === '[data-event]' ? {} : null));
+
+            onPointerDown(pointerEvent(column, yFor(600), { target: { closest } }));
+
+            expect(closest).toHaveBeenCalledWith('[data-event]');
+            expect(column.setPointerCapture).not.toHaveBeenCalled();
+            expect(selection.value).toBeNull();
+        });
+    });
+
+    describe('snapping and clamping', () => {
+        /** Clicks at `clientY` and returns where the created slot starts. */
+        const clickStart = (target: HTMLElement, clientY: number) => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(target, clientY));
+            onPointerUp();
+
+            return onSelect.mock.calls[0][0].startsAt;
+        };
+
+        it.each([
+            [0, 0],
+            [9.9, 0],
+            [614, 610],
+            [629, 620],
+            [1389, 1380],
+        ])('snaps %s minutes down to %s', (offset, expectedStart) => {
+            expect(clickStart(column, TOP + offset)).toEqual(at(expectedStart));
+        });
+
+        it('clamps pointers above the column to minute 0', () => {
+            expect(clickStart(column, TOP - 200)).toEqual(at(0));
+        });
+
+        it('clamps pointers below the column to the last 50 minutes of the day', () => {
+            expect(clickStart(column, TOP + 2000)).toEqual(at(1440 - 50));
+        });
+
+        it('scales with the column height', () => {
+            const halfHeight = makeColumn(TOP, 720); // 1px === 2 minutes
+
+            expect(clickStart(halfHeight, TOP + 302.5)).toEqual(at(600)); // ~605 minutes
+        });
+    });
+
+    describe('click (press and release on the same slot)', () => {
+        it('selects a default 50 minute slot', () => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledTimes(1);
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
+        });
+
+        it('treats movement within the same 10 minute slot as a click', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, TOP + 601));
+            onPointerMove(pointerEvent(column, TOP + 608));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(650) });
+        });
+
+        it('moves the start earlier so the default slot ends at midnight', () => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(1430)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1390), endsAt: at(1440) });
+        });
+
+        it('selects midnight to 00:50 when clicking the top of the column', () => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, TOP));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(50) });
+        });
+    });
+
+    describe('drag', () => {
+        it('snaps the dragged range (100 min) to the nearest lesson duration (1h50)', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(710) });
+        });
+
+        it('starts at the earlier slot when dragging upwards', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(690)));
+            onPointerMove(pointerEvent(column, yFor(600)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(710) });
+        });
+
+        it('uses the latest pointer position', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(900)));
+            onPointerMove(pointerEvent(column, yFor(660)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(680) });
+        });
+
+        it('selects 25 minutes when dragging by one slot', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(610)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(600), endsAt: at(625) });
+        });
+
+        it('caps a long drag at 1h50', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(1290)));
+            onPointerMove(pointerEvent(column, TOP + 5000));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1290), endsAt: at(1400) });
+        });
+
+        it('moves the start earlier so the lesson ends at midnight', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(1420)));
+            onPointerMove(pointerEvent(column, yFor(1430)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(1415), endsAt: at(1440) });
+        });
+
+        it('starts at midnight when dragged past the top of the column', () => {
+            const { onPointerDown, onPointerMove, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(120)));
+            onPointerMove(pointerEvent(column, TOP - 500));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(0), endsAt: at(110) });
+        });
+    });
+
+    describe('selection', () => {
+        it('is null on a plain press', () => {
+            const { onPointerDown, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+
+            expect(selection.value).toBeNull();
+        });
+
+        it('is null while the pointer stays in the pressed slot', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, TOP + 601));
+            onPointerMove(pointerEvent(column, TOP + 608));
+
+            expect(selection.value).toBeNull();
+        });
+
+        it('appears as soon as the pointer enters another slot', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(610)));
+
+            expect(selection.value).toEqual({ startMin: 600, endMin: 625 });
+        });
+
+        it('updates as the pointer moves, snapped to a lesson duration', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+
+            expect(selection.value).toEqual({ startMin: 600, endMin: 710 });
+        });
+
+        it('anchors the start at the earlier slot when dragging upwards', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(690)));
+            onPointerMove(pointerEvent(column, yFor(600)));
+
+            expect(selection.value).toEqual({ startMin: 600, endMin: 710 });
+        });
+
+        it('disappears again when the pointer comes back to the pressed slot', () => {
+            const { onPointerDown, onPointerMove, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+            expect(selection.value).not.toBeNull();
+
+            onPointerMove(pointerEvent(column, yFor(600)));
+            expect(selection.value).toBeNull();
+        });
+
+        it('is null again after the selection completes', () => {
+            const { onPointerDown, onPointerMove, onPointerUp, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+            expect(selection.value).not.toBeNull();
+
+            onPointerUp();
+            expect(selection.value).toBeNull();
+        });
+    });
+
+    describe('without an active drag', () => {
+        it('pointer move is a no-op', () => {
+            const { onPointerMove, selection } = setup();
+
+            expect(() => onPointerMove(pointerEvent(column, yFor(600)))).not.toThrow();
+            expect(selection.value).toBeNull();
+        });
+
+        it('pointer up does not call onSelect', () => {
+            const { onPointerUp } = setup();
+
+            onPointerUp();
+
+            expect(onSelect).not.toHaveBeenCalled();
+        });
+
+        it('a second pointer up does not select again', () => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerUp();
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe('pointer cancel', () => {
+        it('discards the selection without calling onSelect', () => {
+            const { onPointerDown, onPointerMove, onPointerCancel, onPointerUp, selection } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerMove(pointerEvent(column, yFor(690)));
+            expect(selection.value).not.toBeNull();
+
+            onPointerCancel();
+
+            expect(selection.value).toBeNull();
+
+            onPointerUp();
+            expect(onSelect).not.toHaveBeenCalled();
+        });
+
+        it('is safe to call with no active drag', () => {
+            const { onPointerCancel } = setup();
+
+            expect(() => onPointerCancel()).not.toThrow();
+        });
+
+        it('allows a fresh selection afterwards', () => {
+            const { onPointerDown, onPointerCancel, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            onPointerCancel();
+            onPointerDown(pointerEvent(column, yFor(300)));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledTimes(1);
+            expect(onSelect).toHaveBeenCalledWith({ startsAt: at(300), endsAt: at(350) });
+        });
+    });
+
+    describe('day getter', () => {
+        it('is read when the selection completes, not when the composable is created', () => {
+            let current = new Date(Date.UTC(2024, 0, 15));
+            const { onPointerDown, onPointerUp } = setup(() => current);
+
+            onPointerDown(pointerEvent(column, yFor(600)));
+            current = new Date(Date.UTC(2024, 0, 16));
+            onPointerUp();
+
+            expect(onSelect).toHaveBeenCalledWith({
+                startsAt: at(600, new Date(Date.UTC(2024, 0, 16))),
+                endsAt: at(650, new Date(Date.UTC(2024, 0, 16))),
+            });
+        });
+
+        it('yields the next midnight as end time when the slot reaches the end of the day', () => {
+            const { onPointerDown, onPointerUp } = setup();
+
+            onPointerDown(pointerEvent(column, yFor(1430)));
+            onPointerUp();
+
+            const { endsAt } = onSelect.mock.calls[0][0];
+            expect(endsAt).toEqual(new Date(Date.UTC(2024, 0, 16, 0, 0)));
+        });
+    });
+});
