@@ -38,7 +38,7 @@ final class CreateEventRequest extends FormRequest
             CarbonImmutable::parse($attributes['starts_at']),
             CarbonImmutable::parse($attributes['ends_at']),
             $attributes['type'] === EventType::Lesson->value
-                ? new LessonData((int)$attributes['student_id'], LessonStatus::from($attributes['status']), $attributes['title'])
+                ? new LessonData((int) $attributes['student_id'], LessonStatus::from($attributes['status']), $attributes['title'])
                 : null,
         );
     }
