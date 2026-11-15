@@ -131,7 +131,13 @@ const isEditable = computed(() => {
                 @cancel="emit('close')"
                 @update="emit('update-draft', $event)"
             />
-            <LessonDetails v-else-if="shown?.kind === 'lesson'" :event="shown.event" :timezone="props.timezone" />
+            <LessonDetails
+                v-else-if="shown?.kind === 'lesson'"
+                :event="shown.event"
+                :is-editing="isEditing"
+                :timezone="props.timezone"
+                @done="isEditing = false"
+            />
             <TimeOffForm
                 v-else-if="shown?.kind === 'time_off' && isEditing"
                 :key="shown.event.id"

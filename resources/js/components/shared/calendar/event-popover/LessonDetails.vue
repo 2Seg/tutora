@@ -8,10 +8,16 @@ import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import type { Lesson } from '@/types/calendar';
 import UserAvatar from '@/components/user/UserAvatar.vue';
 import { ClockAlert } from '@lucide/vue';
+import LessonTitleForm from '@/components/shared/calendar/event-popover/LessonTitleForm.vue';
 
 const props = defineProps<{
     event: Lesson;
     timezone: string;
+    isEditing: boolean;
+}>();
+
+const emit = defineEmits<{
+    done: [];
 }>();
 
 const schedule = computed(() => formatEventSchedule(props.event));
@@ -32,7 +38,8 @@ const studentSchedule = computed(() => {
 <template>
     <StatusBadge :variant="event.status" />
 
-    <h2 class="m-0 truncate pr-8">{{ getEventTitle(event) }}</h2>
+    <LessonTitleForm v-if="isEditing" :event="event" @done="emit('done')" />
+    <h2 v-else class="m-0 truncate pr-8">{{ getEventTitle(event) }}</h2>
 
     <div class="text-sm m-0">
         <div class="flex items-center justify-between gap-2">
