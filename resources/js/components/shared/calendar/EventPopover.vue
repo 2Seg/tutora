@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { SquarePen, X } from '@lucide/vue';
+import { Trash2, SquarePen, X } from '@lucide/vue';
 import { computed, ref, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
@@ -12,6 +12,8 @@ import { StudentSummary } from '@/types/Student';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { trans } from 'laravel-vue-i18n';
 import { toDate, toWallClock } from '@/lib/calendar-utils';
+import ConfirmDialog from '@/components/shared/ConfirmDialog.vue';
+import { deleteMethod } from '@/routes/teacher/calendar/events';
 
 type Shown = { kind: 'draft'; event: Draft } | { kind: 'lesson'; event: Lesson } | { kind: 'time_off'; event: TimeOff };
 
@@ -85,6 +87,7 @@ const isEditable = computed(() => {
     if (shown.value?.kind !== 'lesson') return false;
     return toDate(shown.value.event.startsAt) > toWallClock(new Date(), props.timezone);
 });
+const isDeletable = computed(() => shown.value?.kind === 'time_off');
 </script>
 
 <template>
@@ -101,20 +104,36 @@ const isEditable = computed(() => {
         >
             <div class="absolute top-2 right-2 flex flex-row gap-0.5">
                 <ButtonGroup>
+                    <ConfirmDialog
+                        v-if="shown && shown.kind !== 'draft' && isDeletable && !isEditing"
+                        :action="deleteMethod(shown.event.id)"
+                        :title="$t('calendar.event.dialog.delete_time_off')"
+                        destructive
+                        @success="emit('close')"
+                    >
+                        <Button
+                            :aria-label="$t('calendar.event.popover.delete')"
+                            :title="$t('calendar.event.popover.delete')"
+                            size="icon-sm"
+                            variant="ghost"
+                        >
+                            <Trash2 />
+                        </Button>
+                    </ConfirmDialog>
                     <Button
                         v-if="isEditable && !isEditing"
-                        @click="isEditing = true"
                         :aria-label="$t('calendar.event.popover.edit')"
-                        :title="trans('calendar.event.popover.edit')"
+                        :title="$t('calendar.event.popover.edit')"
                         size="icon-sm"
                         variant="ghost"
+                        @click="isEditing = true"
                     >
                         <SquarePen />
                     </Button>
                 </ButtonGroup>
                 <Button
                     :aria-label="$t('calendar.event.popover.close')"
-                    :title="trans('calendar.event.popover.close')"
+                    :title="$t('calendar.event.popover.close')"
                     size="icon-sm"
                     variant="ghost"
                     @click="emit('close')"
