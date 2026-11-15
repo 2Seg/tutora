@@ -6,6 +6,7 @@ namespace Tests\Feature\Repositories\Event;
 
 use App\Data\Event\CreateEventData;
 use App\Data\Event\CreateLessonData;
+use App\Data\Event\UpdateEventData;
 use App\Enums\EventType;
 use App\Enums\LessonStatus;
 use App\Models\Event;
@@ -127,6 +128,62 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
             'student_id' => $student->id,
             'status' => LessonStatus::Planned,
             'title' => $student->full_name,
+        ]);
+    }
+
+    public function testItUpdatesTimeOffEventWithoutTouchingLessons(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->timeOff()->create(['user_id' => $user->id]);
+        $updateEventData = UpdateEventData::forTimeOff(
+            CarbonImmutable::parse('2000-01-01 00:00:00'),
+            CarbonImmutable::parse('2000-01-02 00:00:00')
+        );
+
+        // Act
+        $this->eventRepository->update($event, $updateEventData);
+
+        // Assert
+        $this->assertDatabaseHas('events', [
+            'id' => $event->id,
+            'type' => EventType::TimeOff,
+            'starts_at' => '2000-01-01 00:00:00',
+            'ends_at' => '2000-01-02 00:00:00',
+        ]);
+        $this->assertDatabaseCount('lessons', 0);
+    }
+
+    public function testItUpdatesALessonEventWithItsLesson(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->hasLesson(['title' => 'Event Title'])
+            ->create([
+                'user_id' => $user->id,
+                'type' => EventType::Lesson,
+                'starts_at' => '2000-01-01 00:00:00',
+                'ends_at' => '2000-01-02 00:00:00',
+            ]);
+        $updateEventData = UpdateEventData::forLesson('Modified Event Title');
+
+        // Act
+        $this->eventRepository->update($event, $updateEventData);
+
+        // Assert
+        $this->assertDatabaseHas('events', [
+            'id' => $event->id,
+            'type' => EventType::Lesson,
+            'starts_at' => '2000-01-01 00:00:00',
+            'ends_at' => '2000-01-02 00:00:00',
+        ]);
+        $this->assertDatabaseMissing('lessons', [
+            'event_id' => $event->id,
+            'title' => 'Event Title',
+        ]);
+        $this->assertDatabaseHas('lessons', [
+            'event_id' => $event->id,
+            'title' => 'Modified Event Title',
         ]);
     }
 }

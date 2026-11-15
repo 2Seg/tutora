@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Repositories\Event;
 
 use App\Data\Event\CreateEventData;
+use App\Data\Event\UpdateEventData;
+use App\Models\Event;
 use App\Models\User;
 use Illuminate\Support\Collection;
 
@@ -32,5 +34,19 @@ final class EloquentEventRepository implements EventRepository
                 ]);
             }
         });
+    }
+
+    public function update(Event $event, UpdateEventData $updateEventData): void
+    {
+        if ($updateEventData->lessonTitle !== null) {
+            $event->lesson->update(['title' => $updateEventData->lessonTitle]);
+
+            return;
+        }
+
+        $event->update([
+            'starts_at' => $updateEventData->startsAt,
+            'ends_at' => $updateEventData->endsAt,
+        ]);
     }
 }
