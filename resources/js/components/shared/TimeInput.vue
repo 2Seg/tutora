@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { HTMLAttributes } from 'vue';
+import { nextTick, type HTMLAttributes } from 'vue';
 import { Input } from '@/components/ui/input';
 
 const props = defineProps<{ class?: HTMLAttributes['class'] }>();
@@ -11,10 +11,13 @@ const highlightWhenHoveredOrFocused = 'hover:bg-accent focus-visible:bg-accent f
 const looksLikeMutedTime = 'tabular-nums text-muted-foreground aria-invalid:text-destructive';
 const hideBrowserClockIcon = '[&::-webkit-calendar-picker-indicator]:hidden';
 
-function updateOnceTimeIsComplete(event: Event) {
-    const typedTime = (event.target as HTMLInputElement).value;
+async function updateOnceTimeIsComplete(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const typedTime = input.value;
     const isComplete = typedTime !== '';
     if (isComplete) time.value = typedTime;
+    await nextTick();
+    input.value = time.value ?? '';
 }
 </script>
 
