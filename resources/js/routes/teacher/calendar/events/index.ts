@@ -91,9 +91,68 @@ update.patch = (args: { event: number | { id: number } } | [event: number | { id
     method: 'patch',
 })
 
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\DeleteEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/DeleteEventController.php:21
+* @route '/teacher/calendar/events/{event}'
+*/
+export const deleteMethod = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: deleteMethod.url(args, options),
+    method: 'delete',
+})
+
+deleteMethod.definition = {
+    methods: ["delete"],
+    url: '/teacher/calendar/events/{event}',
+} satisfies RouteDefinition<["delete"]>
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\DeleteEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/DeleteEventController.php:21
+* @route '/teacher/calendar/events/{event}'
+*/
+deleteMethod.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { event: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { event: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            event: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        event: typeof args.event === 'object'
+        ? args.event.id
+        : args.event,
+    }
+
+    return deleteMethod.definition.url
+            .replace('{event}', parsedArgs.event.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\DeleteEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/DeleteEventController.php:21
+* @route '/teacher/calendar/events/{event}'
+*/
+deleteMethod.delete = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+    url: deleteMethod.url(args, options),
+    method: 'delete',
+})
+
 const events = {
     store: Object.assign(store, store),
     update: Object.assign(update, update),
+    delete: Object.assign(deleteMethod, deleteMethod),
 }
 
 export default events
