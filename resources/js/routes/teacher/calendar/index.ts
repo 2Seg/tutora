@@ -1,6 +1,6 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
-import events from './events'
 import availabilities from './availabilities'
+import events from './events'
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
 * @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
@@ -47,8 +47,8 @@ show.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
 
 const calendar = {
     show: Object.assign(show, show),
-    events: Object.assign(events, events),
     availabilities: Object.assign(availabilities, availabilities),
+    events: Object.assign(events, events),
 }
 
 export default calendar
