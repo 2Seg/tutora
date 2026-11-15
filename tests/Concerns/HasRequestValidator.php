@@ -6,6 +6,7 @@ namespace Tests\Concerns;
 
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Routing\Route;
 use Illuminate\Translation\ArrayLoader;
 use Illuminate\Translation\Translator;
 use Illuminate\Validation\Factory;
@@ -22,5 +23,19 @@ trait HasRequestValidator
             $formRequest->messages(),
             $formRequest->attributes()
         );
+    }
+
+    protected function bindRequestContext(FormRequest $formRequest, array $routeParameters = []): FormRequest
+    {
+        $route = new Route('GET', '/', []);
+        $route->bind($formRequest);
+
+        foreach ($routeParameters as $name => $value) {
+            $route->setParameter($name, $value);
+        }
+
+        $formRequest->setRouteResolver(fn() => $route);
+
+        return $formRequest;
     }
 }
