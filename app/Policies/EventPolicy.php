@@ -31,4 +31,10 @@ final readonly class EventPolicy
 
         return $event->type === EventType::TimeOff || $event->starts_at->isFuture();
     }
+
+    public function delete(User $user, Event $event): bool
+    {
+        return $event->type === EventType::TimeOff
+            && $event->user_id === $user->id;
+    }
 }

@@ -137,4 +137,41 @@ final class EventPolicyTest extends UnitTestCase
         // Act & Assert
         $this->assertTrue($this->eventPolicy->update($user, $event));
     }
+
+    public function testItDeniesDeleteIfEventIsLesson(): void
+    {
+        // Arrange
+        $user = new User();
+        $event = new Event();
+        $event->type = EventType::Lesson;
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->delete($user, $event));
+    }
+
+    public function testItDeniesDeleteIfTimeOffDoesNotBelongToUser(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $event = new Event();
+        $event->user_id = 2;
+        $event->type = EventType::TimeOff;
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->delete($user, $event));
+    }
+
+    public function testItAllowsDeleteIfTimeOffBelongsToUser(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $event = new Event();
+        $event->user_id = 1;
+        $event->type = EventType::TimeOff;
+
+        // Act & Assert
+        $this->assertTrue($this->eventPolicy->delete($user, $event));
+    }
 }
