@@ -50,6 +50,7 @@ return [
             'cancel' => 'Cancel',
             'create' => 'Create',
             'edit' => 'Edit',
+            'save' => 'Save',
             'close' => 'Close',
             'join_meeting' => 'Join meeting',
         ],

@@ -81,6 +81,10 @@ function selectEvent(event: CalendarEvent) {
     emit('event-click', event);
 }
 
+function previewTimeOff(timeOff: TimeOff | null) {
+    pendingTimeOff.value = timeOff && { ...timeOff, startsAt: toDate(timeOff.startsAt), endsAt: toDate(timeOff.endsAt) };
+}
+
 function resizeEvent(event: CalendarEvent, endsAt: Date) {
     if (event.id === DRAFT_ID) {
         if (draft.value) draft.value = { ...draft.value, endsAt };
@@ -277,6 +281,7 @@ onMounted(() => {
             :timezone="props.timezone"
             @close="closePopover"
             @update-draft="updateDraft"
+            @preview-time-off="previewTimeOff"
         />
 
         <!-- Carries the cursor while the draft is being moved -->

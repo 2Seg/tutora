@@ -1,21 +1,11 @@
 <script lang="ts" setup>
 import { ClockAlert } from '@lucide/vue';
 import { computed } from 'vue';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import TimeInput from '@/components/shared/TimeInput.vue';
+import FormActions from '@/components/shared/calendar/event-popover/FormActions.vue';
+import ScheduleInputs from '@/components/shared/calendar/event-popover/ScheduleInputs.vue';
 import { formatDuration, formatEventSchedule } from '@/lib/calendar-event';
-import {
-    fromWallClock,
-    LESSON_DURATIONS,
-    minutesToTime,
-    slotMinutes,
-    timeToMinutes,
-    withEnd,
-    withLessonDuration,
-    withLessonStart,
-    withStart,
-} from '@/lib/calendar-utils';
+import { fromWallClock, LESSON_DURATIONS, slotMinutes, withLessonDuration } from '@/lib/calendar-utils';
 import type { Draft, DraftUpdate, EventType, SelectLessonStatus } from '@/types/calendar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { trans } from 'laravel-vue-i18n';
@@ -40,21 +30,10 @@ const emit = defineEmits<{
 }>();
 
 const schedule = computed(() => formatEventSchedule(props.draft));
-const times = computed(() => {
+const durationMinutes = computed(() => {
     const { startMin, endMin } = slotMinutes(props.draft);
-    return { start: minutesToTime(startMin), end: minutesToTime(endMin), duration: endMin - startMin };
+    return endMin - startMin;
 });
-
-function moveStartTo(time: string | undefined) {
-    if (!time) return;
-    const startMin = timeToMinutes(time);
-    const isLesson = props.draft.type === 'lesson';
-    emit('update', isLesson ? withLessonStart(props.draft, startMin) : withStart(props.draft, startMin));
-}
-
-function moveEndTo(time: string | undefined) {
-    if (time) emit('update', withEnd(props.draft, timeToMinutes(time)));
-}
 
 const inlineField =
     'h-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent ' +
@@ -111,7 +90,7 @@ function selectStudent(studentId: StudentSummary['id']) {
                     </p>
                     <template v-if="draft.type === 'lesson'">
                         <Select
-                            :model-value="times.duration"
+                            :model-value="durationMinutes"
                             @update:model-value="emit('update', withLessonDuration(draft, Number($event)))"
                         >
                             <SelectTrigger
@@ -134,23 +113,13 @@ function selectStudent(studentId: StudentSummary['id']) {
                         </Select>
                     </template>
                 </div>
-                <p class="m-0 flex items-center gap-2 text-muted-foreground tabular-nums">
-                    <TimeInput
-                        :aria-invalid="!!errors.starts_at"
-                        :aria-label="trans('calendar.event.popover.time.start')"
-                        :model-value="times.start"
-                        @update:model-value="moveStartTo"
-                    />
-                    <span>–</span>
-                    <TimeInput
-                        v-if="draft.type === 'time_off'"
-                        :aria-invalid="!!errors.ends_at"
-                        :aria-label="trans('calendar.event.popover.time.end')"
-                        :model-value="times.end"
-                        @update:model-value="moveEndTo"
-                    />
-                    <span v-else>{{ times.end }}</span>
-                </p>
+                <ScheduleInputs
+                    :errors="errors"
+                    :is-lesson="draft.type === 'lesson'"
+                    :slot="draft"
+                    :timezone="props.timezone"
+                    @update="emit('update', $event)"
+                />
                 <p
                     v-if="draft.type === 'lesson' && studentSchedule"
                     :title="$t('calendar.event.popover.time.student')"
@@ -159,16 +128,6 @@ function selectStudent(studentId: StudentSummary['id']) {
                     {{ studentSchedule.timeRange }}
                     <ClockAlert :size="15" />
                 </p>
-                <input
-                    :value="fromWallClock(props.draft.startsAt, props.timezone).toISOString()"
-                    name="starts_at"
-                    type="hidden"
-                />
-                <input
-                    :value="fromWallClock(props.draft.endsAt, props.timezone).toISOString()"
-                    name="ends_at"
-                    type="hidden"
-                />
             </div>
             <p v-if="errors.starts_at" class="text-sm text-destructive">{{ errors.starts_at }}</p>
             <p v-if="errors.ends_at" class="text-sm text-destructive">{{ errors.ends_at }}</p>
@@ -254,14 +213,11 @@ function selectStudent(studentId: StudentSummary['id']) {
                 </p>
             </TabsContent>
 
-            <div class="flex justify-end gap-2">
-                <Button size="sm" type="button" variant="ghost" @click="emit('cancel')">
-                    {{ $t('calendar.event.popover.cancel') }}
-                </Button>
-                <Button :disabled="processing" size="sm">
-                    {{ $t('calendar.event.popover.create') }}
-                </Button>
-            </div>
+            <FormActions
+                :processing="processing"
+                :submit-label="trans('calendar.event.popover.create')"
+                @cancel="emit('cancel')"
+            />
         </Tabs>
     </Form>
 </template>
