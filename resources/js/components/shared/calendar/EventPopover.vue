@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { X } from '@lucide/vue';
+import { SquarePen, X } from '@lucide/vue';
 import { computed, shallowRef, watch } from 'vue';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverAnchor, PopoverContent } from '@/components/ui/popover';
@@ -8,8 +8,11 @@ import DraftForm from '@/components/shared/calendar/event-popover/DraftForm.vue'
 import LessonDetails from '@/components/shared/calendar/event-popover/LessonDetails.vue';
 import type { CalendarEvent, Draft, DraftUpdate, Lesson, TimeOff } from '@/types/calendar';
 import { StudentSummary } from '@/types/Student';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { trans } from 'laravel-vue-i18n';
+import { toDate, toWallClock } from '@/lib/calendar-utils';
 
-type Shown = { kind: 'draft'; draft: Draft } | { kind: 'lesson'; event: Lesson } | { kind: 'time_off'; event: TimeOff };
+type Shown = { kind: 'draft'; event: Draft } | { kind: 'lesson'; event: Lesson } | { kind: 'time_off'; event: TimeOff };
 
 const props = defineProps<{
     container: HTMLElement | null;
@@ -32,7 +35,7 @@ watch(
     () => [props.draft, props.event, props.isMoving],
     () => {
         if (props.draft) {
-            shown.value = { kind: 'draft', draft: props.draft };
+            shown.value = { kind: 'draft', event: props.draft };
         } else if (props.event) {
             shown.value =
                 props.event.type === 'lesson'
@@ -61,6 +64,11 @@ const reference = computed(() => {
 });
 
 const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draft ?? props.event));
+const isEditable = computed(() => {
+    if (shown.value?.kind === 'time_off') return true;
+    if (shown.value?.kind !== 'lesson') return false;
+    return toDate(shown.value.event.startsAt) > toWallClock(new Date(), props.timezone);
+});
 </script>
 
 <template>
@@ -75,19 +83,32 @@ const isOpen = computed(() => !props.isMoving && !!anchor.value && !!(props.draf
             side="right"
             @interact-outside.prevent
         >
-            <Button
-                :aria-label="$t('calendar.event.popover.close')"
-                class="absolute top-2 right-2"
-                size="icon-sm"
-                variant="ghost"
-                @click="emit('close')"
-            >
-                <X />
-            </Button>
+            <div class="absolute top-2 right-2 flex flex-row gap-0.5">
+                <ButtonGroup>
+                    <Button
+                        v-if="isEditable"
+                        :aria-label="$t('calendar.event.popover.edit')"
+                        :title="trans('calendar.event.popover.edit')"
+                        size="icon-sm"
+                        variant="ghost"
+                    >
+                        <SquarePen />
+                    </Button>
+                </ButtonGroup>
+                <Button
+                    :aria-label="$t('calendar.event.popover.close')"
+                    :title="trans('calendar.event.popover.close')"
+                    size="icon-sm"
+                    variant="ghost"
+                    @click="emit('close')"
+                >
+                    <X />
+                </Button>
+            </div>
 
             <DraftForm
                 v-if="shown?.kind === 'draft'"
-                :draft="shown.draft"
+                :draft="shown.event"
                 :students="props.students"
                 :timezone="props.timezone"
                 @cancel="emit('close')"

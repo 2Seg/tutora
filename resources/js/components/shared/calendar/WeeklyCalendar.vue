@@ -17,10 +17,15 @@ import {
     toDate,
     toWallClock,
 } from '@/lib/calendar-utils';
-import type { Availability, CalendarEvent, Draft, DraftUpdate } from '@/types/calendar';
+import type { Availability, CalendarEvent, Draft, DraftUpdate, SlotSelection, TimeOff } from '@/types/calendar';
 import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { useDraftMove } from '@/composables/calendar/useDraftMove';
+import { useEventMove } from '@/composables/calendar/useEventMove';
 import { StudentSummary } from '@/types/Student';
+import { router } from '@inertiajs/vue3';
+import { update } from '@/routes/teacher/calendar/events';
+import { DRAFT_ID } from '@/lib/calendar-event';
+
+type PendingTimeOff = TimeOff & SlotSelection;
 
 const props = withDefaults(
     defineProps<{
@@ -41,12 +46,18 @@ const weekStart = defineModel<Date>('weekStart', {
     default: (rawProps: Record<string, unknown>) => startOfWeek(toWallClock(new Date(), rawProps.timezone as string)),
 });
 
+const pendingTimeOff = ref<PendingTimeOff | null>(null);
+
 const zonedEvents = computed<CalendarEvent[]>(() =>
-    props.events.map((event) => ({
-        ...event,
-        startsAt: toWallClock(toDate(event.startsAt), props.timezone),
-        endsAt: toWallClock(toDate(event.endsAt), props.timezone),
-    })),
+    props.events.map((event) =>
+        event.id === pendingTimeOff.value?.id
+            ? pendingTimeOff.value
+            : {
+                  ...event,
+                  startsAt: toWallClock(toDate(event.startsAt), props.timezone),
+                  endsAt: toWallClock(toDate(event.endsAt), props.timezone),
+              },
+    ),
 );
 
 // Week navigation
@@ -70,8 +81,16 @@ function selectEvent(event: CalendarEvent) {
     emit('event-click', event);
 }
 
-function resizeDraft(_event: CalendarEvent, endsAt: Date) {
-    if (draft.value) draft.value = { ...draft.value, endsAt };
+function resizeEvent(event: CalendarEvent, endsAt: Date) {
+    if (event.id === DRAFT_ID) {
+        if (draft.value) draft.value = { ...draft.value, endsAt };
+        return;
+    }
+    if (event.type !== 'time_off') return;
+
+    const resized = { ...event, startsAt: toDate(event.startsAt), endsAt };
+    pendingTimeOff.value = resized;
+    savePendingTimeOff(resized);
 }
 
 function updateDraft(update: DraftUpdate) {
@@ -124,11 +143,53 @@ const body = ref<HTMLElement | null>(null);
 const now = useNow({ scheduler: (tick) => useIntervalFn(tick, 60_000) });
 const zonedNow = computed(() => toWallClock(now.value, props.timezone));
 
-const { isMoving: isMovingDraft, onPointerDown: onDraftPointerDown } = useDraftMove({
+const draftMove = useEventMove({
     body,
     days: () => days.value,
-    draft,
+    grab: (target) => (target.closest('[data-draft]') ? draft.value : null),
+    onMove: (moved) => (draft.value = moved),
+    isStillHeld: () => draft.value !== null,
 });
+
+function grabTimeOff(target: HTMLElement): PendingTimeOff | null {
+    const eventId = target.closest<HTMLElement>('[data-movable-time-off]')?.dataset.eventId;
+    const timeOff = zonedEvents.value.find((event) => event.type === 'time_off' && String(event.id) === eventId);
+    if (!timeOff || timeOff.type !== 'time_off') return null;
+
+    return { ...timeOff, startsAt: toDate(timeOff.startsAt), endsAt: toDate(timeOff.endsAt) };
+}
+
+function savePendingTimeOff(timeOff: PendingTimeOff) {
+    router.patch(
+        update(Number(timeOff.id)).url,
+        {
+            starts_at: fromWallClock(timeOff.startsAt, props.timezone).toISOString(),
+            ends_at: fromWallClock(timeOff.endsAt, props.timezone).toISOString(),
+        },
+        { preserveScroll: true, preserveState: true, onFinish: () => (pendingTimeOff.value = null) },
+    );
+}
+
+const timeOffMove = useEventMove({
+    body,
+    days: () => days.value,
+    grab: grabTimeOff,
+    onMove: (moved) => (pendingTimeOff.value = moved),
+    onRelease: savePendingTimeOff,
+    onCancel: () => (pendingTimeOff.value = null),
+});
+
+const isMoving = computed(() => draftMove.isMoving.value || timeOffMove.isMoving.value);
+const movingEventId = computed(() => {
+    if (draftMove.isMoving.value) return DRAFT_ID;
+    if (timeOffMove.isMoving.value) return pendingTimeOff.value?.id ?? null;
+    return null;
+});
+
+function onBodyPointerDown(e: PointerEvent) {
+    draftMove.onPointerDown(e);
+    timeOffMove.onPointerDown(e);
+}
 
 onMounted(() => {
     if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;
@@ -137,8 +198,7 @@ onMounted(() => {
 
 <template>
     <section
-        :class="{ '**:data-draft:z-10 **:data-draft:scale-105 **:data-draft:shadow-lg': isMovingDraft }"
-        class="text-foreground overflow-x-auto **:data-draft:transition-transform"
+        class="text-foreground overflow-x-auto **:data-moving:z-10 **:data-moving:scale-105 **:data-moving:shadow-lg"
     >
         <div class="min-w-175">
             <header class="mb-4 flex items-center gap-x-4 whitespace-nowrap">
@@ -176,7 +236,7 @@ onMounted(() => {
                     </div>
                 </div>
 
-                <div ref="body" :class="gridColumns" @pointerdown="onDraftPointerDown">
+                <div ref="body" :class="gridColumns" @pointerdown="onBodyPointerDown">
                     <div class="sticky left-0 z-20 bg-card">
                         <div v-for="(label, hour) in hourLabels" :key="hour" class="relative h-10">
                             <span
@@ -195,12 +255,13 @@ onMounted(() => {
                         :day="day"
                         :draft="draft"
                         :events="zonedEvents"
+                        :moving-event-id="movingEventId"
                         :now="zonedNow"
                         :selected-event-id="selectedEventId"
                         :time-format="formats.time"
                         @event-click="selectEvent"
                         @draft-resizing="draftResizeEnd = $event"
-                        @event-resize="resizeDraft"
+                        @event-resize="resizeEvent"
                         @select-slot="draft = { ...$event, type: 'lesson' }"
                     />
                 </div>
@@ -211,7 +272,7 @@ onMounted(() => {
             :container="body"
             :draft="shownDraft"
             :event="selectedEvent"
-            :is-moving="isMovingDraft"
+            :is-moving="isMoving"
             :students="props.students"
             :timezone="props.timezone"
             @close="closePopover"
@@ -219,6 +280,6 @@ onMounted(() => {
         />
 
         <!-- Carries the cursor while the draft is being moved -->
-        <div v-if="isMovingDraft" class="fixed inset-0 z-50 cursor-grabbing" />
+        <div v-if="isMoving" class="fixed inset-0 z-50 cursor-grabbing" />
     </section>
 </template>

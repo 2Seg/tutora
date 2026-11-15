@@ -169,6 +169,17 @@ describe('useEventResize', () => {
             expect(resizing.value?.endMin).toBe(minutes(10, 10));
         });
 
+        it('measures from the start of the day for an event that started the day before', () => {
+            const { resizing, press, moveTo } = setup(timeOff(new Date(Date.UTC(2026, 9, 13, 22)), at(8)));
+
+            press();
+            moveTo(minutes(3));
+            expect(resizing.value?.endMin).toBe(minutes(3));
+
+            moveTo(0);
+            expect(resizing.value?.endMin).toBe(minutes(0, 10));
+        });
+
         it('stops at midnight', () => {
             const { resizing, press, moveTo } = setup();
 

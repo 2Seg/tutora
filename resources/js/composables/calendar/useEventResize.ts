@@ -33,7 +33,7 @@ export function useEventResize(
 
         const start = toDate(event.startsAt);
         const end = toDate(event.endsAt);
-        const startMin = minutesOfDay(start);
+        const startMin = isSameDay(start, day()) ? minutesOfDay(start) : 0;
         resizing.value = { id: event.id, endMin: isSameDay(end, day()) ? minutesOfDay(end) : MINUTES_PER_DAY };
 
         const onMove = (move: PointerEvent) => {

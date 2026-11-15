@@ -49,6 +49,8 @@ return [
             'time_off' => 'Time off',
             'cancel' => 'Cancel',
             'create' => 'Create',
+            'edit' => 'Edit',
+            'close' => 'Close',
             'join_meeting' => 'Join meeting',
         ],
     ],

@@ -9,6 +9,7 @@ const props = defineProps<{
     isPast: boolean;
     isCompact: boolean;
     isResizable?: boolean;
+    isMovable?: boolean;
     isSelected?: boolean;
     continuesBefore?: boolean;
     continuesAfter?: boolean;
@@ -27,7 +28,7 @@ const emit = defineEmits<{ 'resize-start': [e: PointerEvent] }>();
             appearance.className,
             { 'opacity-70': isPast },
             isCompact ? 'flex-row items-center gap-2' : 'flex-col items-start justify-start py-1.5',
-            isResizable ? 'cursor-grab' : 'cursor-pointer',
+            isMovable ? 'cursor-grab' : 'cursor-pointer',
             isSelected && 'z-10 scale-105 shadow-lg',
             continuesBefore && 'rounded-t-none border-t-0',
             continuesAfter && 'rounded-b-none border-b-0',

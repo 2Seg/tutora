@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ref, shallowRef, watch } from 'vue';
 
-import { useDraftMove } from '@/composables/calendar/useDraftMove';
+import { useEventMove } from '@/composables/calendar/useEventMove';
 import type { Draft, SlotSelection } from '@/types/calendar';
 
 // The composable registers an unmount hook, but there is no component here: collect the hooks to run them by hand.
@@ -65,15 +65,21 @@ function fire(type: 'pointermove' | 'pointerup' | 'pointercancel', { x = 0, y = 
 function setup(initial: SlotSelection | null = draftOf(1, 600, 660), body: HTMLElement | null = makeBody()) {
     const draft = ref<SlotSelection | null>(initial);
     const changes = vi.fn();
+    const onRelease = vi.fn();
+    const onCancel = vi.fn();
     watch(draft, changes, { flush: 'sync' });
 
-    const { isMoving, onPointerDown } = useDraftMove({
+    const { isMoving, onPointerDown } = useEventMove({
         body: shallowRef(body),
         days: () => DAYS,
-        draft,
+        grab: (target) => (target.closest('[data-draft]') ? draft.value : null),
+        onMove: (moved) => (draft.value = moved),
+        onRelease,
+        onCancel,
+        isStillHeld: () => draft.value !== null,
     });
 
-    return { draft, changes, isMoving, onPointerDown };
+    return { draft, changes, onRelease, onCancel, isMoving, onPointerDown };
 }
 
 beforeEach(() => {
@@ -86,15 +92,18 @@ afterEach(() => {
     vi.unstubAllGlobals();
 });
 
-describe('useDraftMove', () => {
+describe('useEventMove', () => {
     describe('pointer down', () => {
-        it('starts moving when the draft is pressed', () => {
+        it('starts moving once the pressed draft changes position', () => {
             const { onPointerDown, isMoving } = setup();
 
+            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
             expect(isMoving.value).toBe(false);
 
-            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(1), y: yAt(631) });
+            expect(isMoving.value).toBe(false);
 
+            fire('pointermove', { x: xIn(1), y: yAt(640) });
             expect(isMoving.value).toBe(true);
         });
 
@@ -110,19 +119,23 @@ describe('useDraftMove', () => {
         });
 
         it('ignores buttons other than the main one', () => {
-            const { onPointerDown, isMoving } = setup();
+            const { onPointerDown, isMoving, changes } = setup();
 
             onPointerDown(press({ x: xIn(1), y: yAt(630), button: 2 }));
+            fire('pointermove', { x: xIn(3), y: yAt(900) });
 
             expect(isMoving.value).toBe(false);
+            expect(changes).not.toHaveBeenCalled();
         });
 
-        it('ignores presses when there is no draft', () => {
-            const { onPointerDown, isMoving } = setup(null);
+        it('ignores presses when there is nothing to grab', () => {
+            const { onPointerDown, isMoving, changes } = setup(null);
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(3), y: yAt(900) });
 
             expect(isMoving.value).toBe(false);
+            expect(changes).not.toHaveBeenCalled();
         });
     });
 
@@ -325,12 +338,13 @@ describe('useDraftMove', () => {
             const { onPointerDown, isMoving, draft, changes } = setup();
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(2), y: yAt(630) });
             fire(type);
             fire('pointermove', { x: xIn(4), y: yAt(900) });
 
             expect(isMoving.value).toBe(false);
-            expect(draft.value).toEqual(draftOf(1, 600, 660));
-            expect(changes).not.toHaveBeenCalled();
+            expect(draft.value).toEqual(draftOf(2, 600, 660));
+            expect(changes).toHaveBeenCalledTimes(1);
         });
 
         it('keeps the draft where it was dropped', () => {
@@ -359,6 +373,7 @@ describe('useDraftMove', () => {
             const { onPointerDown, isMoving, draft } = setup();
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(2), y: yAt(630) });
             draft.value = null; // Escape, for example
             fire('pointermove', { x: xIn(3), y: yAt(720) });
 
@@ -366,15 +381,58 @@ describe('useDraftMove', () => {
             expect(draft.value).toBeNull();
         });
 
+        it('reports the moved and original positions on release after a move', () => {
+            const { onPointerDown, onRelease } = setup();
+
+            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(3), y: yAt(720) });
+            fire('pointerup');
+
+            expect(onRelease).toHaveBeenCalledTimes(1);
+            expect(onRelease).toHaveBeenCalledWith(draftOf(3, 690, 750), draftOf(1, 600, 660));
+        });
+
+        it('does not report a release without movement', () => {
+            const { onPointerDown, onRelease } = setup();
+
+            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointerup');
+
+            expect(onRelease).not.toHaveBeenCalled();
+        });
+
+        it('does not report a release when moved back to where it started', () => {
+            const { onPointerDown, onRelease } = setup();
+
+            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(2), y: yAt(630) });
+            fire('pointermove', { x: xIn(1), y: yAt(630) });
+            fire('pointerup');
+
+            expect(onRelease).not.toHaveBeenCalled();
+        });
+
+        it('reports a cancelled move as cancelled, not released', () => {
+            const { onPointerDown, onRelease, onCancel } = setup();
+
+            onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(3), y: yAt(720) });
+            fire('pointercancel');
+
+            expect(onRelease).not.toHaveBeenCalled();
+            expect(onCancel).toHaveBeenCalledTimes(1);
+        });
+
         it('ends and stops following the pointer when the component is unmounted', () => {
             const { onPointerDown, isMoving, draft } = setup();
 
             onPointerDown(press({ x: xIn(1), y: yAt(630) }));
+            fire('pointermove', { x: xIn(2), y: yAt(630) });
             hooks.unmount.forEach((hook) => hook());
             fire('pointermove', { x: xIn(3), y: yAt(720) });
 
             expect(isMoving.value).toBe(false);
-            expect(draft.value).toEqual(draftOf(1, 600, 660));
+            expect(draft.value).toEqual(draftOf(2, 600, 660));
         });
     });
 });

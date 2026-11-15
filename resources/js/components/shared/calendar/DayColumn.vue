@@ -17,6 +17,7 @@ import {
     unavailableSlotsForDay,
 } from '@/lib/calendar-utils';
 import type { Availability, CalendarEvent, Draft, SlotSelection } from '@/types/calendar';
+import { DRAFT_ID } from '@/lib/calendar-event';
 
 const props = defineProps<{
     day: Date;
@@ -26,6 +27,7 @@ const props = defineProps<{
     timeFormat: Intl.DateTimeFormat;
     draft: Draft | null;
     selectedEventId?: CalendarEvent['id'] | null;
+    movingEventId?: CalendarEvent['id'] | null;
 }>();
 
 const emit = defineEmits<{
@@ -35,7 +37,6 @@ const emit = defineEmits<{
     'draft-resizing': [endsAt: Date | null];
 }>();
 
-const DRAFT_ID = 'draft';
 const draftEvent = computed<CalendarEvent | null>(() => {
     if (!props.draft) return null;
     const { type, title, startsAt, endsAt } = props.draft;
@@ -54,9 +55,10 @@ const { resizing, onResizeStart } = useEventResize(
     (event, endsAt) => emit('event-resize', event, endsAt),
 );
 
-watch(
-    () => resizing.value?.endMin,
-    (endMin) => emit('draft-resizing', endMin === undefined ? null : atMinutes(props.day, endMin)),
+const draftResizeEndMin = computed(() => (resizing.value?.id === DRAFT_ID ? resizing.value.endMin : undefined));
+
+watch(draftResizeEndMin, (endMin) =>
+    emit('draft-resizing', endMin === undefined ? null : atMinutes(props.day, endMin)),
 );
 
 const RIGHT_GUTTER = 12;
@@ -183,10 +185,14 @@ const dragEventPreview = computed(() => {
             :continues-after="item.continuesAfter"
             :continues-before="item.continuesBefore"
             :data-draft="item.event.id === DRAFT_ID || undefined"
+            :data-event-id="item.event.id"
+            :data-movable-time-off="item.event.type === 'time_off' || undefined"
+            :data-moving="item.event.id === movingEventId || undefined"
             :event="item.event"
             :is-compact="item.isCompact"
+            :is-movable="item.event.id === DRAFT_ID || item.event.type === 'time_off'"
             :is-past="item.isPast"
-            :is-resizable="item.event.id === DRAFT_ID"
+            :is-resizable="(item.event.id === DRAFT_ID || item.event.type === 'time_off') && !item.continuesAfter"
             :is-selected="item.event.id === selectedEventId"
             :range="timeFormat.formatRange(item.start, item.end)"
             :style="item.style"

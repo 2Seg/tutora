@@ -5,6 +5,8 @@ import { getStatusLabel } from '@/lib/calendar-status';
 import { CALENDAR_TIME_ZONE, toDate } from '@/lib/calendar-utils';
 import type { CalendarEvent, EventType, Lesson, LessonStatus, TimeOff } from '@/types/calendar';
 
+export const DRAFT_ID = 'draft';
+
 const eventAppearances: Record<LessonStatus | TimeOff['type'], { className: string; icon?: Component }> = {
     planned: { className: 'badge-secondary' },
     cancelled: { className: 'badge-destructive' },
