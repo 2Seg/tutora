@@ -186,4 +186,16 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
             'title' => 'Modified Event Title',
         ]);
     }
+
+    public function testItDeletesAnEvent(): void
+    {
+        // Arrange
+        $event = Event::factory()->create();
+
+        // Act
+        $this->eventRepository->delete($event);
+
+        // Assert
+        $this->assertDatabaseMissing('events', ['id' => $event->id]);
+    }
 }

@@ -17,4 +17,6 @@ interface EventRepository
     public function storeForUser(User $user, CreateEventData $createEventData): void;
 
     public function update(Event $event, UpdateEventData $updateEventData): void;
+
+    public function delete(Event $event): void;
 }

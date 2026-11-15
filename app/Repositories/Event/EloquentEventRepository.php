@@ -49,4 +49,9 @@ final class EloquentEventRepository implements EventRepository
             'ends_at' => $updateEventData->endsAt,
         ]);
     }
+
+    public function delete(Event $event): void
+    {
+        $event->delete();
+    }
 }
