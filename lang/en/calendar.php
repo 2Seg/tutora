@@ -50,9 +50,13 @@ return [
             'cancel' => 'Cancel',
             'create' => 'Create',
             'edit' => 'Edit',
+            'delete' => 'Delete',
             'save' => 'Save',
             'close' => 'Close',
             'join_meeting' => 'Join meeting',
+        ],
+        'dialog' => [
+            'delete_time_off' => 'Delete this time off?',
         ],
     ],
 ];
