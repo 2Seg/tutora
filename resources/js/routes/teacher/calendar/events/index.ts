@@ -150,6 +150,64 @@ deleteMethod.delete = (args: { event: number | { id: number } } | [event: number
 })
 
 /**
+* @see \App\Http\Controllers\Teacher\Calendar\Events\PlanEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
+* @route '/teacher/calendar/events/{event}/plan'
+*/
+export const plan = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: plan.url(args, options),
+    method: 'patch',
+})
+
+plan.definition = {
+    methods: ["patch"],
+    url: '/teacher/calendar/events/{event}/plan',
+} satisfies RouteDefinition<["patch"]>
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\Events\PlanEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
+* @route '/teacher/calendar/events/{event}/plan'
+*/
+plan.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { event: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { event: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            event: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        event: typeof args.event === 'object'
+        ? args.event.id
+        : args.event,
+    }
+
+    return plan.definition.url
+            .replace('{event}', parsedArgs.event.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\Events\PlanEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
+* @route '/teacher/calendar/events/{event}/plan'
+*/
+plan.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: plan.url(args, options),
+    method: 'patch',
+})
+
+/**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
 * @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
 * @route '/teacher/calendar/events/{event}/cancel'
@@ -211,6 +269,7 @@ const events = {
     store: Object.assign(store, store),
     update: Object.assign(update, update),
     delete: Object.assign(deleteMethod, deleteMethod),
+    plan: Object.assign(plan, plan),
     cancel: Object.assign(cancel, cancel),
 }
 

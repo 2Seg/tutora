@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Teacher\Calendar\Events\CancelEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\CreateEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\DeleteEventController;
+use App\Http\Controllers\Teacher\Calendar\Events\PlanEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController;
 use App\Http\Controllers\Teacher\Calendar\ShowCalendarController;
 use App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController;
@@ -37,6 +38,7 @@ $router->middleware('auth')->group(function (Router $router) {
                 $router->prefix('{event}')->group(function (Router $router) {
                     $router->patch('/', UpdateEventController::class)->name('update');
                     $router->delete('/', DeleteEventController::class)->name('delete');
+                    $router->patch('/plan', PlanEventController::class)->name('plan');
                     $router->patch('/cancel', CancelEventController::class)->name('cancel');
                 });
             });
