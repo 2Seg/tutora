@@ -231,6 +231,98 @@ final class EventPolicyTest extends UnitTestCase
         $this->assertTrue($this->eventPolicy->cancel($user, $event));
     }
 
+    public function testItDeniesPlanIfEventIsTimeOff(): void
+    {
+        // Arrange
+        $user = new User();
+        $event = new Event();
+        $event->type = EventType::TimeOff;
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->plan($user, $event));
+    }
+
+    public function testItDeniesPlanIfLessonDoesNotBelongToUser(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $event = new Event();
+        $event->user_id = 2;
+        $event->type = EventType::Lesson;
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->plan($user, $event));
+    }
+
+    public function testItDeniesPlanIfLessonIsPast(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $event = new Event();
+        $event->type = EventType::Lesson;
+        $event->setDateFormat('Y-m-d H:i:s');
+        $event->starts_at = '2000-01-01T00:00:00+00:00';
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->plan($user, $event));
+    }
+
+    public function testItDeniesPlanIfLessonStatusIsCancelled(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $lesson = new Lesson();
+        $lesson->status = LessonStatus::Cancelled;
+        $event = new Event();
+        $event->user_id = 1;
+        $event->type = EventType::Lesson;
+        $event->setDateFormat('Y-m-d H:i:s');
+        $event->starts_at = '3000-01-01T00:00:00+00:00';
+        $event->setRelation('lesson', $lesson);
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->cancel($user, $event));
+    }
+
+    public function testItDeniesPlanIfPlanStatusIsPlanned(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $lesson = new Lesson();
+        $lesson->status = LessonStatus::Planned;
+        $event = new Event();
+        $event->user_id = 1;
+        $event->type = EventType::Lesson;
+        $event->setDateFormat('Y-m-d H:i:s');
+        $event->starts_at = '3000-01-01T00:00:00+00:00';
+        $event->setRelation('lesson', $lesson);
+
+        // Act & Assert
+        $this->assertFalse($this->eventPolicy->plan($user, $event));
+    }
+
+    public function testItAllowsPlanIfLessonStatusIsRequested(): void
+    {
+        // Arrange
+        $user = new User();
+        $user->id = 1;
+        $lesson = new Lesson();
+        $lesson->status = LessonStatus::Requested;
+        $event = new Event();
+        $event->user_id = 1;
+        $event->type = EventType::Lesson;
+        $event->setDateFormat('Y-m-d H:i:s');
+        $event->starts_at = '3000-01-01T00:00:00+00:00';
+        $event->setRelation('lesson', $lesson);
+
+        // Act & Assert
+        $this->assertTrue($this->eventPolicy->plan($user, $event));
+    }
+
     public function testItDeniesDeleteIfEventIsLesson(): void
     {
         // Arrange

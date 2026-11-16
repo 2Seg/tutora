@@ -32,17 +32,18 @@ final readonly class EventPolicy
         return $event->type === EventType::TimeOff || $event->starts_at->isFuture();
     }
 
+    public function plan(User $user, Event $event): bool
+    {
+        if (!$this->isLessonUpcomingAndBelongsToUser($user, $event)) {
+            return false;
+        }
+
+        return $event->lesson->status->isPlannable();
+    }
+
     public function cancel(User $user, Event $event): bool
     {
-        if ($event->type === EventType::TimeOff) {
-            return false;
-        }
-
-        if ($event->user_id !== $user->id) {
-            return false;
-        }
-
-        if ($event->starts_at->isPast()) {
+        if (!$this->isLessonUpcomingAndBelongsToUser($user, $event)) {
             return false;
         }
 
@@ -53,5 +54,18 @@ final readonly class EventPolicy
     {
         return $event->type === EventType::TimeOff
             && $event->user_id === $user->id;
+    }
+
+    private function isLessonUpcomingAndBelongsToUser(User $user, Event $event): bool
+    {
+        if ($event->type === EventType::TimeOff) {
+            return false;
+        }
+
+        if ($event->user_id !== $user->id) {
+            return false;
+        }
+
+        return $event->starts_at->isFuture();
     }
 }
