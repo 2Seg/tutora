@@ -38,7 +38,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 * @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:22
 * @route '/teacher/calendar/events/{event}'
 */
-export const update = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+export const update = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -53,7 +53,7 @@ update.definition = {
 * @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:22
 * @route '/teacher/calendar/events/{event}'
 */
-update.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+update.url = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { event: args }
     }
@@ -86,7 +86,7 @@ update.url = (args: { event: number | { id: number } } | [event: number | { id: 
 * @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:22
 * @route '/teacher/calendar/events/{event}'
 */
-update.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+update.patch = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: update.url(args, options),
     method: 'patch',
 })
@@ -96,7 +96,7 @@ update.patch = (args: { event: number | { id: number } } | [event: number | { id
 * @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:21
 * @route '/teacher/calendar/events/{event}'
 */
-export const deleteMethod = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+export const deleteMethod = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: deleteMethod.url(args, options),
     method: 'delete',
 })
@@ -111,7 +111,7 @@ deleteMethod.definition = {
 * @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:21
 * @route '/teacher/calendar/events/{event}'
 */
-deleteMethod.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+deleteMethod.url = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { event: args }
     }
@@ -144,7 +144,7 @@ deleteMethod.url = (args: { event: number | { id: number } } | [event: number | 
 * @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:21
 * @route '/teacher/calendar/events/{event}'
 */
-deleteMethod.delete = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
+deleteMethod.delete = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
     url: deleteMethod.url(args, options),
     method: 'delete',
 })
@@ -154,7 +154,7 @@ deleteMethod.delete = (args: { event: number | { id: number } } | [event: number
 * @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
 * @route '/teacher/calendar/events/{event}/plan'
 */
-export const plan = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+export const plan = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: plan.url(args, options),
     method: 'patch',
 })
@@ -169,7 +169,7 @@ plan.definition = {
 * @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
 * @route '/teacher/calendar/events/{event}/plan'
 */
-plan.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+plan.url = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { event: args }
     }
@@ -202,7 +202,7 @@ plan.url = (args: { event: number | { id: number } } | [event: number | { id: nu
 * @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
 * @route '/teacher/calendar/events/{event}/plan'
 */
-plan.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+plan.patch = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: plan.url(args, options),
     method: 'patch',
 })
@@ -212,7 +212,7 @@ plan.patch = (args: { event: number | { id: number } } | [event: number | { id: 
 * @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
 * @route '/teacher/calendar/events/{event}/cancel'
 */
-export const cancel = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+export const cancel = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: cancel.url(args, options),
     method: 'patch',
 })
@@ -227,7 +227,7 @@ cancel.definition = {
 * @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
 * @route '/teacher/calendar/events/{event}/cancel'
 */
-cancel.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+cancel.url = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions) => {
     if (typeof args === 'string' || typeof args === 'number') {
         args = { event: args }
     }
@@ -260,7 +260,7 @@ cancel.url = (args: { event: number | { id: number } } | [event: number | { id: 
 * @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
 * @route '/teacher/calendar/events/{event}/cancel'
 */
-cancel.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+cancel.patch = (args: { event: string | number | { id: string | number } } | [event: string | number | { id: string | number } ] | string | number | { id: string | number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
     url: cancel.url(args, options),
     method: 'patch',
 })
