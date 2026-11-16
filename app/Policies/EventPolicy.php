@@ -32,6 +32,23 @@ final readonly class EventPolicy
         return $event->type === EventType::TimeOff || $event->starts_at->isFuture();
     }
 
+    public function cancel(User $user, Event $event): bool
+    {
+        if ($event->type === EventType::TimeOff) {
+            return false;
+        }
+
+        if ($event->user_id !== $user->id) {
+            return false;
+        }
+
+        if ($event->starts_at->isPast()) {
+            return false;
+        }
+
+        return $event->lesson->status->isCancellable();
+    }
+
     public function delete(User $user, Event $event): bool
     {
         return $event->type === EventType::TimeOff
