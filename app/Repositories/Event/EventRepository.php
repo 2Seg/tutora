@@ -18,5 +18,7 @@ interface EventRepository
 
     public function update(Event $event, UpdateEventData $updateEventData): void;
 
+    public function cancel(Event $event): void;
+
     public function delete(Event $event): void;
 }

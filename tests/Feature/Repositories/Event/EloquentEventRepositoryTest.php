@@ -187,6 +187,25 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
         ]);
     }
 
+    public function testItCancelsAnEvent(): void
+    {
+        // Arrange
+        $event = Event::factory()->hasLesson(['status' => LessonStatus::Planned])->create();
+
+        // Act
+        $this->eventRepository->cancel($event);
+
+        // Assert
+        $this->assertDatabaseMissing('lessons', [
+            'event_id' => $event->id,
+            'status' => LessonStatus::Planned,
+        ]);
+        $this->assertDatabaseHas('lessons', [
+            'event_id' => $event->id,
+            'status' => LessonStatus::Cancelled,
+        ]);
+    }
+
     public function testItDeletesAnEvent(): void
     {
         // Arrange

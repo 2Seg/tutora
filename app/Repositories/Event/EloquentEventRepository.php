@@ -6,6 +6,7 @@ namespace App\Repositories\Event;
 
 use App\Data\Event\CreateEventData;
 use App\Data\Event\UpdateEventData;
+use App\Enums\LessonStatus;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -48,6 +49,11 @@ final class EloquentEventRepository implements EventRepository
             'starts_at' => $updateEventData->startsAt,
             'ends_at' => $updateEventData->endsAt,
         ]);
+    }
+
+    public function cancel(Event $event): void
+    {
+        $event->lesson->update(['status' => LessonStatus::Cancelled]);
     }
 
     public function delete(Event $event): void
