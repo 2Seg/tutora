@@ -13,8 +13,14 @@ export const buttonVariants = cva(
                     'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
                 outline:
                     'border bg-transparent hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
+                'ok-outline':
+                    'border bg-transparent hover:bg-ok/10 hover:text-ok focus-visible:ring-ok/20 dark:focus-visible:ring-ok/40 dark:hover:bg-ok/20',
+                'destructive-outline':
+                    'border bg-transparent hover:bg-destructive/10 hover:text-destructive focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:hover:bg-destructive/20',
                 secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
                 ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
+                'destructive-ghost': 'hover:bg-destructive/10 hover:text-destructive dark:hover:bg-destructive/20',
+                'warning-ghost': 'hover:bg-warning/10 hover:text-warning dark:hover:bg-warning/20',
                 link: 'text-primary underline-offset-4 hover:underline',
             },
             size: {

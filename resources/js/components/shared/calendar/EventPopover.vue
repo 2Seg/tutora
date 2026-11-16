@@ -115,7 +115,7 @@ const isDeletable = computed(() => shown.value?.kind === 'time_off');
                             :aria-label="$t('calendar.event.popover.delete')"
                             :title="$t('calendar.event.popover.delete')"
                             size="icon-sm"
-                            variant="ghost"
+                            variant="destructive-ghost"
                         >
                             <Trash2 />
                         </Button>
@@ -125,7 +125,7 @@ const isDeletable = computed(() => shown.value?.kind === 'time_off');
                         :aria-label="$t('calendar.event.popover.edit')"
                         :title="$t('calendar.event.popover.edit')"
                         size="icon-sm"
-                        variant="ghost"
+                        variant="warning-ghost"
                         @click="isEditing = true"
                     >
                         <SquarePen />
