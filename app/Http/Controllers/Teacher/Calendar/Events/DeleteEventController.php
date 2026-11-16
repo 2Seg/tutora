@@ -2,16 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Http\Controllers\Teacher\Calendar;
+namespace App\Http\Controllers\Teacher\Calendar\Events;
 
-use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Repositories\Event\EventRepository;
 use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
-final readonly class UpdateEventController
+final readonly class DeleteEventController
 {
     public function __construct(
         private Gate $gate,
@@ -19,11 +18,11 @@ final readonly class UpdateEventController
         private EventRepository $eventRepository,
     ) {}
 
-    public function __invoke(UpdateEventRequest $updateEventRequest, Event $event): RedirectResponse
+    public function __invoke(Event $event): RedirectResponse
     {
-        $this->gate->authorize('update', $event);
+        $this->gate->authorize('delete', $event);
 
-        $this->eventRepository->update($event, $updateEventRequest->toEventData());
+        $this->eventRepository->delete($event);
 
         return $this->redirector->route('teacher.calendar.show');
     }

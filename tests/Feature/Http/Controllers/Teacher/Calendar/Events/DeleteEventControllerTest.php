@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Tests\Feature\Http\Controllers\Teacher\Calendar;
+namespace Tests\Feature\Http\Controllers\Teacher\Calendar\Events;
 
 use App\Models\Event;
 use App\Models\User;

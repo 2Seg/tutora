@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\Teacher\Calendar\CreateEventController;
-use App\Http\Controllers\Teacher\Calendar\DeleteEventController;
+use App\Http\Controllers\Teacher\Calendar\Events\CreateEventController;
+use App\Http\Controllers\Teacher\Calendar\Events\DeleteEventController;
+use App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController;
 use App\Http\Controllers\Teacher\Calendar\ShowCalendarController;
 use App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController;
-use App\Http\Controllers\Teacher\Calendar\UpdateEventController;
 use App\Http\Controllers\Teacher\Student\ListStudentsController;
 use Illuminate\Routing\Router;
 
