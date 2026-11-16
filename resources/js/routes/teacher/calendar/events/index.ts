@@ -149,10 +149,69 @@ deleteMethod.delete = (args: { event: number | { id: number } } | [event: number
     method: 'delete',
 })
 
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
+* @route '/teacher/calendar/events/{event}/cancel'
+*/
+export const cancel = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: cancel.url(args, options),
+    method: 'patch',
+})
+
+cancel.definition = {
+    methods: ["patch"],
+    url: '/teacher/calendar/events/{event}/cancel',
+} satisfies RouteDefinition<["patch"]>
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
+* @route '/teacher/calendar/events/{event}/cancel'
+*/
+cancel.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
+    if (typeof args === 'string' || typeof args === 'number') {
+        args = { event: args }
+    }
+
+    if (typeof args === 'object' && !Array.isArray(args) && 'id' in args) {
+        args = { event: args.id }
+    }
+
+    if (Array.isArray(args)) {
+        args = {
+            event: args[0],
+        }
+    }
+
+    args = applyUrlDefaults(args)
+
+    const parsedArgs = {
+        event: typeof args.event === 'object'
+        ? args.event.id
+        : args.event,
+    }
+
+    return cancel.definition.url
+            .replace('{event}', parsedArgs.event.toString())
+            .replace(/\/+$/, '') + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
+* @route '/teacher/calendar/events/{event}/cancel'
+*/
+cancel.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
+    url: cancel.url(args, options),
+    method: 'patch',
+})
+
 const events = {
     store: Object.assign(store, store),
     update: Object.assign(update, update),
     delete: Object.assign(deleteMethod, deleteMethod),
+    cancel: Object.assign(cancel, cancel),
 }
 
 export default events

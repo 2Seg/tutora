@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Teacher\Calendar\Events\CancelEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\CreateEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\DeleteEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController;
@@ -32,8 +33,12 @@ $router->middleware('auth')->group(function (Router $router) {
 
             $router->prefix('events')->name('events.')->group(function (Router $router) {
                 $router->post('/', CreateEventController::class)->name('store');
-                $router->patch('/{event}', UpdateEventController::class)->name('update');
-                $router->delete('/{event}', DeleteEventController::class)->name('delete');
+
+                $router->prefix('{event}')->group(function (Router $router) {
+                    $router->patch('/', UpdateEventController::class)->name('update');
+                    $router->delete('/', DeleteEventController::class)->name('delete');
+                    $router->patch('/cancel', CancelEventController::class)->name('cancel');
+                });
             });
         });
     });
