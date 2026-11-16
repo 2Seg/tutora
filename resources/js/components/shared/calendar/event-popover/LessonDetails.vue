@@ -9,6 +9,7 @@ import type { Lesson } from '@/types/calendar';
 import UserAvatar from '@/components/user/UserAvatar.vue';
 import { ClockAlert } from '@lucide/vue';
 import LessonTitleForm from '@/components/shared/calendar/event-popover/LessonTitleForm.vue';
+import LessonStatusActions from '@/components/shared/calendar/event-popover/LessonStatusActions.vue';
 
 const props = defineProps<{
     event: Lesson;
@@ -36,7 +37,10 @@ const studentSchedule = computed(() => {
 </script>
 
 <template>
-    <StatusBadge :variant="event.status" />
+    <div class="flex gap-2">
+        <StatusBadge :variant="event.status" />
+        <LessonStatusActions :event="event" :timezone="timezone" />
+    </div>
 
     <LessonTitleForm v-if="isEditing" :event="event" @done="emit('done')" />
     <h2 v-else class="m-0 truncate pr-8">{{ getEventTitle(event) }}</h2>

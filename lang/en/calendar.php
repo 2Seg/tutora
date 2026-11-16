@@ -29,6 +29,10 @@ return [
             'draft' => 'Draft',
             'time_off' => 'Time off',
         ],
+        'dialog' => [
+            'delete_time_off' => 'Delete this time off?',
+            'cancel_event' => 'Cancel this event?',
+        ],
         'popover' => [
             'title' => [
                 'placeholder' => 'Add title',
@@ -45,6 +49,10 @@ return [
                 'duration' => 'Duration',
                 'student' => 'Student time',
             ],
+            'action' => [
+                'cancel' => 'Cancel event',
+                'plan' => 'Plan event',
+            ],
             'lesson' => 'Lesson',
             'time_off' => 'Time off',
             'cancel' => 'Cancel',
@@ -54,9 +62,6 @@ return [
             'save' => 'Save',
             'close' => 'Close',
             'join_meeting' => 'Join meeting',
-        ],
-        'dialog' => [
-            'delete_time_off' => 'Delete this time off?',
         ],
     ],
 ];
