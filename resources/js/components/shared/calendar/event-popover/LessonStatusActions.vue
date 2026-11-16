@@ -7,6 +7,8 @@ import { computed } from 'vue';
 import { toDate, toWallClock } from '@/lib/calendar-utils';
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue';
 import { cancel, plan } from '@/routes/teacher/calendar/events';
+import { toast } from 'vue-sonner';
+import { trans } from 'laravel-vue-i18n';
 
 const props = defineProps<{
     event: Lesson;
@@ -20,7 +22,9 @@ const isCancellable = computed(() => isUpcoming.value && props.event.status !== 
 
 <template>
     <ButtonGroup>
-        <ConfirmDialog :action="plan(Number(event.id))" :title="$t('calendar.event.dialog.plan_event')">
+        <ConfirmDialog :action="plan(Number(event.id))" :title="$t('calendar.event.dialog.plan_event')"
+            @success="toast.success(trans('calendar.event.toast.lesson_planned'))"
+        >
             <Button
                 v-if="isPlannable"
                 :aria-label="$t('calendar.event.popover.action.plan')"
@@ -32,7 +36,10 @@ const isCancellable = computed(() => isUpcoming.value && props.event.status !== 
                 <Check />
             </Button>
         </ConfirmDialog>
-        <ConfirmDialog :action="cancel(Number(event.id))" :title="$t('calendar.event.dialog.cancel_event')" destructive>
+        <ConfirmDialog :action="cancel(Number(event.id))" :title="$t('calendar.event.dialog.cancel_event')"
+            destructive
+            @success="toast.success(trans('calendar.event.toast.lesson_cancelled'))"
+        >
             <Button
                 v-if="isCancellable"
                 :aria-label="$t('calendar.event.popover.action.cancel')"

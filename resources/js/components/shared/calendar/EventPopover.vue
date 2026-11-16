@@ -13,6 +13,8 @@ import { ButtonGroup } from '@/components/ui/button-group';
 import { toDate, toWallClock } from '@/lib/calendar-utils';
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue';
 import { deleteMethod } from '@/routes/teacher/calendar/events';
+import { toast } from 'vue-sonner';
+import { trans } from 'laravel-vue-i18n';
 
 type Shown = { kind: 'draft'; event: Draft } | { kind: 'lesson'; event: Lesson } | { kind: 'time_off'; event: TimeOff };
 
@@ -43,6 +45,11 @@ watch(
 watch(isEditing, (editing) => {
     if (!editing) emit('preview-time-off', null);
 });
+
+function onTimeOffDeleted() {
+    toast.success(trans('calendar.event.toast.time_off_deleted'));
+    emit('close');
+}
 
 function previewTimeOff(timeOff: TimeOff, slot: SlotSelection) {
     emit('preview-time-off', { ...timeOff, ...slot });
@@ -109,7 +116,7 @@ const isDeletable = computed(() => shown.value?.kind === 'time_off');
                         :action="deleteMethod(Number(shown.event.id))"
                         :title="$t('calendar.event.dialog.delete_time_off')"
                         destructive
-                        @success="emit('close')"
+                        @success="onTimeOffDeleted"
                     >
                         <Button
                             :aria-label="$t('calendar.event.popover.delete')"

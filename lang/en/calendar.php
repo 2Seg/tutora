@@ -29,6 +29,15 @@ return [
             'draft' => 'Draft',
             'time_off' => 'Time off',
         ],
+        'toast' => [
+            'lesson_created' => 'Lesson created',
+            'lesson_planned' => 'Lesson planned',
+            'lesson_cancelled' => 'Lesson cancelled',
+            'lesson_updated' => 'Lesson updated',
+            'time_off_created' => 'Time off created',
+            'time_off_rescheduled' => 'Time off rescheduled',
+            'time_off_deleted' => 'Time off deleted',
+        ],
         'dialog' => [
             'delete_time_off' => 'Delete this time off?',
             'cancel_event' => 'Cancel this event?',

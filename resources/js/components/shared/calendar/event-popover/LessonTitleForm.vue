@@ -4,6 +4,7 @@ import { Form } from '@inertiajs/vue3';
 import { trans } from 'laravel-vue-i18n';
 import { update } from '@/routes/teacher/calendar/events';
 import type { Lesson } from '@/types/calendar';
+import { toast } from 'vue-sonner';
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from '@/components/ui/input-group';
 
 defineProps<{
@@ -13,6 +14,11 @@ defineProps<{
 const emit = defineEmits<{
     done: [];
 }>();
+
+function onUpdated() {
+    toast.success(trans('calendar.event.toast.lesson_updated'));
+    emit('done');
+}
 </script>
 
 <template>
@@ -21,7 +27,7 @@ const emit = defineEmits<{
         :action="update(Number(event.id))"
         :options="{ preserveScroll: true }"
         class="flex flex-col gap-2 pr-8"
-        @success="emit('done')"
+        @success="onUpdated"
     >
         <InputGroup>
             <InputGroupInput

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useEventListener, useIntervalFn, useNow } from '@vueuse/core';
-import { getActiveLanguage } from 'laravel-vue-i18n';
+import { getActiveLanguage, trans } from 'laravel-vue-i18n';
 import { computed, onMounted, ref, watch } from 'vue';
 import DayColumn from '@/components/shared/calendar/DayColumn.vue';
 import EventPopover from '@/components/shared/calendar/EventPopover.vue';
@@ -22,6 +22,7 @@ import { Pagination, PaginationContent, PaginationNext, PaginationPrevious } fro
 import { useEventMove } from '@/composables/calendar/useEventMove';
 import { StudentSummary } from '@/types/Student';
 import { router } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 import { update } from '@/routes/teacher/calendar/events';
 import { DRAFT_ID } from '@/lib/calendar-event';
 
@@ -83,7 +84,11 @@ function selectEvent(event: CalendarEvent) {
 }
 
 function previewTimeOff(timeOff: TimeOff | null) {
-    pendingTimeOff.value = timeOff && { ...timeOff, startsAt: toDate(timeOff.startsAt), endsAt: toDate(timeOff.endsAt) };
+    pendingTimeOff.value = timeOff && {
+        ...timeOff,
+        startsAt: toDate(timeOff.startsAt),
+        endsAt: toDate(timeOff.endsAt),
+    };
 }
 
 function resizeEvent(event: CalendarEvent, endsAt: Date) {
@@ -129,7 +134,12 @@ const formats = computed(() => {
     const locale = getActiveLanguage().replace('_', '-');
     const timezone = CALENDAR_TIME_ZONE;
     return {
-        time: new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: timezone }),
+        time: new Intl.DateTimeFormat(locale, {
+            hour: '2-digit',
+            minute: '2-digit',
+            hourCycle: 'h23',
+            timeZone: timezone,
+        }),
         weekday: new Intl.DateTimeFormat(locale, { weekday: 'short', timeZone: timezone }),
         range: new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'long', year: 'numeric', timeZone: timezone }),
     };
@@ -171,7 +181,12 @@ function savePendingTimeOff(timeOff: PendingTimeOff) {
             starts_at: fromWallClock(timeOff.startsAt, props.timezone).toISOString(),
             ends_at: fromWallClock(timeOff.endsAt, props.timezone).toISOString(),
         },
-        { preserveScroll: true, preserveState: true, onFinish: () => (pendingTimeOff.value = null) },
+        {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: () => toast.success(trans('calendar.event.toast.time_off_rescheduled')),
+            onFinish: () => (pendingTimeOff.value = null),
+        },
     );
 }
 

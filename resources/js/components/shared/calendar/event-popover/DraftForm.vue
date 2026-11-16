@@ -17,6 +17,7 @@ import UserAvatar from '@/components/user/UserAvatar.vue';
 import { Label } from '@/components/ui/label';
 import { Form } from '@inertiajs/vue3';
 import { store } from '@/routes/teacher/calendar/events';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     draft: Draft;
@@ -55,6 +56,11 @@ const studentSchedule = computed(() => {
     );
 });
 
+function onCreated() {
+    toast.success(trans(`calendar.event.toast.${props.draft.type}_created`));
+    emit('cancel');
+}
+
 function selectStudent(studentId: StudentSummary['id']) {
     const student = props.students?.find((student) => student.id === studentId);
     const shouldUseStudentAsTitle = student && !props.draft.title;
@@ -63,7 +69,7 @@ function selectStudent(studentId: StudentSummary['id']) {
 </script>
 
 <template>
-    <Form #default="{ errors, processing }" :action="store()" class="flex flex-col gap-3" @success="emit('cancel')">
+    <Form #default="{ errors, processing }" :action="store()" class="flex flex-col gap-3" @success="onCreated">
         <Tabs :model-value="draft.type" @update:model-value="emit('update', { type: $event as EventType })">
             <TabsList>
                 <TabsTrigger value="lesson">{{ trans('calendar.event.popover.lesson') }}</TabsTrigger>

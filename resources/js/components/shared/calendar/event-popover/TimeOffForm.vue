@@ -9,6 +9,7 @@ import { formatEventSchedule } from '@/lib/calendar-event';
 import { toDate } from '@/lib/calendar-utils';
 import { update } from '@/routes/teacher/calendar/events';
 import type { SlotSelection, TimeOff } from '@/types/calendar';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     event: TimeOff;
@@ -25,6 +26,11 @@ const slot = computed<SlotSelection>(() => ({
     endsAt: toDate(props.event.endsAt),
 }));
 const schedule = computed(() => formatEventSchedule(slot.value));
+
+function onRescheduled() {
+    toast.success(trans('calendar.event.toast.time_off_rescheduled'));
+    emit('done');
+}
 </script>
 
 <template>
@@ -33,7 +39,7 @@ const schedule = computed(() => formatEventSchedule(slot.value));
         :action="update(Number(event.id))"
         :options="{ preserveScroll: true }"
         class="flex flex-col gap-3"
-        @success="emit('done')"
+        @success="onRescheduled"
     >
         <StatusBadge variant="time_off" />
 
