@@ -106,7 +106,7 @@ const isDeletable = computed(() => shown.value?.kind === 'time_off');
                 <ButtonGroup>
                     <ConfirmDialog
                         v-if="shown && shown.kind !== 'draft' && isDeletable && !isEditing"
-                        :action="deleteMethod(shown.event.id)"
+                        :action="deleteMethod(Number(shown.event.id))"
                         :title="$t('calendar.event.dialog.delete_time_off')"
                         destructive
                         @success="emit('close')"
