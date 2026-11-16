@@ -51,6 +51,11 @@ final class EloquentEventRepository implements EventRepository
         ]);
     }
 
+    public function plan(Event $event): void
+    {
+        $event->lesson->update(['status' => LessonStatus::Planned]);
+    }
+
     public function cancel(Event $event): void
     {
         $event->lesson->update(['status' => LessonStatus::Cancelled]);
