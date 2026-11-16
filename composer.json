@@ -14,7 +14,8 @@
         "inertiajs/inertia-laravel": "^3.5",
         "laravel/framework": "^13.17",
         "laravel/tinker": "^3.0",
-        "laravel/wayfinder": "^0.1.23"
+        "laravel/wayfinder": "^0.1.23",
+        "ext-pdo": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
