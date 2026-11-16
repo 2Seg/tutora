@@ -32,6 +32,7 @@ return [
         'dialog' => [
             'delete_time_off' => 'Delete this time off?',
             'cancel_event' => 'Cancel this event?',
+            'plan_event' => 'Plan this event?',
         ],
         'popover' => [
             'title' => [

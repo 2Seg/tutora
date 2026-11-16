@@ -26,4 +26,22 @@ final class LessonStatusTest extends UnitTestCase
         // Act & Assert
         $this->assertTrue(LessonStatus::Planned->isCancellable());
     }
+
+    public function testCancelledIsNotPlannable(): void
+    {
+        // Act & Assert
+        $this->assertFalse(LessonStatus::Cancelled->isPlannable());
+    }
+
+    public function testPlannedIsNotPlannable(): void
+    {
+        // Act & Assert
+        $this->assertFalse(LessonStatus::Planned->isPlannable());
+    }
+
+    public function testRequestedIsPlannable(): void
+    {
+        // Act & Assert
+        $this->assertTrue(LessonStatus::Requested->isPlannable());
+    }
 }

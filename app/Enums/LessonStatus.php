@@ -17,4 +17,12 @@ enum LessonStatus: string
             self::Cancelled => false,
         };
     }
+
+    public function isPlannable(): bool
+    {
+        return match ($this) {
+            self::Requested => true,
+            self::Cancelled, self::Planned => false,
+        };
+    }
 }

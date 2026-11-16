@@ -6,7 +6,7 @@ import { Lesson } from '@/types/calendar';
 import { computed } from 'vue';
 import { toDate, toWallClock } from '@/lib/calendar-utils';
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue';
-import { cancel } from '@/routes/teacher/calendar/events';
+import { cancel, plan } from '@/routes/teacher/calendar/events';
 
 const props = defineProps<{
     event: Lesson;
@@ -20,16 +20,18 @@ const isCancellable = computed(() => isUpcoming.value && props.event.status !== 
 
 <template>
     <ButtonGroup>
-        <Button
-            v-if="isPlannable"
-            :aria-label="$t('calendar.event.popover.action.plan')"
-            :title="$t('calendar.event.popover.action.plan')"
-            class="rounded-full"
-            size="icon-xs"
-            variant="ok-outline"
-        >
-            <Check />
-        </Button>
+        <ConfirmDialog :action="plan(Number(event.id))" :title="$t('calendar.event.dialog.plan_event')">
+            <Button
+                v-if="isPlannable"
+                :aria-label="$t('calendar.event.popover.action.plan')"
+                :title="$t('calendar.event.popover.action.plan')"
+                class="rounded-full"
+                size="icon-xs"
+                variant="ok-outline"
+            >
+                <Check />
+            </Button>
+        </ConfirmDialog>
         <ConfirmDialog :action="cancel(Number(event.id))" :title="$t('calendar.event.dialog.cancel_event')" destructive>
             <Button
                 v-if="isCancellable"
