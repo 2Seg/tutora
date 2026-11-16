@@ -68,6 +68,31 @@ final class ShowCalendarControllerTest extends FeatureTestCase
         $this->assertSame($availabilities->first()->id, $actual->inertiaProps('availabilities.0.id'));
     }
 
+    public function testItSendsSelectedEventIdFromQuery(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->create(['user_id' => $user->id]);
+
+        // Act
+        $actual = $this->actingAs($user)->get("/teacher/calendar?event={$event->id}");
+
+        // Assert
+        $this->assertSame($event->id, $actual->inertiaProps('selectedEventId'));
+    }
+
+    public function testSelectedEventIdIsNullWithoutQuery(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $actual = $this->actingAs($user)->get('/teacher/calendar');
+
+        // Assert
+        $this->assertNull($actual->inertiaProps('selectedEventId'));
+    }
+
     public function testItDoesNotSendStudentsOnInitialLoad(): void
     {
         // Arrange

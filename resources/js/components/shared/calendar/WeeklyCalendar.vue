@@ -33,6 +33,7 @@ const props = withDefaults(
         availabilities?: Availability[];
         students?: StudentSummary[];
         timezone: string;
+        initialSelectedEventId?: CalendarEvent['id'] | null;
     }>(),
     { events: () => [], availabilities: () => [] },
 );
@@ -197,6 +198,7 @@ function onBodyPointerDown(e: PointerEvent) {
 
 onMounted(() => {
     if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;
+    if (props.initialSelectedEventId != null) selectedEventId.value = props.initialSelectedEventId;
 });
 </script>
 

@@ -37,6 +37,7 @@ final readonly class ShowCalendarController
                     ->toResourceCollection(StudentSummaryResource::class)
                     ->resolve(),
             ),
+            'selectedEventId' => $request->integer('event') ?: null,
         ]);
     }
 }

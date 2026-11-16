@@ -4,7 +4,7 @@ import { ref } from 'vue';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { statusVariants } from '@/lib/calendar-status';
-import { startOfWeek, toWallClock } from '@/lib/calendar-utils';
+import { startOfWeek, toDate, toWallClock } from '@/lib/calendar-utils';
 import type { Availability, CalendarEvent, Draft } from '@/types/calendar';
 import AvailabilitiesPopover from '@/components/shared/calendar/AvailabilitiesPopover.vue';
 import { StudentSummary } from '@/types/Student';
@@ -13,9 +13,11 @@ const props = defineProps<{
     events: CalendarEvent[];
     availabilities: Availability[];
     students?: StudentSummary[];
+    selectedEventId?: number | null;
 }>();
 const timezone = usePage().props.auth.user.timezone;
-const weekStart = ref(startOfWeek(toWallClock(new Date(), timezone)));
+const initialEvent = props.events.find((event) => event.id === props.selectedEventId);
+const weekStart = ref(startOfWeek(toWallClock(initialEvent ? toDate(initialEvent.startsAt) : new Date(), timezone)));
 const draft = ref<Draft | null>(null);
 </script>
 
@@ -36,6 +38,7 @@ const draft = ref<Draft | null>(null);
             v-model:week-start="weekStart"
             :availabilities="props.availabilities"
             :events="props.events"
+            :initial-selected-event-id="initialEvent?.id ?? null"
             :students="props.students"
             :timezone="timezone"
             class="min-w-0"

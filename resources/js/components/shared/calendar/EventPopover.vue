@@ -10,7 +10,6 @@ import LessonDetails from '@/components/shared/calendar/event-popover/LessonDeta
 import type { CalendarEvent, Draft, DraftUpdate, Lesson, SlotSelection, TimeOff } from '@/types/calendar';
 import { StudentSummary } from '@/types/Student';
 import { ButtonGroup } from '@/components/ui/button-group';
-import { trans } from 'laravel-vue-i18n';
 import { toDate, toWallClock } from '@/lib/calendar-utils';
 import ConfirmDialog from '@/components/shared/ConfirmDialog.vue';
 import { deleteMethod } from '@/routes/teacher/calendar/events';
@@ -101,6 +100,7 @@ const isDeletable = computed(() => shown.value?.kind === 'time_off');
             hide-when-detached
             side="right"
             @interact-outside.prevent
+            @open-auto-focus.prevent
         >
             <div class="absolute top-2 right-2 flex flex-row gap-0.5">
                 <ButtonGroup>
