@@ -1,33 +1,18 @@
 <script lang="ts" setup>
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { LogIn } from '@lucide/vue';
-import {
-    InputGroup,
-    InputGroupAddon,
-    InputGroupInput,
-} from '@/components/ui/input-group';
+import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { MailIcon, Lock } from '@lucide/vue';
 import { Form } from '@inertiajs/vue3';
+import { login } from '@/routes/auth';
 </script>
 
 <template>
-    <Form
-        #default="{ errors, processing }"
-        action="/login"
-        class="w-full max-w-sm"
-        method="POST"
-    >
+    <Form #default="{ errors, processing }" :action="login()" class="w-full max-w-sm">
         <Card class="bg-card">
             <CardHeader class="flex items-center justify-center">
                 <AppLogo />
@@ -42,10 +27,7 @@ import { Form } from '@inertiajs/vue3';
             </CardHeader>
             <CardContent>
                 <div class="grid w-full items-center gap-4">
-                    <p
-                        v-if="errors.failed"
-                        class="text-sm text-center text-destructive"
-                    >
+                    <p v-if="errors.failed" class="text-sm text-center text-destructive">
                         {{ errors.failed }}
                     </p>
                     <div class="flex flex-col space-y-1.5">

@@ -13,6 +13,7 @@ final class UserResource extends JsonResource
             'id' => $this->id,
             'fullName' => $this->full_name,
             'initials' => $this->initials,
+            'timezone' => $this->timezone,
         ];
     }
 }

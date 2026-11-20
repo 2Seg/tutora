@@ -1,0 +1,54 @@
+import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../wayfinder'
+import availabilities from './availabilities'
+import events from './events'
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @route '/teacher/calendar'
+*/
+export const show = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: show.url(options),
+    method: 'get',
+})
+
+show.definition = {
+    methods: ["get","head"],
+    url: '/teacher/calendar',
+} satisfies RouteDefinition<["get","head"]>
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @route '/teacher/calendar'
+*/
+show.url = (options?: RouteQueryOptions) => {
+    return show.definition.url + queryParams(options)
+}
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @route '/teacher/calendar'
+*/
+show.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
+    url: show.url(options),
+    method: 'get',
+})
+
+/**
+* @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @route '/teacher/calendar'
+*/
+show.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({
+    url: show.url(options),
+    method: 'head',
+})
+
+const calendar = {
+    show: Object.assign(show, show),
+    availabilities: Object.assign(availabilities, availabilities),
+    events: Object.assign(events, events),
+}
+
+export default calendar

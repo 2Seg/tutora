@@ -9,5 +9,7 @@ use Illuminate\Support\Collection;
 
 interface StudentRepository
 {
-    public function getStudentsFromUser(User $user): Collection;
+    public function getAllFromUser(User $user): Collection;
+
+    public function belongsToUser(int $studentId, User $user): bool;
 }

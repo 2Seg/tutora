@@ -15,9 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->web([
-            HandleInertiaRequests::class,
-        ]);
+        $middleware->web([HandleInertiaRequests::class]);
+        $middleware->redirectGuestsTo(fn(Request $request) => route('auth.show'));
         $middleware->redirectUsersTo(fn(Request $request) => route('teacher.dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {

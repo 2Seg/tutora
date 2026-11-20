@@ -12,7 +12,7 @@ use Tests\Feature\FeatureTestCase;
 
 final class ExceptionHandlerTest extends FeatureTestCase
 {
-    private ExceptionHandler $handler;
+    private readonly ExceptionHandler $handler;
 
     protected function setUp(): void
     {

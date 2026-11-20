@@ -7,4 +7,5 @@ export interface User {
     initials: string;
     email?: string;
     phone?: string;
+    timezone: string;
 }
