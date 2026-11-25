@@ -34,7 +34,6 @@ const props = withDefaults(
         availabilities?: Availability[];
         students?: StudentSummary[];
         timezone: string;
-        initialSelectedEventId?: CalendarEvent['id'] | null;
     }>(),
     { events: () => [], availabilities: () => [] },
 );
@@ -75,7 +74,7 @@ function goToThisWeek() {
 watch(weekStart, closePopover);
 
 // Draft and selection
-const selectedEventId = ref<CalendarEvent['id'] | null>(null);
+const selectedEventId = defineModel<CalendarEvent['id'] | null>('selectedEventId', { default: null });
 const selectedEvent = computed(() => zonedEvents.value.find((event) => event.id === selectedEventId.value) ?? null);
 
 function selectEvent(event: CalendarEvent) {
@@ -212,9 +211,7 @@ function onBodyPointerDown(e: PointerEvent) {
 }
 
 onMounted(() => {
-    if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;
-    if (props.initialSelectedEventId != null) selectedEventId.value = props.initialSelectedEventId;
-});
+    if (scroller.value && body.value) scroller.value.scrollTop = (body.value.offsetHeight / 24) * 7;});
 </script>
 
 <template>

@@ -20,6 +20,7 @@ const props = defineProps<{
 const timezone = usePage().props.auth.user.timezone;
 const weekStart = ref(toDate(props.weekStart));
 const draft = ref<Draft | null>(null);
+const selectedEventId = ref<CalendarEvent['id'] | null>(props.selectedEventId ?? null);
 
 watch(weekStart, (week) =>
     router.get(
@@ -27,6 +28,14 @@ watch(weekStart, (week) =>
         {},
         { only: ['events'], preserveState: true, preserveScroll: true },
     ),
+);
+
+watch(selectedEventId, (eventId) =>
+    router.replace({
+        url: show({ mergeQuery: { event: eventId } }).url,
+        preserveState: true,
+        preserveScroll: true,
+    }),
 );
 </script>
 
@@ -44,10 +53,10 @@ watch(weekStart, (week) =>
 
         <WeeklyCalendar
             v-model:draft="draft"
+            v-model:selected-event-id="selectedEventId"
             v-model:week-start="weekStart"
             :availabilities="props.availabilities"
             :events="props.events"
-            :initial-selected-event-id="props.selectedEventId ?? null"
             :students="props.students"
             :timezone="timezone"
             class="min-w-0"
