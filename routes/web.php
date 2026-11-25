@@ -11,6 +11,7 @@ use App\Http\Controllers\Teacher\Calendar\Events\PlanEventController;
 use App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController;
 use App\Http\Controllers\Teacher\Calendar\ShowCalendarController;
 use App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController;
+use App\Http\Controllers\Teacher\Student\CreateStudentController;
 use App\Http\Controllers\Teacher\Student\ListStudentsController;
 use Illuminate\Routing\Router;
 
@@ -26,7 +27,11 @@ $router->middleware('auth')->group(function (Router $router) {
 
     $router->prefix('teacher')->name('teacher.')->group(function (Router $router) {
         $router->inertia('/', 'teacher/Dashboard')->name('dashboard');
-        $router->get('/students', ListStudentsController::class)->name('students.index');
+
+        $router->prefix('students')->name('students.')->group(function (Router $router) {
+            $router->get('/', ListStudentsController::class)->name('index');
+            $router->post('/', CreateStudentController::class)->name('store');
+        });
 
         $router->prefix('calendar')->name('calendar.')->group(function (Router $router) {
             $router->get('/', ShowCalendarController::class)->name('show');
