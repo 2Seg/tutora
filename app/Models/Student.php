@@ -15,6 +15,14 @@ final class Student extends Model
 {
     use HasFactory, HasFullName, HasInitials, HasTimestamps;
 
+    protected $fillable = [
+        'email',
+        'first_name',
+        'last_name',
+        'phone',
+        'timezone',
+    ];
+
     public function events(): HasMany
     {
         return $this->hasMany(Event::class);
