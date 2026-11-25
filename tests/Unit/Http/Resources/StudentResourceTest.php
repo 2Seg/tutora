@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Resources;
 
+use App\Enums\LessonStatus;
 use App\Http\Resources\StudentResource;
+use App\Models\Event;
+use App\Models\Lesson;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Tests\Unit\UnitTestCase;
@@ -191,5 +194,42 @@ final class StudentResourceTest extends UnitTestCase
 
         // Assert
         $this->assertSame($expected, array_keys($actual));
+    }
+
+    public function testItSerializesNextLessonWhenLoaded(): void
+    {
+        // Arrange
+        $event = new Event();
+        $event->setDateFormat('Y-m-d H:i:s');
+        $event->id = 7;
+        $event->starts_at = '2000-01-01T10:00:00+00:00';
+        $event->ends_at = '2000-01-01T11:00:00+00:00';
+        $event->setRelation('lesson', new Lesson(['title' => 'French', 'status' => LessonStatus::Planned]));
+        $this->student->setRelation('nextLesson', $event);
+        $expected = [
+            'id' => 7,
+            'title' => 'French',
+            'status' => LessonStatus::Planned,
+            'startsAt' => '2000-01-01T10:00:00+00:00',
+            'endsAt' => '2000-01-01T11:00:00+00:00',
+        ];
+
+        // Act
+        $actual = (new StudentResource($this->student))->resolve($this->request);
+
+        // Assert
+        $this->assertSame($expected, $actual['nextLesson']);
+    }
+
+    public function testItSerializesNullNextLessonWhenLoadedWithoutLesson(): void
+    {
+        // Arrange
+        $this->student->setRelation('nextLesson', null);
+
+        // Act
+        $actual = (new StudentResource($this->student))->resolve($this->request);
+
+        // Assert
+        $this->assertNull($actual['nextLesson']);
     }
 }

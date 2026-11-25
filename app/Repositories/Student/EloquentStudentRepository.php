@@ -12,7 +12,7 @@ final readonly class EloquentStudentRepository implements StudentRepository
 {
     public function getAllFromUser(User $user): Collection
     {
-        return $user->students()->latest('updated_at')->get();
+        return $user->students()->with('nextLesson')->latest('updated_at')->get();
     }
 
     public function belongsToUser(int $studentId, User $user): bool

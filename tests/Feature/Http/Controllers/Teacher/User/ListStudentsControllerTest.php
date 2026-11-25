@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Http\Controllers\Teacher\User;
 
+use App\Enums\LessonStatus;
+use App\Models\Event;
+use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\User;
 use DateTimeZone;
@@ -59,5 +62,24 @@ final class ListStudentsControllerTest extends FeatureTestCase
 
         // Assert
         $this->assertSame(DateTimeZone::listIdentifiers(), $actual->inertiaProps('timezones'));
+    }
+
+    public function testItSendsTheNextLessonOfEachStudent(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id]);
+        $event = Event::factory()->withoutAfterCreating()->create([
+            'user_id' => $user->id,
+            'starts_at' => now()->addDay(),
+            'ends_at' => now()->addDay()->addHour(),
+        ]);
+        Lesson::factory()->create(['event_id' => $event->id, 'student_id' => $student->id, 'status' => LessonStatus::Planned]);
+
+        // Act
+        $actual = $this->actingAs($user)->get('/teacher/students');
+
+        // Assert
+        $this->assertSame($event->id, $actual->inertiaProps('students.0.nextLesson.id'));
     }
 }

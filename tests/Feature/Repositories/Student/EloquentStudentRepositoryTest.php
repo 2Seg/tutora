@@ -5,9 +5,13 @@ declare(strict_types=1);
 namespace Tests\Feature\Repositories\Student;
 
 use App\Data\Student\CreateStudentData;
+use App\Enums\LessonStatus;
+use App\Models\Event;
+use App\Models\Lesson;
 use App\Models\Student;
 use App\Models\User;
 use App\Repositories\Student\EloquentStudentRepository;
+use Carbon\CarbonInterface;
 use Tests\Feature\FeatureTestCase;
 
 final class EloquentStudentRepositoryTest extends FeatureTestCase
@@ -110,5 +114,76 @@ final class EloquentStudentRepositoryTest extends FeatureTestCase
             'phone' => '+33612345678',
             'timezone' => 'Europe/Paris',
         ]);
+    }
+
+    public function testItLoadsTheEarliestUpcomingLessonAsNextLesson(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id]);
+        $this->createLesson($user, $student, now()->addDays(3), LessonStatus::Planned);
+        $expected = $this->createLesson($user, $student, now()->addDay(), LessonStatus::Requested);
+
+        // Act
+        $actual = $this->studentRepository->getAllFromUser($user);
+
+        // Assert
+        $this->assertSame($expected->id, $actual->first()->nextLesson->id);
+    }
+
+    public function testItIgnoresPastLessonsForNextLesson(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id]);
+        $this->createLesson($user, $student, now()->subDay(), LessonStatus::Planned);
+
+        // Act
+        $actual = $this->studentRepository->getAllFromUser($user);
+
+        // Assert
+        $this->assertNull($actual->first()->nextLesson);
+    }
+
+    public function testItIgnoresCancelledLessonsForNextLesson(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id]);
+        $this->createLesson($user, $student, now()->addDay(), LessonStatus::Cancelled);
+        $expected = $this->createLesson($user, $student, now()->addDays(2), LessonStatus::Planned);
+
+        // Act
+        $actual = $this->studentRepository->getAllFromUser($user);
+
+        // Assert
+        $this->assertSame($expected->id, $actual->first()->nextLesson->id);
+    }
+
+    public function testItIgnoresAnotherStudentLessonsForNextLesson(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()]);
+        $anotherStudent = Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()->subDay()]);
+        $this->createLesson($user, $anotherStudent, now()->addDay(), LessonStatus::Planned);
+
+        // Act
+        $actual = $this->studentRepository->getAllFromUser($user);
+
+        // Assert
+        $this->assertNull($actual->firstWhere('id', $student->id)->nextLesson);
+    }
+
+    private function createLesson(User $user, Student $student, CarbonInterface $startsAt, LessonStatus $status): Event
+    {
+        $event = Event::factory()->withoutAfterCreating()->create([
+            'user_id' => $user->id,
+            'starts_at' => $startsAt,
+            'ends_at' => $startsAt->copy()->addHour(),
+        ]);
+        Lesson::factory()->create(['event_id' => $event->id, 'student_id' => $student->id, 'status' => $status]);
+
+        return $event;
     }
 }

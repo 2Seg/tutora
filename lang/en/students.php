@@ -13,7 +13,8 @@ return [
         'phone' => 'Phone',
         'timezone' => 'Timezone',
         'next_lesson' => 'Next lesson',
-        'view_calendar' => 'View calendar',
+        'view_calendar' => 'View in calendar',
+        'no_next_lesson' => 'No upcoming lesson',
     ],
 
     'create' => [
