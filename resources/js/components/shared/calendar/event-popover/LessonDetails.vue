@@ -10,6 +10,8 @@ import UserAvatar from '@/components/user/UserAvatar.vue';
 import { ClockAlert } from '@lucide/vue';
 import LessonTitleForm from '@/components/shared/calendar/event-popover/LessonTitleForm.vue';
 import LessonStatusActions from '@/components/shared/calendar/event-popover/LessonStatusActions.vue';
+import { Link } from '@inertiajs/vue3';
+import { index } from '@/routes/teacher/students';
 
 const props = defineProps<{
     event: Lesson;
@@ -34,6 +36,7 @@ const studentSchedule = computed(() => {
         studentTimezone,
     );
 });
+const studentUrl = computed(() => index({ query: { student: props.event.student?.id } }).url);
 </script>
 
 <template>
@@ -75,7 +78,7 @@ const studentSchedule = computed(() => {
 
     <div v-if="event.student" class="flex gap-3 items-center">
         <UserAvatar :user="event.student" />
-        <span>{{ event.student.fullName }}</span>
+        <Link :href="studentUrl" class="hover:text-primary">{{ event.student.fullName }}</Link>
     </div>
 
     <Button v-if="event.status === 'planned' && event.meetingUrl" as-child size="sm" variant="outline">
