@@ -15,4 +15,19 @@ return [
         'view_calendar' => 'View calendar',
     ],
 
+    'create' => [
+        'trigger' => 'Add',
+        'title' => 'New student',
+        'fields' => [
+            'first_name' => 'First name',
+            'last_name' => 'Last name',
+            'email' => 'Email',
+            'phone' => 'Phone',
+            'timezone' => 'Timezone',
+        ],
+        'cancel' => 'Cancel',
+        'save' => 'Save',
+        'toast' => ['created' => 'Student created'],
+    ],
+
 ];

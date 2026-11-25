@@ -65,12 +65,15 @@ const to = computed(() => Math.min((pagination.value.pageIndex + 1) * pagination
 
 <template>
     <div class="space-y-4">
-        <SearchInput
-            :model-value="table.atoms.globalFilter.get() ?? ''"
-            :placeholder="searchPlaceholder"
-            class="mb-4"
-            @update:model-value="table.setGlobalFilter($event)"
-        />
+        <div class="flex items-center justify-between">
+            <SearchInput
+                :model-value="table.atoms.globalFilter.get() ?? ''"
+                :placeholder="searchPlaceholder"
+                @update:model-value="table.setGlobalFilter($event)"
+            />
+
+            <slot name="actions" />
+        </div>
 
         <div class="flex min-h-112 flex-col rounded-2xl bg-card p-4">
             <Table>
