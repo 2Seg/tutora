@@ -15,7 +15,7 @@ final class CreateStudentRequest extends FormRequest
             'email' => ['required', 'string', 'email', 'max:255', 'unique:students,email'],
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:255'],
+            'phone' => ['required', 'string', 'regex:/^\+[1-9](?: ?\d){7,14}$/'],
             'timezone' => ['required', 'string', 'max:64', 'timezone'],
         ];
     }

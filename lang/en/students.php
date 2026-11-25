@@ -25,6 +25,7 @@ return [
             'phone' => 'Phone',
             'timezone' => 'Timezone',
         ],
+        'placeholders' => ['phone' => '+33 6 12 34 56 78'],
         'cancel' => 'Cancel',
         'save' => 'Save',
         'toast' => ['created' => 'Student created'],

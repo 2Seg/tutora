@@ -8,6 +8,7 @@ use App\Http\Requests\CreateStudentRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\PresenceVerifierInterface;
 use Mockery;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\Concerns\HasRequestValidator;
 use Tests\Unit\UnitTestCase;
 
@@ -179,17 +180,47 @@ final class CreateStudentRequestTest extends UnitTestCase
         $this->assertArrayHasKey('String', $validator->failed()['phone']);
     }
 
-    public function testItFailsIfPhoneIsMoreThan255Characters(): void
+    public static function invalidPhoneProvider(): iterable
+    {
+        yield 'national format' => ['0612345678'];
+        yield 'country code starting with 0' => ['+0612345678'];
+        yield 'dashes' => ['+33-6-12-34-56-78'];
+        yield 'double space' => ['+33  612345678'];
+        yield 'too short' => ['+3361'];
+        yield 'more than 15 digits' => ['+3361234567890123'];
+        yield 'letters' => ['phone'];
+    }
+
+    #[DataProvider('invalidPhoneProvider')]
+    public function testItFailsIfPhoneIsNotAnInternationalNumber(string $phone): void
     {
         // Arrange
-        $data = ['phone' => str_repeat('a', 256)];
+        $data = ['phone' => $phone];
 
         // Act
         $validator = $this->makeValidator($data);
 
         // Assert
         $this->assertTrue($validator->fails());
-        $this->assertArrayHasKey('Max', $validator->failed()['phone']);
+        $this->assertArrayHasKey('Regex', $validator->failed()['phone']);
+    }
+
+    public function testItPassesIfPhoneHasSpacesBetweenDigits(): void
+    {
+        // Arrange
+        $data = [
+            'email' => 'john@doe.com',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'phone' => '+33 6 12 34 56 78',
+            'timezone' => 'Europe/Paris',
+        ];
+
+        // Act
+        $validator = $this->makeValidator($data);
+
+        // Assert
+        $this->assertTrue($validator->passes());
     }
 
     public function testItFailsIfTimezoneIsMissing(): void
