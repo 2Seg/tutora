@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Teacher\Student;
 
+use App\Http\Requests\ListStudentsRequest;
 use App\Repositories\Student\StudentRepository;
 use DateTimeZone;
-use Illuminate\Http\Request;
 use Inertia\Response;
 use Inertia\ResponseFactory;
 
@@ -17,7 +17,7 @@ final readonly class ListStudentsController
         private StudentRepository $studentRepository,
     ) {}
 
-    public function __invoke(Request $request): Response
+    public function __invoke(ListStudentsRequest $request): Response
     {
         return $this->inertia->render('teacher/students/Index', [
             'students' => $this->studentRepository
@@ -25,6 +25,7 @@ final readonly class ListStudentsController
                 ->toResourceCollection()
                 ->resolve(),
             'timezones' => DateTimeZone::listIdentifiers(),
+            'selectedStudentId' => $request->integer('student') ?: null,
         ]);
     }
 }

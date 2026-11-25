@@ -82,4 +82,29 @@ final class ListStudentsControllerTest extends FeatureTestCase
         // Assert
         $this->assertSame($event->id, $actual->inertiaProps('students.0.nextLesson.id'));
     }
+
+    public function testItSendsSelectedStudentIdFromQuery(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $student = Student::factory()->create(['user_id' => $user->id]);
+
+        // Act
+        $actual = $this->actingAs($user)->get("/teacher/students?student={$student->id}");
+
+        // Assert
+        $this->assertSame($student->id, $actual->inertiaProps('selectedStudentId'));
+    }
+
+    public function testSelectedStudentIdIsNullWithoutQuery(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $actual = $this->actingAs($user)->get('/teacher/students');
+
+        // Assert
+        $this->assertNull($actual->inertiaProps('selectedStudentId'));
+    }
 }
