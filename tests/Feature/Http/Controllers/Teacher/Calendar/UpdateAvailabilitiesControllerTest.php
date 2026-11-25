@@ -60,4 +60,18 @@ final class UpdateAvailabilitiesControllerTest extends FeatureTestCase
         $this->assertCount(2, $user->refresh()->availabilities);
         $actual->assertRedirect('/teacher/calendar');
     }
+
+    public function testItRedirectsBackToTheDisplayedWeek(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $actual = $this->actingAs($user)
+            ->from('/teacher/calendar?week=2026-11-16')
+            ->put('/teacher/calendar/availabilities', ['availabilities' => []]);
+
+        // Assert
+        $actual->assertRedirect('/teacher/calendar?week=2026-11-16');
+    }
 }

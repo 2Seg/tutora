@@ -140,4 +140,22 @@ final class CancelEventControllerTest extends FeatureTestCase
             'status' => LessonStatus::Cancelled,
         ]);
     }
+
+    public function testItRedirectsBackToTheDisplayedWeek(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->hasLesson(['status' => LessonStatus::Planned])->create([
+            'user_id' => $user->id,
+            'starts_at' => CarbonImmutable::parse('3000-01-01 00:00:00'),
+        ]);
+
+        // Act
+        $actual = $this->actingAs($user)
+            ->from('/teacher/calendar?week=2026-11-16')
+            ->patch("/teacher/calendar/events/{$event->id}/cancel");
+
+        // Assert
+        $actual->assertRedirect('/teacher/calendar?week=2026-11-16');
+    }
 }

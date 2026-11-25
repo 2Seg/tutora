@@ -9,13 +9,17 @@ use App\Data\Event\UpdateEventData;
 use App\Enums\LessonStatus;
 use App\Models\Event;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
 final class EloquentEventRepository implements EventRepository
 {
-    public function getAllFromUser(User $user): Collection
+    public function getFromUserBetween(User $user, CarbonImmutable $from, CarbonImmutable $to): Collection
     {
-        return $user->events()->get();
+        return $user->events()
+            ->where('starts_at', '<', $to->utc())
+            ->where('ends_at', '>', $from->utc())
+            ->get();
     }
 
     public function storeForUser(User $user, CreateEventData $createEventData): void

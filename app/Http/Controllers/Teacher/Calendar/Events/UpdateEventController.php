@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateEventRequest;
 use App\Models\Event;
 use App\Repositories\Event\EventRepository;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
@@ -16,6 +17,7 @@ final readonly class UpdateEventController
     public function __construct(
         private Gate $gate,
         private Redirector $redirector,
+        private UrlGenerator $urlGenerator,
         private EventRepository $eventRepository,
     ) {}
 
@@ -25,6 +27,6 @@ final readonly class UpdateEventController
 
         $this->eventRepository->update($event, $updateEventRequest->toEventData());
 
-        return $this->redirector->route('teacher.calendar.show');
+        return $this->redirector->back(fallback: $this->urlGenerator->route('teacher.calendar.show'));
     }
 }

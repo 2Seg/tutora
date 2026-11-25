@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition, applyUrlDefaults } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CreateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/CreateEventController.php:22
+* @see app/Http/Controllers/Teacher/Calendar/Events/CreateEventController.php:24
 * @route '/teacher/calendar/events'
 */
 export const store = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -16,7 +16,7 @@ store.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CreateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/CreateEventController.php:22
+* @see app/Http/Controllers/Teacher/Calendar/Events/CreateEventController.php:24
 * @route '/teacher/calendar/events'
 */
 store.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ store.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CreateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/CreateEventController.php:22
+* @see app/Http/Controllers/Teacher/Calendar/Events/CreateEventController.php:24
 * @route '/teacher/calendar/events'
 */
 store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
@@ -35,7 +35,7 @@ store.post = (options?: RouteQueryOptions): RouteDefinition<'post'> => ({
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:22
+* @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:24
 * @route '/teacher/calendar/events/{event}'
 */
 export const update = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -50,7 +50,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:22
+* @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:24
 * @route '/teacher/calendar/events/{event}'
 */
 update.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -83,7 +83,7 @@ update.url = (args: { event: number | { id: number } } | [event: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\UpdateEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:22
+* @see app/Http/Controllers/Teacher/Calendar/Events/UpdateEventController.php:24
 * @route '/teacher/calendar/events/{event}'
 */
 update.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -93,7 +93,7 @@ update.patch = (args: { event: number | { id: number } } | [event: number | { id
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\DeleteEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:23
 * @route '/teacher/calendar/events/{event}'
 */
 export const deleteMethod = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -108,7 +108,7 @@ deleteMethod.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\DeleteEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:23
 * @route '/teacher/calendar/events/{event}'
 */
 deleteMethod.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -141,7 +141,7 @@ deleteMethod.url = (args: { event: number | { id: number } } | [event: number | 
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\DeleteEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/DeleteEventController.php:23
 * @route '/teacher/calendar/events/{event}'
 */
 deleteMethod.delete = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'delete'> => ({
@@ -151,7 +151,7 @@ deleteMethod.delete = (args: { event: number | { id: number } } | [event: number
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\PlanEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:23
 * @route '/teacher/calendar/events/{event}/plan'
 */
 export const plan = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -166,7 +166,7 @@ plan.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\PlanEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:23
 * @route '/teacher/calendar/events/{event}/plan'
 */
 plan.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -199,7 +199,7 @@ plan.url = (args: { event: number | { id: number } } | [event: number | { id: nu
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\PlanEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/PlanEventController.php:23
 * @route '/teacher/calendar/events/{event}/plan'
 */
 plan.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -209,7 +209,7 @@ plan.patch = (args: { event: number | { id: number } } | [event: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:23
 * @route '/teacher/calendar/events/{event}/cancel'
 */
 export const cancel = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({
@@ -224,7 +224,7 @@ cancel.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:23
 * @route '/teacher/calendar/events/{event}/cancel'
 */
 cancel.url = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions) => {
@@ -257,7 +257,7 @@ cancel.url = (args: { event: number | { id: number } } | [event: number | { id: 
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\Events\CancelEventController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:21
+* @see app/Http/Controllers/Teacher/Calendar/Events/CancelEventController.php:23
 * @route '/teacher/calendar/events/{event}/cancel'
 */
 cancel.patch = (args: { event: number | { id: number } } | [event: number | { id: number } ] | number | { id: number }, options?: RouteQueryOptions): RouteDefinition<'patch'> => ({

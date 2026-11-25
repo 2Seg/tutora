@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Teacher\Calendar\Events;
 use App\Models\Event;
 use App\Repositories\Event\EventRepository;
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Routing\UrlGenerator;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Routing\Redirector;
 
@@ -15,6 +16,7 @@ final readonly class CancelEventController
     public function __construct(
         private Gate $gate,
         private Redirector $redirector,
+        private UrlGenerator $urlGenerator,
         private EventRepository $eventRepository,
     ) {}
 
@@ -24,6 +26,6 @@ final readonly class CancelEventController
 
         $this->eventRepository->cancel($event);
 
-        return $this->redirector->route('teacher.calendar.show');
+        return $this->redirector->back(fallback: $this->urlGenerator->route('teacher.calendar.show'));
     }
 }

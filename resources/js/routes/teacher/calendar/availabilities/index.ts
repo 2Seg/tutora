@@ -1,7 +1,7 @@
 import { queryParams, type RouteQueryOptions, type RouteDefinition } from './../../../../wayfinder'
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/UpdateAvailabilitiesController.php:19
+* @see app/Http/Controllers/Teacher/Calendar/UpdateAvailabilitiesController.php:21
 * @route '/teacher/calendar/availabilities'
 */
 export const update = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({
@@ -16,7 +16,7 @@ update.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/UpdateAvailabilitiesController.php:19
+* @see app/Http/Controllers/Teacher/Calendar/UpdateAvailabilitiesController.php:21
 * @route '/teacher/calendar/availabilities'
 */
 update.url = (options?: RouteQueryOptions) => {
@@ -25,7 +25,7 @@ update.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\UpdateAvailabilitiesController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/UpdateAvailabilitiesController.php:19
+* @see app/Http/Controllers/Teacher/Calendar/UpdateAvailabilitiesController.php:21
 * @route '/teacher/calendar/availabilities'
 */
 update.put = (options?: RouteQueryOptions): RouteDefinition<'put'> => ({

@@ -33,27 +33,102 @@ final class EloquentEventRepositoryTest extends FeatureTestCase
         // Arrange
         $user = User::factory()->create();
         $user2 = User::factory()->create();
-        $event = Event::factory()->create(['user_id' => $user2->id]);
+        $event = Event::factory()->create([
+            'user_id' => $user2->id,
+            'starts_at' => '2026-11-24 10:00:00',
+            'ends_at' => '2026-11-24 11:00:00',
+        ]);
 
         // Act
-        $actual = $this->eventRepository->getAllFromUser($user);
+        $actual = $this->eventRepository->getFromUserBetween(
+            $user,
+            CarbonImmutable::parse('2026-11-23 00:00:00'),
+            CarbonImmutable::parse('2026-11-30 00:00:00'),
+        );
 
         // Assert
         $this->assertCount(0, $actual);
         $this->assertFalse($actual->contains($event));
     }
 
-    public function testItRetrievesEventsFromUser(): void
+    public function testItRetrievesEventsFromUserOverlappingTheRange(): void
     {
         // Arrange
         $user = User::factory()->create();
-        $event = Event::factory()->create(['user_id' => $user->id]);
+        $inside = Event::factory()->create([
+            'user_id' => $user->id,
+            'starts_at' => '2026-11-24 10:00:00',
+            'ends_at' => '2026-11-24 11:00:00',
+        ]);
+        $startingBefore = Event::factory()->timeOff()->create([
+            'user_id' => $user->id,
+            'starts_at' => '2026-11-22 22:00:00',
+            'ends_at' => '2026-11-23 02:00:00',
+        ]);
+        $endingAfter = Event::factory()->timeOff()->create([
+            'user_id' => $user->id,
+            'starts_at' => '2026-11-29 22:00:00',
+            'ends_at' => '2026-11-30 02:00:00',
+        ]);
 
         // Act
-        $actual = $this->eventRepository->getAllFromUser($user);
+        $actual = $this->eventRepository->getFromUserBetween(
+            $user,
+            CarbonImmutable::parse('2026-11-23 00:00:00'),
+            CarbonImmutable::parse('2026-11-30 00:00:00'),
+        );
 
         // Assert
-        $this->assertCount(1, $actual);
+        $this->assertEqualsCanonicalizing(
+            [$inside->id, $startingBefore->id, $endingAfter->id],
+            $actual->pluck('id')->all(),
+        );
+    }
+
+    public function testItDoesNotRetrieveEventsTouchingTheRangeBounds(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        Event::factory()->timeOff()->create([
+            'user_id' => $user->id,
+            'starts_at' => '2026-11-22 22:00:00',
+            'ends_at' => '2026-11-23 00:00:00',
+        ]);
+        Event::factory()->timeOff()->create([
+            'user_id' => $user->id,
+            'starts_at' => '2026-11-30 00:00:00',
+            'ends_at' => '2026-11-30 02:00:00',
+        ]);
+
+        // Act
+        $actual = $this->eventRepository->getFromUserBetween(
+            $user,
+            CarbonImmutable::parse('2026-11-23 00:00:00'),
+            CarbonImmutable::parse('2026-11-30 00:00:00'),
+        );
+
+        // Assert
+        $this->assertCount(0, $actual);
+    }
+
+    public function testItComparesRangeInUtc(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->timeOff()->create([
+            'user_id' => $user->id,
+            'starts_at' => '2026-11-22 12:00:00',
+            'ends_at' => '2026-11-22 13:00:00',
+        ]);
+
+        // Act
+        $actual = $this->eventRepository->getFromUserBetween(
+            $user,
+            CarbonImmutable::parse('2026-11-23 00:00:00', 'Pacific/Auckland'),
+            CarbonImmutable::parse('2026-11-30 00:00:00', 'Pacific/Auckland'),
+        );
+
+        // Assert
         $this->assertTrue($actual->contains($event));
     }
 

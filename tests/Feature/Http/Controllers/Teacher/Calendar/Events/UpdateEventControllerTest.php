@@ -137,4 +137,22 @@ final class UpdateEventControllerTest extends FeatureTestCase
             'ends_at' => '2000-01-03 00:00:00',
         ]);
     }
+
+    public function testItRedirectsBackToTheDisplayedWeek(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->hasLesson(['title' => 'Event Title'])->create([
+            'user_id' => $user->id,
+            'starts_at' => CarbonImmutable::now()->addWeek(),
+        ]);
+
+        // Act
+        $actual = $this->actingAs($user)
+            ->from('/teacher/calendar?week=2026-11-16')
+            ->patch('/teacher/calendar/events/' . $event->id, ['title' => 'Modified Event Title']);
+
+        // Assert
+        $actual->assertRedirect('/teacher/calendar?week=2026-11-16');
+    }
 }

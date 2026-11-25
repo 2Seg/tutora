@@ -85,4 +85,23 @@ final class CreateEventControllerTest extends FeatureTestCase
         $actual->assertForbidden();
         $this->assertDatabaseCount('events', 0);
     }
+
+    public function testItRedirectsBackToTheDisplayedWeek(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $data = [
+            'type' => 'time_off',
+            'starts_at' => '2000-01-01 00:00:00',
+            'ends_at' => '2010-01-01 00:00:00',
+        ];
+
+        // Act
+        $actual = $this->actingAs($user)
+            ->from('/teacher/calendar?week=2026-11-16')
+            ->post('/teacher/calendar/events', $data);
+
+        // Assert
+        $actual->assertRedirect('/teacher/calendar?week=2026-11-16');
+    }
 }

@@ -8,11 +8,12 @@ use App\Data\Event\CreateEventData;
 use App\Data\Event\UpdateEventData;
 use App\Models\Event;
 use App\Models\User;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
 interface EventRepository
 {
-    public function getAllFromUser(User $user): Collection;
+    public function getFromUserBetween(User $user, CarbonImmutable $from, CarbonImmutable $to): Collection;
 
     public function storeForUser(User $user, CreateEventData $createEventData): void;
 

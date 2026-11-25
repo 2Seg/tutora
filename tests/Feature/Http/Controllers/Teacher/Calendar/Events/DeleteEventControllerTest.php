@@ -61,4 +61,19 @@ final class DeleteEventControllerTest extends FeatureTestCase
         $actual->assertRedirect('/teacher/calendar');
         $this->assertDatabaseMissing('events', ['id' => $event->id]);
     }
+
+    public function testItRedirectsBackToTheDisplayedWeek(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $event = Event::factory()->timeOff()->create(['user_id' => $user->id]);
+
+        // Act
+        $actual = $this->actingAs($user)
+            ->from('/teacher/calendar?week=2026-11-16')
+            ->delete('/teacher/calendar/events/' . $event->id);
+
+        // Assert
+        $actual->assertRedirect('/teacher/calendar?week=2026-11-16');
+    }
 }

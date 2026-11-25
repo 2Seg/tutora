@@ -3,7 +3,7 @@ import availabilities from './availabilities'
 import events from './events'
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:26
 * @route '/teacher/calendar'
 */
 export const show = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -18,7 +18,7 @@ show.definition = {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:26
 * @route '/teacher/calendar'
 */
 show.url = (options?: RouteQueryOptions) => {
@@ -27,7 +27,7 @@ show.url = (options?: RouteQueryOptions) => {
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:26
 * @route '/teacher/calendar'
 */
 show.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
@@ -37,7 +37,7 @@ show.get = (options?: RouteQueryOptions): RouteDefinition<'get'> => ({
 
 /**
 * @see \App\Http\Controllers\Teacher\Calendar\ShowCalendarController::__invoke
-* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:24
+* @see app/Http/Controllers/Teacher/Calendar/ShowCalendarController.php:26
 * @route '/teacher/calendar'
 */
 show.head = (options?: RouteQueryOptions): RouteDefinition<'head'> => ({

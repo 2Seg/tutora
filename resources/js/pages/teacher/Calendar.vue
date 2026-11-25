@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { usePage } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { router, usePage } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import WeeklyCalendar from '@/components/shared/calendar/WeeklyCalendar.vue';
 import { statusVariants } from '@/lib/calendar-status';
-import { startOfWeek, toDate, toWallClock } from '@/lib/calendar-utils';
+import { toDate } from '@/lib/calendar-utils';
+import { show } from '@/routes/teacher/calendar';
 import type { Availability, CalendarEvent, Draft } from '@/types/calendar';
 import AvailabilitiesPopover from '@/components/shared/calendar/AvailabilitiesPopover.vue';
 import { StudentSummary } from '@/types/Student';
@@ -14,11 +15,19 @@ const props = defineProps<{
     availabilities: Availability[];
     students?: StudentSummary[];
     selectedEventId?: number | null;
+    weekStart: string;
 }>();
 const timezone = usePage().props.auth.user.timezone;
-const initialEvent = props.events.find((event) => event.id === props.selectedEventId);
-const weekStart = ref(startOfWeek(toWallClock(initialEvent ? toDate(initialEvent.startsAt) : new Date(), timezone)));
+const weekStart = ref(toDate(props.weekStart));
 const draft = ref<Draft | null>(null);
+
+watch(weekStart, (week) =>
+    router.get(
+        show({ query: { week: week.toISOString().slice(0, 10) } }).url,
+        {},
+        { only: ['events'], preserveState: true, preserveScroll: true },
+    ),
+);
 </script>
 
 <template>
@@ -38,7 +47,7 @@ const draft = ref<Draft | null>(null);
             v-model:week-start="weekStart"
             :availabilities="props.availabilities"
             :events="props.events"
-            :initial-selected-event-id="initialEvent?.id ?? null"
+            :initial-selected-event-id="props.selectedEventId ?? null"
             :students="props.students"
             :timezone="timezone"
             class="min-w-0"
