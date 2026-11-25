@@ -31,8 +31,8 @@ const student: Student = {
 
 const lesson = (status: LessonStatus, title?: string): Lesson => ({
     id: 1,
-    startsAt: '2026-10-28T09:00:00',
-    endsAt: '2026-10-28T10:00:00',
+    startsAt: '2026-10-28T09:00:00Z',
+    endsAt: '2026-10-28T10:00:00Z',
     type: 'lesson',
     status,
     student,
