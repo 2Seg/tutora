@@ -56,7 +56,7 @@ function previewTimeOff(timeOff: TimeOff, slot: SlotSelection) {
 }
 
 watch(
-    () => [props.draft, props.event, props.isMoving],
+    () => [props.draft, props.event, props.isMoving, props.container],
     () => {
         if (props.draft) {
             shown.value = { kind: 'draft', event: props.draft };
