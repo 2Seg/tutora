@@ -38,16 +38,15 @@ final class ListStudentsControllerTest extends FeatureTestCase
     {
         // Arrange
         $user = User::factory()->create();
-        $students = Student::factory()
-            ->count(2)
-            ->create(['user_id' => $user->id]);
+        Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()->subDay()]);
+        $newestStudent = Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()]);
 
         // Act
         $actual = $this->actingAs($user)->get('/teacher/students');
 
         // Assert
         $this->assertCount(2, $actual->inertiaProps('students'));
-        $this->assertSame($students->first()->id, $actual->inertiaProps('students.0.id'));
+        $this->assertSame($newestStudent->id, $actual->inertiaProps('students.0.id'));
     }
 
     public function testItSendsTheTimezonesAcceptedByValidation(): void

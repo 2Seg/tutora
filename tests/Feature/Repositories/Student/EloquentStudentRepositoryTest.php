@@ -34,6 +34,21 @@ final class EloquentStudentRepositoryTest extends FeatureTestCase
         $this->assertTrue($actual->contains($student));
     }
 
+    public function testItRetrievesStudentsOrderedByUpdatedAtDesc(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+        $oldest = Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()->subDays(2)]);
+        $newest = Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()]);
+        $middle = Student::factory()->create(['user_id' => $user->id, 'updated_at' => now()->subDay()]);
+
+        // Act
+        $actual = $this->studentRepository->getAllFromUser($user);
+
+        // Assert
+        $this->assertSame([$newest->id, $middle->id, $oldest->id], $actual->pluck('id')->all());
+    }
+
     public function testItDoesNotRetrieveStudentsFromAnotherUser(): void
     {
         // Arrange
