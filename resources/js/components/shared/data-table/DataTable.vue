@@ -51,7 +51,7 @@ const table = useTable({
         return props.columns;
     },
     globalFilterFn: 'includesString',
-    getRowId: (row) => props.getRowId(row),
+    getRowId: (row: any) => props.getRowId(row),
     initialState: {
         pagination: { pageIndex: initialPageIndex, pageSize: props.pageSize },
     },
