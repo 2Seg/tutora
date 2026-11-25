@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Teacher\Student;
 
 use App\Repositories\Student\StudentRepository;
+use DateTimeZone;
 use Illuminate\Http\Request;
 use Inertia\Response;
 use Inertia\ResponseFactory;
@@ -23,6 +24,7 @@ final readonly class ListStudentsController
                 ->getAllFromUser($request->user())
                 ->toResourceCollection()
                 ->resolve(),
+            'timezones' => DateTimeZone::listIdentifiers(),
         ]);
     }
 }

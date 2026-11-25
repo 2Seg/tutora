@@ -6,6 +6,7 @@ namespace Tests\Feature\Http\Controllers\Teacher\User;
 
 use App\Models\Student;
 use App\Models\User;
+use DateTimeZone;
 use Tests\Feature\FeatureTestCase;
 
 final class ListStudentsControllerTest extends FeatureTestCase
@@ -47,5 +48,17 @@ final class ListStudentsControllerTest extends FeatureTestCase
         // Assert
         $this->assertCount(2, $actual->inertiaProps('students'));
         $this->assertSame($students->first()->id, $actual->inertiaProps('students.0.id'));
+    }
+
+    public function testItSendsTheTimezonesAcceptedByValidation(): void
+    {
+        // Arrange
+        $user = User::factory()->create();
+
+        // Act
+        $actual = $this->actingAs($user)->get('/teacher/students');
+
+        // Assert
+        $this->assertSame(DateTimeZone::listIdentifiers(), $actual->inertiaProps('timezones'));
     }
 }
