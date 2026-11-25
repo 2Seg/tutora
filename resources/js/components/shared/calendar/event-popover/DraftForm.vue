@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ClockAlert } from '@lucide/vue';
+import { Check, ChevronDown, ClockAlert } from '@lucide/vue';
 import { computed } from 'vue';
 import { Input } from '@/components/ui/input';
 import FormActions from '@/components/shared/calendar/event-popover/FormActions.vue';
@@ -10,6 +10,18 @@ import type { Draft, DraftUpdate, EventType, SelectLessonStatus } from '@/types/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { trans } from 'laravel-vue-i18n';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Combobox,
+    ComboboxAnchor,
+    ComboboxEmpty,
+    ComboboxGroup,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxItemIndicator,
+    ComboboxList,
+    ComboboxTrigger,
+    ComboboxViewport,
+} from '@/components/ui/combobox';
 import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
 import { StatusBadgeVariant } from '@/lib/calendar-status';
 import { StudentSummary } from '@/types/Student';
@@ -171,34 +183,51 @@ function selectStudent(studentId: StudentSummary['id']) {
 
                     <div class="flex min-w-0 flex-col gap-1">
                         <Label for="student">{{ trans('calendar.event.popover.student.label') }}</Label>
-                        <Select
+                        <Combobox
                             :model-value="draft.studentId"
                             name="student_id"
                             @update:model-value="selectStudent(Number($event))"
                         >
-                            <SelectTrigger
-                                :aria-invalid="!!errors.student_id"
-                                :class="[
-                                    inlineField,
-                                    'mx-0 gap-0.5 max-h-7 text-secondary-foreground [&_svg]:size-3.5 cursor-pointer',
-                                ]"
-                            >
-                                <SelectValue :placeholder="$t('calendar.event.popover.student.placeholder')">
+                            <ComboboxAnchor class="w-fit max-w-full">
+                                <ComboboxTrigger
+                                    id="student"
+                                    :aria-invalid="!!errors.student_id"
+                                    :class="[
+                                        inlineField,
+                                        'mx-0 flex h-7 w-fit max-w-full items-center gap-0.5 text-secondary-foreground cursor-pointer',
+                                    ]"
+                                >
                                     <template v-if="selectedStudent">
                                         <UserAvatar :user="selectedStudent" class="size-6.5 shrink-0" />
                                         <span class="truncate">{{ selectedStudent.fullName }}</span>
                                     </template>
-                                </SelectValue>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                    <SelectItem v-for="student in props.students" :key="student.id" :value="student.id">
-                                        <UserAvatar :user="student" class="size-6.5" />
-                                        {{ student.fullName }}
-                                    </SelectItem>
-                                </SelectGroup>
-                            </SelectContent>
-                        </Select>
+                                    <span v-else class="truncate">
+                                        {{ $t('calendar.event.popover.student.placeholder') }}
+                                    </span>
+                                    <ChevronDown class="ml-auto size-3.5 shrink-0 opacity-50" />
+                                </ComboboxTrigger>
+                            </ComboboxAnchor>
+                            <ComboboxList align="start" class="w-60">
+                                <ComboboxInput :placeholder="$t('calendar.event.popover.student.search')" />
+                                <ComboboxEmpty>{{ $t('calendar.event.popover.student.empty') }}</ComboboxEmpty>
+                                <ComboboxViewport class="max-h-59">
+                                    <ComboboxGroup>
+                                        <ComboboxItem
+                                            v-for="student in props.students"
+                                            :key="student.id"
+                                            :text-value="student.fullName"
+                                            :value="student.id"
+                                        >
+                                            <UserAvatar :user="student" class="size-6.5" />
+                                            {{ student.fullName }}
+                                            <ComboboxItemIndicator>
+                                                <Check class="size-4" />
+                                            </ComboboxItemIndicator>
+                                        </ComboboxItem>
+                                    </ComboboxGroup>
+                                </ComboboxViewport>
+                            </ComboboxList>
+                        </Combobox>
                         <p v-if="errors.student_id" class="text-sm text-destructive">
                             {{ errors.student_id }}
                         </p>

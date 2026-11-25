@@ -27,10 +27,10 @@
     "dependencies": {
         "@inertiajs/vite": "^3.8.0",
         "@inertiajs/vue3": "^3.8.0",
-        "@lucide/vue": "^1.73.0",
+        "@lucide/vue": "^1.80.0",
         "@tanstack/vue-table": "^9.2.8",
         "@vitejs/plugin-vue": "^6.0.9",
-        "@vueuse/core": "^15.0.0",
+        "@vueuse/core": "^15.1.0",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "cn": "^0.5.2",

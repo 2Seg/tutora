@@ -52,6 +52,8 @@ return [
             'student' => [
                 'placeholder' => 'Select a student',
                 'label' => 'Student',
+                'search' => 'Search a student...',
+                'empty' => 'No student found.',
             ],
             'time' => [
                 'start' => 'Start time',
