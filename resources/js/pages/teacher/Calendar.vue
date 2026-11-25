@@ -31,8 +31,9 @@ watch(weekStart, (week) =>
 );
 
 watch(selectedEventId, (eventId) =>
-    router.replace({
+    router.push({
         url: show({ mergeQuery: { event: eventId } }).url,
+        props: (current) => ({ ...current, selectedEventId: eventId }),
         preserveState: true,
         preserveScroll: true,
     }),

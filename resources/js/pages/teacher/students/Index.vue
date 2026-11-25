@@ -16,8 +16,9 @@ const selectedStudent = computed(
 );
 
 watch(selectedStudentId, (studentId) =>
-    router.replace({
+    router.push({
         url: index({ mergeQuery: { student: studentId } }).url,
+        props: (current) => ({ ...current, selectedStudentId: studentId === null ? null : Number(studentId) }),
         preserveState: true,
         preserveScroll: true,
     }),
