@@ -46,7 +46,7 @@ function onCreated() {
                         :aria-invalid="!!errors[field.name]"
                         :autocomplete="field.autocomplete"
                         :name="field.name"
-                        :placeholder="field.name === 'phone' ? trans('students.create.placeholders.phone') : undefined"
+                        :placeholder="trans(`students.create.placeholders.${field.name}`)"
                         :type="field.type"
                     />
                     <p v-if="errors[field.name]" class="text-sm text-destructive">{{ errors[field.name] }}</p>
