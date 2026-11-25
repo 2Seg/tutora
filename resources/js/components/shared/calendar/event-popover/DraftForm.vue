@@ -207,7 +207,7 @@ function selectStudent(studentId: StudentSummary['id']) {
                                     <ChevronDown class="ml-auto size-3.5 shrink-0 opacity-50" />
                                 </ComboboxTrigger>
                             </ComboboxAnchor>
-                            <ComboboxList align="start" class="w-60">
+                            <ComboboxList align="start" class="w-60" data-keep-draft>
                                 <ComboboxInput :placeholder="$t('calendar.event.popover.student.search')" />
                                 <ComboboxEmpty>{{ $t('calendar.event.popover.student.empty') }}</ComboboxEmpty>
                                 <ComboboxViewport class="max-h-59">
