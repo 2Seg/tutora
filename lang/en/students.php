@@ -11,6 +11,7 @@ return [
     'card' => [
         'email' => 'Email',
         'phone' => 'Phone',
+        'timezone' => 'Timezone',
         'next_lesson' => 'Next lesson',
         'view_calendar' => 'View calendar',
     ],

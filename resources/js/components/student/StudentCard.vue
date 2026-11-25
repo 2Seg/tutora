@@ -39,6 +39,12 @@ const props = defineProps<{ student: Student }>();
                         </p>
                         <p class="text-sm">{{ student.phone }}</p>
                     </div>
+                    <div>
+                        <p class="text-xs uppercase text-muted-foreground">
+                            {{ $t('students.card.timezone') }}
+                        </p>
+                        <p class="text-sm">{{ student.timezone }}</p>
+                    </div>
                 </ItemContent>
             </Item>
 
