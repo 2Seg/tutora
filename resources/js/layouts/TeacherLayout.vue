@@ -1,4 +1,5 @@
 <script lang="ts" setup>
+import { Head } from '@inertiajs/vue3';
 import UserNavigationMenu from '@/components/user/UserNavigationMenu.vue';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import ProfileMenu from '@/components/user/UserMenu.vue';
@@ -10,6 +11,7 @@ const { current } = useUserNavigation();
 </script>
 
 <template>
+    <Head :title="current?.label" />
     <div class="flex h-dvh flex-col">
         <header class="flex justify-between min-w-screen px-6 pt-3 pb-1">
             <AppLogo></AppLogo>

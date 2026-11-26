@@ -7,11 +7,12 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { LogIn } from '@lucide/vue';
 import { InputGroup, InputGroupAddon, InputGroupInput } from '@/components/ui/input-group';
 import { MailIcon, Lock } from '@lucide/vue';
-import { Form } from '@inertiajs/vue3';
+import { Form, Head } from '@inertiajs/vue3';
 import { login } from '@/routes/auth';
 </script>
 
 <template>
+    <Head :title="$t('auth.login.title')" />
     <Form #default="{ errors, processing }" :action="login()" class="w-full max-w-sm">
         <Card class="bg-card">
             <CardHeader class="flex items-center justify-center">

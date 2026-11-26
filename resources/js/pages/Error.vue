@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue';
 import { Button } from '@/components/ui/button';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLogo from '@/components/shared/AppLogo.vue';
 import { trans } from 'laravel-vue-i18n';
@@ -27,6 +27,7 @@ function goBack(): void {
 </script>
 
 <template>
+    <Head :title="$t('error.default.title')" />
     <main class="min-h-screen flex flex-col items-center justify-center gap-2">
         <Card class="bg-card w-full max-w-sm">
             <CardHeader class="flex items-center justify-center">
