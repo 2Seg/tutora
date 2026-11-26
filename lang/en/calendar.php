@@ -1,0 +1,79 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+    'aside' => [
+        'update_availabilities' => 'Update availabilities',
+    ],
+    'availability' => [
+        'available' => 'Available',
+        'unavailable' => 'Unavailable',
+        'popover' => [
+            'title' => 'Weekly availabilities',
+            'add' => 'Add slot',
+            'remove' => 'Remove slot',
+            'cancel' => 'Cancel',
+            'save' => 'Save',
+        ],
+    ],
+    'event' => [
+        'default_title' => [
+            'lesson' => '(No title)',
+            'time_off' => 'Time off',
+        ],
+        'status' => [
+            'planned' => 'Planned',
+            'requested' => 'Requested',
+            'cancelled' => 'Cancelled',
+            'draft' => 'Draft',
+            'time_off' => 'Time off',
+        ],
+        'toast' => [
+            'lesson_created' => 'Lesson created',
+            'lesson_planned' => 'Lesson planned',
+            'lesson_cancelled' => 'Lesson cancelled',
+            'lesson_updated' => 'Lesson updated',
+            'time_off_created' => 'Time off created',
+            'time_off_rescheduled' => 'Time off rescheduled',
+            'time_off_deleted' => 'Time off deleted',
+        ],
+        'dialog' => [
+            'delete_time_off' => 'Delete this time off?',
+            'cancel_event' => 'Cancel this event?',
+            'plan_event' => 'Plan this event?',
+        ],
+        'popover' => [
+            'title' => [
+                'placeholder' => 'Add title',
+                'label' => 'Title',
+            ],
+            'status' => ['label' => 'Status'],
+            'student' => [
+                'placeholder' => 'Select a student',
+                'label' => 'Student',
+                'search' => 'Search a student...',
+                'empty' => 'No student found.',
+            ],
+            'time' => [
+                'start' => 'Start time',
+                'end' => 'End time',
+                'duration' => 'Duration',
+                'student' => 'Student time',
+            ],
+            'action' => [
+                'cancel' => 'Cancel event',
+                'plan' => 'Plan event',
+            ],
+            'lesson' => 'Lesson',
+            'time_off' => 'Time off',
+            'cancel' => 'Cancel',
+            'create' => 'Create',
+            'edit' => 'Edit',
+            'delete' => 'Delete',
+            'save' => 'Save',
+            'close' => 'Close',
+            'join_meeting' => 'Join meeting',
+        ],
+    ],
+];

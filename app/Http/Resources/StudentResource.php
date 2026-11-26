@@ -24,6 +24,13 @@ final class StudentResource extends JsonResource
             'timezone' => $this->timezone,
             'createdAt' => $this->created_at?->toIso8601String(),
             'updatedAt' => $this->updated_at?->toIso8601String(),
+            'nextLesson' => $this->whenLoaded('nextLesson', fn() => [
+                'id' => $this->nextLesson->id,
+                'title' => $this->nextLesson->lesson->title,
+                'status' => $this->nextLesson->lesson->status,
+                'startsAt' => $this->nextLesson->starts_at->toIso8601String(),
+                'endsAt' => $this->nextLesson->ends_at->toIso8601String(),
+            ]),
         ];
     }
 }

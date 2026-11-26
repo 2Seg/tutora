@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 /**
  * @extends Factory<User>
  */
-class UserFactory extends Factory
+final class UserFactory extends Factory
 {
     public function definition(): array
     {
@@ -19,7 +19,7 @@ class UserFactory extends Factory
             'first_name' => $this->faker->firstName(),
             'last_name' => $this->faker->lastName(),
             'phone' => $this->faker->phoneNumber(),
-            'avatar_img' => $this->faker->imageUrl(),
+            'avatar_img' => $this->faker->optional(0.3)->imageUrl(),
             'timezone' => $this->faker->timezone(),
             'bio' => $this->faker->text(),
         ];

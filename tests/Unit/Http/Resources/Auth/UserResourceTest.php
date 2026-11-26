@@ -20,51 +20,63 @@ final class UserResourceTest extends UnitTestCase
         $this->user = new User();
     }
 
-    public function testToArraySerializesUserId(): void
+    public function testItSerializesUserId(): void
     {
         // Arrange
         $this->user->id = 1;
 
         // Act
-        $actual = (new UserResource($this->user))->toArray($this->request);
+        $actual = (new UserResource($this->user))->resolve($this->request);
 
         // Assert
         $this->assertSame(1, $actual['id']);
     }
 
-    public function testToArraySerializesUserFullName(): void
+    public function testItSerializesUserFullName(): void
     {
         // Arrange
         $this->user->first_name = 'Average';
         $this->user->last_name = 'Joe';
 
         // Act
-        $actual = (new UserResource($this->user))->toArray($this->request);
+        $actual = (new UserResource($this->user))->resolve($this->request);
 
         // Assert
         $this->assertSame('Average Joe', $actual['fullName']);
     }
 
-    public function testToArraySerializesUserInitials(): void
+    public function testItSerializesUserInitials(): void
     {
         // Arrange
         $this->user->first_name = 'Average';
         $this->user->last_name = 'Joe';
 
         // Act
-        $actual = (new UserResource($this->user))->toArray($this->request);
+        $actual = (new UserResource($this->user))->resolve($this->request);
 
         // Assert
         $this->assertSame('AJ', $actual['initials']);
     }
 
+    public function testItSerializesUserTimezone(): void
+    {
+        // Arrange
+        $this->user->timezone = 'Europe/Paris';
+
+        // Act
+        $actual = (new UserResource($this->user))->resolve($this->request);
+
+        // Assert
+        $this->assertSame('Europe/Paris', $actual['timezone']);
+    }
+
     public function testItSerializesOnlySpecificFields(): void
     {
         // Arrange
-        $expected = ['id', 'fullName', 'initials'];
+        $expected = ['id', 'fullName', 'initials', 'timezone'];
 
         // Act
-        $actual = (new UserResource($this->user))->toArray($this->request);
+        $actual = (new UserResource($this->user))->resolve($this->request);
 
         // Assert
         $this->assertSame($expected, array_keys($actual));

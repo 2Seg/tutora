@@ -4,12 +4,11 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { resolveLayout } from '@/layouts/resolveLayout';
 import { i18nVue } from 'laravel-vue-i18n';
 
-const translations = import.meta.glob<{ default: Record<string, string> }>(
-    '../../lang/*.json',
-    { eager: true },
-);
+const translations = import.meta.glob<{ default: Record<string, string> }>('../../lang/*.json', { eager: true });
 
 createInertiaApp({
+    title: (title) => (title ? `${title} - ${import.meta.env.VITE_APP_NAME}` : import.meta.env.VITE_APP_NAME),
+
     resolve: async (name) => {
         const page: any = await resolvePageComponent(
             `./pages/${name}.vue`,
@@ -29,8 +28,7 @@ createInertiaApp({
             .use(i18nVue, {
                 lang: (props.initialPage.props.locale as string) ?? 'en',
                 fallbackLang: 'en',
-                resolve: (lang: string) =>
-                    translations[`../../lang/${lang}.json`]?.default ?? {},
+                resolve: (lang: string) => translations[`../../lang/${lang}.json`]?.default ?? {},
             })
             .mount(el);
     },

@@ -1,0 +1,258 @@
+<script lang="ts" setup>
+import { Check, ChevronDown, ClockAlert } from '@lucide/vue';
+import { computed } from 'vue';
+import { Input } from '@/components/ui/input';
+import FormActions from '@/components/shared/calendar/event-popover/FormActions.vue';
+import ScheduleInputs from '@/components/shared/calendar/event-popover/ScheduleInputs.vue';
+import { formatDuration, formatEventSchedule } from '@/lib/calendar-event';
+import { fromWallClock, LESSON_DURATIONS, slotMinutes, withLessonDuration } from '@/lib/calendar-utils';
+import type { Draft, DraftUpdate, EventType, SelectLessonStatus } from '@/types/calendar';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { trans } from 'laravel-vue-i18n';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+    Combobox,
+    ComboboxAnchor,
+    ComboboxEmpty,
+    ComboboxGroup,
+    ComboboxInput,
+    ComboboxItem,
+    ComboboxItemIndicator,
+    ComboboxList,
+    ComboboxTrigger,
+    ComboboxViewport,
+} from '@/components/ui/combobox';
+import StatusBadge from '@/components/shared/calendar/StatusBadge.vue';
+import { StatusBadgeVariant } from '@/lib/calendar-status';
+import { StudentSummary } from '@/types/Student';
+import UserAvatar from '@/components/user/UserAvatar.vue';
+import { Label } from '@/components/ui/label';
+import { Form } from '@inertiajs/vue3';
+import { store } from '@/routes/teacher/calendar/events';
+import { toast } from 'vue-sonner';
+
+const props = defineProps<{
+    draft: Draft;
+    students?: StudentSummary[];
+    timezone: string;
+}>();
+
+const emit = defineEmits<{
+    cancel: [];
+    update: [update: DraftUpdate];
+}>();
+
+const schedule = computed(() => formatEventSchedule(props.draft));
+const durationMinutes = computed(() => {
+    const { startMin, endMin } = slotMinutes(props.draft);
+    return endMin - startMin;
+});
+
+const inlineField =
+    'h-auto -mx-1 mr-0.5 rounded-sm border-0 bg-transparent p-0 text-sm shadow-none dark:bg-transparent ' +
+    'hover:bg-accent focus-visible:bg-accent focus-visible:ring-0 aria-invalid:text-destructive';
+
+const statuses = ['planned', 'cancelled', 'requested'] as const satisfies readonly SelectLessonStatus[];
+
+const selectedStudent = computed(() => props.students?.find((student) => student.id === props.draft.studentId));
+const studentSchedule = computed(() => {
+    const studentTimezone = selectedStudent.value?.timezone;
+    if (!studentTimezone || studentTimezone === props.timezone) return null;
+
+    return formatEventSchedule(
+        {
+            startsAt: fromWallClock(props.draft.startsAt, props.timezone),
+            endsAt: fromWallClock(props.draft.endsAt, props.timezone),
+        },
+        studentTimezone,
+    );
+});
+
+function onCreated() {
+    toast.success(trans(`calendar.event.toast.${props.draft.type}_created`));
+    emit('cancel');
+}
+
+function selectStudent(studentId: StudentSummary['id']) {
+    const student = props.students?.find((student) => student.id === studentId);
+    const shouldUseStudentAsTitle = student && !props.draft.title;
+    emit('update', shouldUseStudentAsTitle ? { studentId, title: student.fullName } : { studentId });
+}
+</script>
+
+<template>
+    <Form #default="{ errors, processing }" :action="store()" class="flex flex-col gap-3" @success="onCreated">
+        <Tabs :model-value="draft.type" @update:model-value="emit('update', { type: $event as EventType })">
+            <TabsList>
+                <TabsTrigger value="lesson">{{ trans('calendar.event.popover.lesson') }}</TabsTrigger>
+                <TabsTrigger value="time_off">{{ trans('calendar.event.popover.time_off') }}</TabsTrigger>
+                <input :value="draft.type" name="type" type="hidden" />
+            </TabsList>
+
+            <p v-if="errors.failed" class="text-sm text-center text-destructive">
+                {{ errors.failed }}
+            </p>
+
+            <div class="text-sm">
+                <div class="flex items-center justify-between gap-2">
+                    <p class="m-0 flex flex-col">
+                        <span>{{ schedule.day }}</span>
+                        <span
+                            v-if="draft.type === 'lesson' && studentSchedule && schedule.day !== studentSchedule.day"
+                            :title="$t('calendar.event.popover.time.student')"
+                            class="flex items-center gap-2 text-secondary-foreground"
+                        >
+                            {{ studentSchedule.day }}
+                            <ClockAlert :size="15" />
+                        </span>
+                    </p>
+                    <template v-if="draft.type === 'lesson'">
+                        <Select
+                            :model-value="durationMinutes"
+                            @update:model-value="emit('update', withLessonDuration(draft, Number($event)))"
+                        >
+                            <SelectTrigger
+                                :aria-invalid="!!errors.ends_at"
+                                :aria-label="trans('calendar.event.popover.time.duration')"
+                                :class="[
+                                    inlineField,
+                                    'mx-0 gap-0.5 font-bold max-h-5 text-secondary-foreground [&_svg]:size-3.5',
+                                ]"
+                            >
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem v-for="duration in LESSON_DURATIONS" :key="duration" :value="duration">
+                                        {{ formatDuration(duration) }}
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                    </template>
+                </div>
+                <ScheduleInputs
+                    :errors="errors"
+                    :is-lesson="draft.type === 'lesson'"
+                    :slot="draft"
+                    :timezone="props.timezone"
+                    @update="emit('update', $event)"
+                />
+                <p
+                    v-if="draft.type === 'lesson' && studentSchedule"
+                    :title="$t('calendar.event.popover.time.student')"
+                    class="m-0 flex items-center gap-2 text-secondary-foreground tabular-nums"
+                >
+                    {{ studentSchedule.timeRange }}
+                    <ClockAlert :size="15" />
+                </p>
+            </div>
+            <p v-if="errors.starts_at" class="text-sm text-destructive">{{ errors.starts_at }}</p>
+            <p v-if="errors.ends_at" class="text-sm text-destructive">{{ errors.ends_at }}</p>
+
+            <TabsContent class="flex flex-col gap-2" value="lesson">
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="flex min-w-0 flex-col gap-1">
+                        <Label for="status">{{ trans('calendar.event.popover.status.label') }}</Label>
+                        <Select
+                            v-slot="{ modelValue }"
+                            :model-value="draft.status ?? 'planned'"
+                            name="status"
+                            @update:model-value="emit('update', { status: $event as SelectLessonStatus })"
+                        >
+                            <SelectTrigger
+                                :aria-invalid="!!errors.status"
+                                :class="[inlineField, 'mx-0 gap-0.5 max-h-7 [&_svg]:size-3.5 cursor-pointer']"
+                            >
+                                <SelectValue>
+                                    <StatusBadge :variant="(modelValue as StatusBadgeVariant) ?? 'planned'" />
+                                </SelectValue>
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectGroup>
+                                    <SelectItem v-for="status in statuses" :key="status" :value="status">
+                                        <StatusBadge :variant="status" />
+                                    </SelectItem>
+                                </SelectGroup>
+                            </SelectContent>
+                        </Select>
+                        <p v-if="errors.status" class="text-sm text-destructive">
+                            {{ errors.status }}
+                        </p>
+                    </div>
+
+                    <div class="flex min-w-0 flex-col gap-1">
+                        <Label for="student">{{ trans('calendar.event.popover.student.label') }}</Label>
+                        <Combobox
+                            :model-value="draft.studentId"
+                            name="student_id"
+                            @update:model-value="selectStudent(Number($event))"
+                        >
+                            <ComboboxAnchor class="w-fit max-w-full">
+                                <ComboboxTrigger
+                                    id="student"
+                                    :aria-invalid="!!errors.student_id"
+                                    :class="[
+                                        inlineField,
+                                        'mx-0 flex h-7 w-fit max-w-full items-center gap-0.5 text-secondary-foreground cursor-pointer',
+                                    ]"
+                                >
+                                    <template v-if="selectedStudent">
+                                        <UserAvatar :user="selectedStudent" class="size-6.5 shrink-0" />
+                                        <span class="truncate">{{ selectedStudent.fullName }}</span>
+                                    </template>
+                                    <span v-else class="truncate">
+                                        {{ $t('calendar.event.popover.student.placeholder') }}
+                                    </span>
+                                    <ChevronDown class="ml-auto size-3.5 shrink-0 opacity-50" />
+                                </ComboboxTrigger>
+                            </ComboboxAnchor>
+                            <ComboboxList align="start" class="w-60" data-keep-draft>
+                                <ComboboxInput :placeholder="$t('calendar.event.popover.student.search')" />
+                                <ComboboxEmpty>{{ $t('calendar.event.popover.student.empty') }}</ComboboxEmpty>
+                                <ComboboxViewport class="max-h-59">
+                                    <ComboboxGroup>
+                                        <ComboboxItem
+                                            v-for="student in props.students"
+                                            :key="student.id"
+                                            :text-value="student.fullName"
+                                            :value="student.id"
+                                        >
+                                            <UserAvatar :user="student" class="size-6.5" />
+                                            {{ student.fullName }}
+                                            <ComboboxItemIndicator>
+                                                <Check class="size-4" />
+                                            </ComboboxItemIndicator>
+                                        </ComboboxItem>
+                                    </ComboboxGroup>
+                                </ComboboxViewport>
+                            </ComboboxList>
+                        </Combobox>
+                        <p v-if="errors.student_id" class="text-sm text-destructive">
+                            {{ errors.student_id }}
+                        </p>
+                    </div>
+                </div>
+
+                <Label for="title">{{ trans('calendar.event.popover.title.label') }}</Label>
+                <Input
+                    :aria-invalid="!!errors.title"
+                    :aria-label="$t('calendar.event.popover.title')"
+                    :model-value="draft.title ?? ''"
+                    :placeholder="$t('calendar.event.popover.title.placeholder')"
+                    name="title"
+                    @update:model-value="emit('update', { title: String($event) })"
+                />
+                <p v-if="errors.title" class="text-sm text-destructive">
+                    {{ errors.title }}
+                </p>
+            </TabsContent>
+
+            <FormActions
+                :processing="processing"
+                :submit-label="trans('calendar.event.popover.create')"
+                @cancel="emit('cancel')"
+            />
+        </Tabs>
+    </Form>
+</template>

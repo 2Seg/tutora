@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Http\Resources;
 
+use App\Enums\LessonStatus;
 use App\Http\Resources\StudentResource;
+use App\Models\Event;
+use App\Models\Lesson;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Tests\Unit\UnitTestCase;
@@ -20,149 +23,149 @@ final class StudentResourceTest extends UnitTestCase
         $this->student = new Student();
     }
 
-    public function testToArraySerializesStudentId()
+    public function testItSerializesStudentId()
     {
         // Arrange
         $this->student->id = 1;
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame(1, $actual['id']);
     }
 
-    public function testToArraySerializesStudentUserId(): void
+    public function testItSerializesStudentUserId(): void
     {
         // Arrange
         $this->student->user_id = 1;
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame(1, $actual['userId']);
     }
 
-    public function testToArraySerializesStudentEmail(): void
+    public function testItSerializesStudentEmail(): void
     {
         // Arrange
         $this->student->email = 'test@test.com';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('test@test.com', $actual['email']);
     }
 
-    public function testToArraySerializesStudentFirstName(): void
+    public function testItSerializesStudentFirstName(): void
     {
         // Arrange
         $this->student->first_name = 'Test';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('Test', $actual['firstName']);
     }
 
-    public function testToArraySerializesStudentLastName(): void
+    public function testItSerializesStudentLastName(): void
     {
         // Arrange
         $this->student->last_name = 'Test';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('Test', $actual['lastName']);
     }
 
-    public function testToArraySerializesStudentFullName(): void
+    public function testItSerializesStudentFullName(): void
     {
         // Arrange
         $this->student->first_name = 'Test';
         $this->student->last_name = 'Tested';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('Test Tested', $actual['fullName']);
     }
 
-    public function testToArraySerializesStudentInitials(): void
+    public function testItSerializesStudentInitials(): void
     {
         // Arrange
         $this->student->first_name = 'Test';
         $this->student->last_name = 'Tested';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('TT', $actual['initials']);
     }
 
-    public function testToArraySerializesStudentPhone(): void
+    public function testItSerializesStudentPhone(): void
     {
         // Arrange
         $this->student->phone = '0123456789';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('0123456789', $actual['phone']);
     }
 
-    public function testToArraySerializesStudentAvatarImg(): void
+    public function testItSerializesStudentAvatarImg(): void
     {
         // Arrange
         $this->student->avatar_img = 'https://image.com';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('https://image.com', $actual['avatarImg']);
     }
 
-    public function testToArraySerializesStudentTimezone(): void
+    public function testItSerializesStudentTimezone(): void
     {
         // Arrange
         $this->student->timezone = 'Europe/London';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('Europe/London', $actual['timezone']);
     }
 
-    public function testToArraySerializesStudentCreatedAt(): void
+    public function testItSerializesStudentCreatedAt(): void
     {
         // Arrange
         $this->student->setDateFormat('Y-m-d H:i:s');
         $this->student->created_at = '2000-01-01T00:00:00+00:00';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('2000-01-01T00:00:00+00:00', $actual['createdAt']);
     }
 
-    public function testToArraySerializesStudentUpdatedAt(): void
+    public function testItSerializesStudentUpdatedAt(): void
     {
         // Arrange
         $this->student->setDateFormat('Y-m-d H:i:s');
         $this->student->updated_at = '2000-01-01T00:00:00+00:00';
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame('2000-01-01T00:00:00+00:00', $actual['updatedAt']);
@@ -187,9 +190,46 @@ final class StudentResourceTest extends UnitTestCase
         ];
 
         // Act
-        $actual = (new StudentResource($this->student))->toArray($this->request);
+        $actual = (new StudentResource($this->student))->resolve($this->request);
 
         // Assert
         $this->assertSame($expected, array_keys($actual));
+    }
+
+    public function testItSerializesNextLessonWhenLoaded(): void
+    {
+        // Arrange
+        $event = new Event();
+        $event->setDateFormat('Y-m-d H:i:s');
+        $event->id = 7;
+        $event->starts_at = '2000-01-01T10:00:00+00:00';
+        $event->ends_at = '2000-01-01T11:00:00+00:00';
+        $event->setRelation('lesson', new Lesson(['title' => 'French', 'status' => LessonStatus::Planned]));
+        $this->student->setRelation('nextLesson', $event);
+        $expected = [
+            'id' => 7,
+            'title' => 'French',
+            'status' => LessonStatus::Planned,
+            'startsAt' => '2000-01-01T10:00:00+00:00',
+            'endsAt' => '2000-01-01T11:00:00+00:00',
+        ];
+
+        // Act
+        $actual = (new StudentResource($this->student))->resolve($this->request);
+
+        // Assert
+        $this->assertSame($expected, $actual['nextLesson']);
+    }
+
+    public function testItSerializesNullNextLessonWhenLoadedWithoutLesson(): void
+    {
+        // Arrange
+        $this->student->setRelation('nextLesson', null);
+
+        // Act
+        $actual = (new StudentResource($this->student))->resolve($this->request);
+
+        // Assert
+        $this->assertNull($actual['nextLesson']);
     }
 }

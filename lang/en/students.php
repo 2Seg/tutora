@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+return [
+
+    'search' => ['placeholder' => 'Search by name or email...'],
+
+    'table' => ['title' => 'Students'],
+
+    'card' => [
+        'email' => 'Email',
+        'phone' => 'Phone',
+        'timezone' => 'Timezone',
+        'next_lesson' => 'Next lesson',
+        'view_calendar' => 'View in calendar',
+        'no_next_lesson' => 'No upcoming lesson',
+    ],
+
+    'create' => [
+        'trigger' => 'Add',
+        'title' => 'New student',
+        'fields' => [
+            'first_name' => 'First name',
+            'last_name' => 'Last name',
+            'email' => 'Email',
+            'phone' => 'Phone',
+            'timezone' => 'Timezone',
+        ],
+        'placeholders' => [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'phone' => '+33 6 12 34 56 78',
+        ],
+        'cancel' => 'Cancel',
+        'save' => 'Save',
+        'toast' => ['created' => 'Student created'],
+    ],
+
+];

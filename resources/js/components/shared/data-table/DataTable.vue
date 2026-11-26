@@ -1,27 +1,24 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import type { ColumnDef } from '@tanstack/vue-table';
 import { FlexRender, useTable } from '@tanstack/vue-table';
-import { ChevronLeft, ChevronRight } from '@lucide/vue';
-import { Button } from '@/components/ui/button';
 import SearchInput from '@/components/shared/SearchInput.vue';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { features, type DataTableFeatures } from '@/components/shared/data-table/features';
+import { computed, onBeforeUnmount, onMounted } from 'vue';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
-import {
-    features,
-    type DataTableFeatures,
-} from '@/components/shared/data-table/features';
-import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
+    PaginationContent,
+    PaginationNext,
+    Pagination,
+    PaginationPrevious,
+    PaginationItem,
+    PaginationEllipsis,
+} from '@/components/ui/pagination';
 
 const props = withDefaults(
     defineProps<{
         columns: ColumnDef<DataTableFeatures, any, any>[];
         data: any[];
+        getRowId: (row: any) => string;
         searchPlaceholder?: string;
         itemLabel?: string;
         pageSize?: number;
@@ -29,23 +26,21 @@ const props = withDefaults(
     { pageSize: 6 },
 );
 
-const emit = defineEmits<{
-    'row-select': [row: any | null];
-}>();
-const selectedRowId = ref<string | null>(null);
+const selectedRowId = defineModel<string | null>('selectedRowId', { default: null });
 
-function select(row: { id: string; original: unknown }) {
+function select(row: { id: string }) {
     selectedRowId.value = row.id;
-    emit('row-select', row.original);
 }
 
 function clear() {
     selectedRowId.value = null;
-    emit('row-select', null);
 }
 
 onMounted(() => document.addEventListener('click', clear));
 onBeforeUnmount(() => document.removeEventListener('click', clear));
+
+const selectedRowIndex = props.data.findIndex((row) => props.getRowId(row) === selectedRowId.value);
+const initialPageIndex = selectedRowIndex === -1 ? 0 : Math.floor(selectedRowIndex / props.pageSize);
 
 const table = useTable({
     features,
@@ -56,34 +51,29 @@ const table = useTable({
         return props.columns;
     },
     globalFilterFn: 'includesString',
+    getRowId: (row: any) => props.getRowId(row),
     initialState: {
-        pagination: { pageIndex: 0, pageSize: props.pageSize },
+        pagination: { pageIndex: initialPageIndex, pageSize: props.pageSize },
     },
 });
 
 const pagination = computed(() => table.atoms.pagination.get());
 const total = computed(() => table.getFilteredRowModel().rows.length);
-const from = computed(() =>
-    total.value === 0
-        ? 0
-        : pagination.value.pageIndex * pagination.value.pageSize + 1,
-);
-const to = computed(() =>
-    Math.min(
-        (pagination.value.pageIndex + 1) * pagination.value.pageSize,
-        total.value,
-    ),
-);
+const from = computed(() => (total.value === 0 ? 0 : pagination.value.pageIndex * pagination.value.pageSize + 1));
+const to = computed(() => Math.min((pagination.value.pageIndex + 1) * pagination.value.pageSize, total.value));
 </script>
 
 <template>
     <div class="space-y-4">
-        <SearchInput
-            class="mb-4"
-            :placeholder="searchPlaceholder"
-            :model-value="table.atoms.globalFilter.get() ?? ''"
-            @update:model-value="table.setGlobalFilter($event)"
-        />
+        <div class="flex items-center justify-between">
+            <SearchInput
+                :model-value="table.atoms.globalFilter.get() ?? ''"
+                :placeholder="searchPlaceholder"
+                @update:model-value="table.setGlobalFilter($event)"
+            />
+
+            <slot name="actions" />
+        </div>
 
         <div class="flex min-h-112 flex-col rounded-2xl bg-card p-4">
             <Table>
@@ -98,10 +88,7 @@ const to = computed(() =>
                             :key="header.id"
                             class="h-auto px-3 pb-4 text-xs font-medium uppercase tracking-wider text-muted-foreground"
                         >
-                            <FlexRender
-                                v-if="!header.isPlaceholder"
-                                :header="header"
-                            />
+                            <FlexRender v-if="!header.isPlaceholder" :header="header" />
                         </TableHead>
                     </TableRow>
                 </TableHeader>
@@ -117,68 +104,59 @@ const to = computed(() =>
                             <TableCell
                                 v-for="cell in row.getVisibleCells()"
                                 :key="cell.id"
-                                class="px-3 py-2 gap-1 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
                                 :class="{
                                     'bg-accent/50': selectedRowId === row.id,
                                 }"
+                                class="px-3 py-2 gap-1 first:rounded-l-xl last:rounded-r-xl group-hover:bg-accent"
                             >
                                 <FlexRender :cell="cell" />
                             </TableCell>
                         </TableRow>
                     </template>
                     <TableRow v-else class="border-0 hover:bg-transparent">
-                        <TableCell
-                            :colspan="columns.length"
-                            class="h-24 text-center"
-                        >
-                            No results.
-                        </TableCell>
+                        <TableCell :colspan="columns.length" class="h-24 text-center"> No results. </TableCell>
                     </TableRow>
                 </TableBody>
             </Table>
 
             <div class="mt-auto flex items-center justify-between px-3">
                 <p class="text-sm text-primary">
-                    Showing {{ from }}–{{ to }} of {{ total }}
-                    {{ itemLabel ?? 'results' }}
+                    {{
+                        $tChoice('common.pagination.results', total, {
+                            from: String(from),
+                            to: String(to),
+                            total: String(total),
+                        })
+                    }}
                 </p>
 
                 <div class="flex items-center gap-1">
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        class="size-8 text-primary"
-                        :disabled="!table.getCanPreviousPage()"
-                        @click="table.previousPage()"
+                    <Pagination
+                        :items-per-page="pagination.pageSize"
+                        :page="pagination.pageIndex + 1"
+                        :sibling-count="1"
+                        :total="table.getRowCount()"
+                        show-edges
+                        @update:page="table.setPageIndex($event - 1)"
                     >
-                        <ChevronLeft class="size-4" />
-                    </Button>
+                        <PaginationContent v-slot="{ items }">
+                            <PaginationPrevious />
 
-                    <Button
-                        v-for="page in table.getPageCount()"
-                        :key="page"
-                        variant="ghost"
-                        size="icon"
-                        class="size-8 text-sm"
-                        :class="
-                            page - 1 === pagination.pageIndex
-                                ? 'bg-accent font-semibold text-primary'
-                                : 'text-muted-foreground'
-                        "
-                        @click="table.setPageIndex(page - 1)"
-                    >
-                        {{ page }}
-                    </Button>
+                            <template v-for="(item, index) in items" :key="index">
+                                <PaginationItem
+                                    v-if="item.type === 'page'"
+                                    :is-active="item.value === pagination.pageIndex + 1"
+                                    :value="item.value"
+                                >
+                                    {{ item.value }}
+                                </PaginationItem>
 
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        class="size-8 text-primary"
-                        :disabled="!table.getCanNextPage()"
-                        @click="table.nextPage()"
-                    >
-                        <ChevronRight class="size-4" />
-                    </Button>
+                                <PaginationEllipsis v-else :index="index" />
+                            </template>
+
+                            <PaginationNext />
+                        </PaginationContent>
+                    </Pagination>
                 </div>
             </div>
         </div>
